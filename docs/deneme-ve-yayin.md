@@ -9,6 +9,8 @@
 
 0.2'yi denemek için dersten önce **Ritim ağırlıklı** veya **Arpej ağırlıklı** kaynağı seç. Yanlış bir EQ yanıtı ver; **B: Doğru EQ** ve **C: Seçtiğin EQ** arasında geçiş yap. Profil'den **İlerlemeyi indir** ile yedek al; farklı bir tarayıcıda **Yedekten geri yükle** seç. Birleştirme özetini kontrol et. Aynı dosyayı ikinci kez yüklemek soru sayısını artırmamalı.
 
+0.3'te **Yollar → Miks ve prodüksiyon → Ses yüksekliği** bölümünü aç. Üç seviyede B'nin daha yüksek, daha düşük veya aynı olmasını dinle. Karşılaştırırken ses ayarını sabit tut; yanıtından sonra dB farkı görünür. **Temel müzik kulağı → Ritim** bölümünde dört sayımdan sonraki ritme odaklan. A ve B tamamlanınca yanıt açılır; bir örneği yarıda kesersen onu tekrar tamamlaman gerekir. Yanıttan sonra iki kalıbın vuruş noktalarını karşılaştır. Son seviyede kulaklık kullanarak küçük farkın anlaşılmasını kontrol et.
+
 ## Kod ile çalışan site farklıdır
 
 GitHub deposunda uygulamanın kaynakları ve dokümanları durur. Çalışan bir bağlantı için web barındırma gerekir. Cloud ortamını yayımlamak geliştirme ortamının anlık görüntüsünü kaydeder; uygulamayı internet sitesine dönüştürmez.

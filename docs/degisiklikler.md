@@ -1,5 +1,16 @@
 # Sürüm değişiklikleri
 
+## 0.3
+
+- Ses yüksekliği için üç seviye: ±6, ±3 ve ±1 dB veya aynı seviye. Üç kaynak seçilebilir; aynı kaynağın A/B örnekleri aynı ses saatinde çalar. Yalnızca seviye değişir; kasıtlı fark RMS eşitlemesiyle kaldırılmaz. Yanıttan sonra göreli dB farkı gösterilir.
+- Ritim ayırt etme için üç seviye: sekizlik bölünme, sus/ters vuruş, onaltılık hareket. 100 BPM'de dört sayım ve bir ölçü. Aynı tempo, ses rengi ve vuruş sayısı; B'de tek vuruş bir alt bölüme kayabilir.
+- Ritimde iki örnek de tamamlanmadan yanıt açılamaz. Yarıda kesilen örnek tamamlanmış sayılmaz; tamamlanan örnek işaretlenir. Ritim çizimi öğretici örnekte ve yanıt sonrasında gösterilir.
+- Miks ve müzik yolları bölüm başlıkları altında düzenlendi. Her bölümün üç seviyesi var; ana ekrandaki sayılar gerçek içeriği yansıtır. Toplam 15 pratik / yedi beceri.
+- Yeni beceriler ayrı ölçülür; ses kaynağı, yarım oturum ve sonuçlar yerel kayıt/yedek akışına dahildir. Önceki EQ öneri sırası ve eski oturumların soru hedefleri korunur.
+- Türkçe ve İngilizce ders açıklamaları, geri bildirim ve mobil görünüm güncellendi.
+
+Deneme: Yollar → Miks ve prodüksiyon → Ses yüksekliği; Yollar → Temel müzik kulağı → Ritim. Güncel kaynak ve hazır web paketleri 0.3'tür. Pages yayını için yayın workflow'unu yeniden çalıştır.
+
 ## 0.2
 
 - EQ dersinin başında üç kaynak seçimi: elektronik groove, ritim ağırlıklı, arpej ağırlıklı. Özgün sentez döngüleri; gerçek kayıt/stem kütüphanesi sonraki aşamada.

@@ -1,5 +1,5 @@
 import { random, type Question } from './model';
-import type { EqSource } from './content';
+import { usesLoop, type EqSource } from './content';
 
 export type Variant = 'a' | 'b' | 'c';
 export type AudioStatus = 'idle' | 'preparing' | 'playing' | 'error';
@@ -21,6 +21,36 @@ export function matchLevelGroup(buffers: Float32Array[]) {
 export function matchLevels(a: Float32Array, b: Float32Array) {
   matchLevelGroup([a, b]);
   return { dryRms: rms(a), wetRms: rms(b), maxPeak: Math.max(peak(a), peak(b)) };
+}
+
+// Preserve the intentional relative level; apply only shared clipping headroom.
+export function makeLevelPair(data: Float32Array, db: number) {
+  const a = new Float32Array(data);
+  const b = Float32Array.from(data, sample => sample * Math.pow(10, db / 20));
+  const scale = Math.min(1, 0.72 / Math.max(peak(a), peak(b), 1e-9));
+  for (let i = 0; i < a.length; i++) { a[i] *= scale; b[i] *= scale; }
+  return { a, b };
+}
+
+// Sample-clock rendering: four count-in beats, then a four-beat bar.
+// No timer or UI frame rate participates in rhythm timing.
+export function makeRhythm(rate: number, slots: number[], subdivision: number, tempo: number): Float32Array<ArrayBuffer> {
+  const beat = 60 / tempo;
+  const data = new Float32Array(Math.ceil((8 * beat + 0.2) * rate));
+  const hit = (time: number, hz: number, amplitude: number) => {
+    const start = Math.round(time * rate), length = Math.round(0.065 * rate);
+    for (let i = 0; i < length; i++) {
+      const t = i / rate;
+      const envelope = Math.min(1, t / 0.002) * Math.pow(1 - i / length, 3);
+      data[start + i] += Math.sin(2 * Math.PI * hz * t) * envelope * amplitude;
+    }
+  };
+  for (let i = 0; i < 4; i++) {
+    hit(i * beat, i === 0 ? 1320 : 880, 0.22);
+    hit((4 + i) * beat, 660, 0.055);
+  }
+  for (const slot of slots) hit((4 + slot / subdivision) * beat, 220, 0.36);
+  return data;
 }
 
 // Original synthesized material: kick, bass, arpeggio, hi-hat and air.
@@ -114,7 +144,7 @@ export class AudioEngine {
     this.sources = []; this.gains = []; this.activeKey = '';
     this.emit('idle');
   }
-  private key(q: Question) { return `${q.kind}:${q.seed}:${q.frequency}:${q.gain}:${q.q}:${q.source}:${q.comparisonFrequency}:${q.notesA.join(',')}:${q.notesB.join(',')}`; }
+  private key(q: Question) { return `${q.kind}:${q.seed}:${q.frequency}:${q.gain}:${q.q}:${q.source}:${q.comparisonFrequency}:${q.levelDb}:${q.tempo}:${q.subdivision}:${q.rhythmA?.join(',')}:${q.rhythmB?.join(',')}:${q.notesA.join(',')}:${q.notesB.join(',')}`; }
   private prepare(q: Question, rate: number): Promise<Pair> {
     const key = this.key(q);
     const cached = this.cache.get(key);
@@ -140,12 +170,17 @@ export class AudioEngine {
         this.diagnostics = { dryRms: rms(dry.getChannelData(0)), wetRms: rms(wet.getChannelData(0)), maxPeak: Math.max(...buffers.map(b => peak(b.getChannelData(0)))) };
         return { a: dry, b: wet, c: chosen };
       }
-      const aData = makeNotes(rate, q.notesA, q.kind === 'chord');
-      const bData = makeNotes(rate, q.notesB.length ? q.notesB : q.notesA, q.kind === 'chord');
       const make = (data: Float32Array) => {
         const buffer = this.init().createBuffer(1, data.length, rate);
         buffer.copyToChannel(data as Float32Array<ArrayBuffer>, 0); return buffer;
       };
+      if (q.kind === 'loudness') {
+        const pair = makeLevelPair(makeLoop(rate, q.seed, q.source), q.levelDb!);
+        return { a: make(pair.a), b: make(pair.b) };
+      }
+      if (q.kind === 'rhythm') return { a: make(makeRhythm(rate, q.rhythmA!, q.subdivision!, q.tempo!)), b: make(makeRhythm(rate, q.rhythmB!, q.subdivision!, q.tempo!)) };
+      const aData = makeNotes(rate, q.notesA, q.kind === 'chord');
+      const bData = makeNotes(rate, q.notesB.length ? q.notesB : q.notesA, q.kind === 'chord');
       return { a: make(aData), b: make(bData) };
     })();
     this.cache.set(key, work);
@@ -156,7 +191,7 @@ export class AudioEngine {
   }
   async play(q: Question, variant: Variant = 'a', onComplete?: () => void): Promise<boolean> {
     const key = this.key(q);
-    if (q.kind === 'eq' && this.status === 'playing' && this.activeKey === key) {
+    if (usesLoop(q.kind) && this.status === 'playing' && this.activeKey === key) {
       this.switchVariant(variant); return true;
     }
     this.stop();
@@ -171,7 +206,7 @@ export class AudioEngine {
       if (token !== this.token) return false;
       if (!pair[variant]) throw new Error('Unavailable audio variant');
       const start = context.currentTime + 0.025;
-      if (q.kind === 'eq') {
+      if (usesLoop(q.kind)) {
         for (const [index, buffer] of [pair.a, pair.b, ...(pair.c ? [pair.c] : [])].entries()) {
           const s = context.createBufferSource(); s.buffer = buffer; s.loop = true;
           const g = context.createGain(); g.gain.value = index === ['a', 'b', 'c'].indexOf(variant) ? 1 : 0;

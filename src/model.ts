@@ -1,10 +1,11 @@
-import { eqSourceIds, getLesson, lessons, text, type EqSource, type Locale, type PathId, type SkillId, type Text } from './content';
+import { eqSourceIds, getLesson, lessons, text, usesLoop, type EqSource, type Locale, type PathId, type SkillId, type Text } from './content';
 
 export const ROUND_COUNT = 5;
 export type Option = { id: string; label: Text; detail?: Text };
 export type Question = {
   kind: SkillId; options: Option[]; correct: string; notesA: number[]; notesB: number[];
   frequency?: number; gain?: number; q?: number; source?: EqSource; comparisonFrequency?: number; seed: number; explanation: Text;
+  levelDb?: number; rhythmA?: number[]; rhythmB?: number[]; subdivision?: number; tempo?: number;
 };
 export type Answer = { choice: string; correct: boolean; at: string };
 export type Session = { id: string; lessonId: string; seed: number; index: number; started: boolean; answers: Answer[]; source?: EqSource };
@@ -39,6 +40,25 @@ export function makeQuestion(lessonId: string, seed: number, index: number, sour
       options: frequencies.map((hz, i) => ({ id: String(hz), label: lesson.level === 1 ? labels[i] : text(formatHz(hz), formatHz(hz)), detail: lesson.level === 1 ? details[i] : undefined })),
       explanation: text(`${formatHz(frequency)} çevresine ${gain > 0 ? 'yükseltme' : 'kesme'} uygulandı (${gain > 0 ? '+' : ''}${gain} dB, Q ${q}). A/B ile rengin nasıl değiştiğini tekrar dinle.`, `A ${gain > 0 ? 'boost' : 'cut'} was applied around ${formatHz(frequency)} (${gain > 0 ? '+' : ''}${gain} dB, Q ${q}). Compare A/B again to hear the change in tone.`) };
   }
+  if (lesson.skill === 'loudness') {
+    const difference = [6, 3, 1][lesson.level - 1];
+    const levelDb = pick([-difference, 0, difference]);
+    return { ...common, source, levelDb, correct: levelDb > 0 ? 'louder' : levelDb < 0 ? 'softer' : 'same',
+      options: [{ id: 'louder', label: text('B daha yüksek', 'B is louder') }, { id: 'softer', label: text('B daha düşük', 'B is softer') }, { id: 'same', label: text('Aynı seviye', 'Same level') }],
+      explanation: text(levelDb === 0 ? 'A ve B aynı sinyal seviyesinde. Zamanlama, nota ve ses rengi de aynı.' : `B’nin sinyal seviyesi A’ya göre ${levelDb > 0 ? '+' : ''}${levelDb} dB. Yalnızca seviye değişti; daha yüksek olması sesin daha iyi olduğu anlamına gelmez.`, levelDb === 0 ? 'A and B have the same signal level, timing, pitch and timbre.' : `B’s signal level is ${levelDb > 0 ? '+' : ''}${levelDb} dB relative to A. Only the level changed; a louder sound does not mean a better sound.`) };
+  }
+  if (lesson.skill === 'rhythm') {
+    const subdivision = lesson.level === 3 ? 4 : 2;
+    const patterns = lesson.level === 1 ? [[0, 2, 4, 6], [0, 1, 2, 4, 6], [0, 2, 3, 4, 6]] : lesson.level === 2 ? [[0, 3, 4, 6], [0, 2, 5, 6], [0, 2, 4, 7]] : [[0, 3, 4, 6, 8, 10, 12, 14], [0, 2, 4, 7, 8, 11, 12, 15], [0, 1, 4, 6, 8, 9, 12, 14]];
+    const rhythmA = [...pick(patterns)];
+    const same = rng() < 0.5;
+    const movable = rhythmA.slice(1).flatMap(slot => [slot - 1, slot + 1].filter(next => next > 0 && next < 4 * subdivision && !rhythmA.includes(next)).map(next => ({ slot, next })));
+    const change = pick(movable);
+    const rhythmB = same ? [...rhythmA] : rhythmA.map(slot => slot === change.slot ? change.next : slot).sort((a, b) => a - b);
+    return { ...common, rhythmA, rhythmB, subdivision, tempo: 100, correct: same ? 'same' : 'different',
+      options: [{ id: 'same', label: text('Aynı ritim', 'Same rhythm') }, { id: 'different', label: text('Bir vuruş yer değiştirdi', 'One hit moved') }],
+      explanation: text(same ? 'İki kalıpta bütün vuruşlar aynı yerde. Dört sayımdan sonra gelen ölçüyü tekrar karşılaştır.' : `B’de ${rhythmPosition(change.slot, subdivision)} noktasındaki vuruş ${rhythmPosition(change.next, subdivision)} noktasına kaydı. Aşağıdaki noktalar sesin yerini, çizgiler boşluğu gösterir.`, same ? 'Every hit has the same position in both patterns. Compare the bar after the four count-in clicks again.' : `The hit at ${rhythmPosition(change.slot, subdivision)} moved to ${rhythmPosition(change.next, subdivision)} in B. The dots below show hits and the dashes show gaps.`) };
+  }
   if (lesson.skill === 'direction') {
     const delta = pick([-7, -4, 0, 4, 7]);
     const correct = delta > 0 ? 'up' : delta < 0 ? 'down' : 'same';
@@ -72,7 +92,8 @@ export function makeQuestion(lessonId: string, seed: number, index: number, sour
     explanation: text(same ? 'İki melodinin bütün notaları aynı. A ve B’yi bir daha dinleyerek doğrula.' : `B melodisinde ${changeAt + 1}. nota değişti. A ve B’de o noktayı karşılaştır.`, same ? 'Every note in the two melodies is the same. Listen to A and B again to confirm.' : `Note ${changeAt + 1} changed in melody B. Compare that moment in A and B.`) };
 }
 export const formatHz = (hz: number) => hz >= 1000 ? `${hz / 1000} kHz` : `${hz} Hz`;
-export const newSession = (lessonId: string, source: EqSource = 'studio'): Session => ({ id: crypto.randomUUID(), lessonId, seed: crypto.getRandomValues(new Uint32Array(1))[0], index: 0, started: false, answers: [], ...(getLesson(lessonId).skill === 'eq' ? { source } : {}) });
+export const rhythmPosition = (slot: number, subdivision: number) => `${Math.floor(slot / subdivision) + 1}${slot % subdivision ? ` ${subdivision === 2 ? '&' : ['','e','&','a'][slot % subdivision]}` : ''}`;
+export const newSession = (lessonId: string, source: EqSource = 'studio'): Session => ({ id: crypto.randomUUID(), lessonId, seed: crypto.getRandomValues(new Uint32Array(1))[0], index: 0, started: false, answers: [], ...(usesLoop(getLesson(lessonId).skill) ? { source } : {}) });
 export function withEqComparison(question: Question, choice: string): Question {
   if (question.kind !== 'eq' || choice === question.correct || !question.options.some(o => o.id === choice)) return question;
   return { ...question, comparisonFrequency: Number(choice) };
@@ -85,13 +106,13 @@ export function answerQuestion(progress: Progress, choice: string, at = new Date
   if (!question.options.some(o => o.id === choice)) return progress;
   const correct = question.correct === choice;
   return { ...progress, session: { ...s, answers: [...s.answers, { choice, correct, at }] },
-    attempts: [...progress.attempts, { sessionId: s.id, index: s.index, lessonId: s.lessonId, correct, at, ...(question.kind === 'eq' ? { source: s.source ?? 'studio' } : {}) }].slice(-2000) };
+    attempts: [...progress.attempts, { sessionId: s.id, index: s.index, lessonId: s.lessonId, correct, at, ...(usesLoop(question.kind) ? { source: s.source ?? 'studio' } : {}) }].slice(-2000) };
 }
 export function advanceQuestion(progress: Progress, at = new Date().toISOString()): Progress {
   const s = progress.session;
   if (!s || !s.answers[s.index]) return progress;
   if (s.index < ROUND_COUNT - 1) return { ...progress, session: { ...s, index: s.index + 1 } };
-  const result: Result = { id: s.id, lessonId: s.lessonId, correct: s.answers.filter(a => a.correct).length, total: ROUND_COUNT, at, ...(getLesson(s.lessonId).skill === 'eq' ? { source: s.source ?? 'studio' } : {}) };
+  const result: Result = { id: s.id, lessonId: s.lessonId, correct: s.answers.filter(a => a.correct).length, total: ROUND_COUNT, at, ...(usesLoop(getLesson(s.lessonId).skill) ? { source: s.source ?? 'studio' } : {}) };
   return { ...progress, session: null, results: [...progress.results, result].slice(-200) };
 }
 export function recommendedLesson(progress: Progress) {

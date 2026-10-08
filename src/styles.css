@@ -134,10 +134,30 @@ h1 { font-size: clamp(32px, 3.6vw, 53px); line-height: 1.12; letter-spacing: -1.
 .back-link { margin-bottom: 22px; }
 .path-detail-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 23px; }
 .lesson-list { border-top: 1px solid #34402c; }
+.lesson-sections { display: grid; gap: 32px; }
+.lesson-section-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 17px; }
+.lesson-section-heading h2 { font-size: 18px; font-weight: 500; color: var(--accent); }
+.lesson-section-heading > span { font-size: 11px; color: var(--muted); }
+.lesson-row h3 { font-size: 21px; font-weight: 500; margin: 9px 0 8px; letter-spacing: -.6px; }
+.rhythm-cue { font-size: 11px; line-height: 1.7; color: var(--muted); margin-top: 15px; }
+.rhythm-feedback, .level-feedback { margin: 20px 0; padding: 17px 12px; background: #121711; border: 1px solid var(--line); border-radius: 8px; }
+.rhythm-feedback > p, .level-feedback > p { font-size: 11px; color: var(--muted); line-height: 1.7; margin-bottom: 12px; }
+.rhythm-row { display: flex; align-items: center; gap: 7px; margin-top: 12px; }
+.rhythm-row > strong { font-size: 12px; width: 12px; flex-shrink: 0; }
+.rhythm-cells { flex: 1; min-width: 0; display: grid; }
+.rhythm-cells > span { text-align: center; padding: 5px 0; border-left: 1px solid #263122; }
+.rhythm-cells small { display: block; font-size: 10px; color: #bbc4b4; }
+.rhythm-cells b { font-size: 13px; display: block; margin-top: 9px; color: var(--accent); }
+.rhythm-cells .beat-start { border-left-color: #727e68; }
+.rhythm-cells .moved { background: #293222; border-radius: 3px; }
+.level-feedback > div { display: grid; grid-template-columns: 18px minmax(0, 1fr) 55px; align-items: center; gap: 12px; margin-bottom: 14px; font-size: 12px; }
+.level-feedback i { background: var(--accent); height: 8px; border-radius: 3px; }
+.level-feedback strong { text-align: right; font-family: ui-monospace, monospace; font-weight: 500; }
+.level-feedback > p { margin: 0; }
 .lesson-row { display: flex; align-items: center; gap: 24px; padding: 30px 0; border-bottom: 1px solid #34402c; }
 .level-number { width: 60px; height: 65px; flex-shrink: 0; border: 1px solid #3a4531; border-radius: 10px; display: grid; place-items: center; font-size: 27px; font-weight: 300; color: var(--accent); background: #1b2416; }
 .lesson-row-copy { flex: 1; }
-.lesson-row h2 { font-size: 21px; font-weight: 500; margin: 9px 0 8px; letter-spacing: -.6px; }
+.lesson-row h2, .lesson-row h3 { font-size: 21px; font-weight: 500; margin: 9px 0 8px; letter-spacing: -.6px; }
 .lesson-row p { font-size: 12px; color: #a2ae96; line-height: 1.7; }
 .attempt-count { display: block; margin-top: 8px; color: #b4cb97; font-size: 10px; }
 .roadmap-note { display: flex; gap: 16px; background: #191f16; border: 1px solid #35412c; padding: 22px; border-radius: 9px; margin-top: 30px; color: #a2b58d; }
@@ -306,7 +326,7 @@ h1 { font-size: clamp(32px, 3.6vw, 53px); line-height: 1.12; letter-spacing: -1.
   .paths-section { margin-top: 28px; } .section-heading { align-items: flex-start; gap: 13px; } .section-heading h2 { font-size: 17px; line-height: 1.45; max-width: 230px; } .section-heading > .text-button { flex-shrink: 0; font-size: 9px; margin-top: 2px; } .path-cards { grid-template-columns: 1fr; gap: 12px; } .path-card { padding: 18px; display: grid; grid-template-columns: 44px 1fr; gap: 7px 15px; } .path-card-top { grid-column: 1; grid-row: 1 / 4; margin: 0; align-self: center; } .path-card-top > svg { display: none; } .path-card-title { font-size: 15px; margin: 0; } .path-card-desc { font-size: 11px; max-width: none; } .path-card-bottom { padding-top: 3px; font-size: 9px; } .listening-note { padding: 19px; gap: 14px; margin-top: 23px; } .listening-note h3 { font-size: 13px; line-height: 1.6; } .listening-note p { font-size: 10px; } .page-footer { font-size: 8px; margin-top: 27px; padding: 19px 0; } .page-footer > span:last-child { font-size: 7px; letter-spacing: .5px; }
   .mobile-nav { display: flex; position: fixed; inset: auto 0 0; z-index: 20; background: #141b11f5; backdrop-filter: blur(15px); border-top: 1px solid #3a482e; padding: 9px 10px max(10px, env(safe-area-inset-bottom)); } .mobile-nav button { background: none; border: 0; color: #8ea079; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 4px 0; font-size: 9px; } .mobile-nav button.active { color: #d2efa4; }
   .page-heading h1 { font-size: 35px; letter-spacing: -1.3px; } .page-heading { margin-bottom: 28px; } .page-heading .lead { font-size: 13px; } .full-path { padding: 23px; gap: 13px; } .full-path-number { font-size: 27px; } .full-path-content { flex-basis: calc(100% - 60px); } .full-path h2 { font-size: 19px; line-height: 1.5; gap: 8px; } .full-path h2 svg { display: none; } .full-path .button { margin-top: 10px; } .full-path p { font-size: 12px; }
-  .lesson-row { gap: 15px; flex-wrap: wrap; padding: 24px 0; } .level-number { width: 47px; height: 55px; font-size: 23px; } .lesson-row-copy { flex-basis: calc(100% - 62px); } .lesson-row h2 { font-size: 20px; } .lesson-row .button { margin-left: 62px; } .path-detail-meta { align-items: flex-start; gap: 10px; } .path-detail-meta .text-button { font-size: 10px; } .roadmap-note { padding: 19px; gap: 12px; } .roadmap-note p { font-size: 11px; }
+  .lesson-row { gap: 15px; flex-wrap: wrap; padding: 24px 0; } .level-number { width: 47px; height: 55px; font-size: 23px; } .lesson-row-copy { flex-basis: calc(100% - 62px); } .lesson-row h2, .lesson-row h3 { font-size: 20px; } .lesson-row .button { margin-left: 62px; } .path-detail-meta { align-items: flex-start; gap: 10px; } .path-detail-meta .text-button { font-size: 10px; } .roadmap-note { padding: 19px; gap: 12px; } .roadmap-note p { font-size: 11px; }
   .skill-grid { gap: 12px; } .skill-card { padding: 17px; } .skill-card-top { flex-direction: column; align-items: flex-start; gap: 8px; font-size: 9px; } .skill-card h2 { font-size: 15px; margin-top: 20px; line-height: 1.5; min-height: 23px; } .skill-score { font-size: 32px; } .skill-card .text-button { font-size: 10px; gap: 5px; } .skill-card .text-button svg { width: 13px; } .skill-bar { margin: 17px 0; }
   .settings-grid { gap: 16px; } .setting-card { padding: 21px; } .setting-card h2 { font-size: 16px; } .setting-card p { font-size: 12px; } .practice-heading { gap: 10px; margin-bottom: 30px; } .practice-heading > span { font-size: 9px; } .practice-heading .text-button { font-size: 10px; } .lesson-intro h1 { font-size: 34px; } .intro-columns { gap: 23px; margin-top: 27px; } .intro-section { gap: 13px; margin-bottom: 24px; } .intro-section p { font-size: 12px; } .guided-example { padding: 18px; } .intro-start { width: 100%; }
   .exercise h1 { font-size: 27px; margin-top: 25px; letter-spacing: -.8px; } .question-progress { font-size: 10px; } .exercise-sub { font-size: 11px; margin-bottom: 20px; } .audio-player { padding: 18px; } .player-top .eyebrow { font-size: 8px; } .audio-mark span { display: none; } .waveform { height: 98px; gap: 3px; } .waveform i { width: 3px; } .ab-button { padding: 11px 10px; font-size: 10px; gap: 7px; } .ab-button svg { display: none; } .ab-controls { gap: 8px; margin-bottom: 16px; } .volume-control input { width: 78px; } .answer-heading { flex-direction: column; align-items: flex-start; gap: 8px; margin-top: 23px; } .answer-options { grid-template-columns: 1fr; gap: 8px; } .answer-options.options-5, .answer-options.options-6 { grid-template-columns: 1fr 1fr; } .answer-option { padding: 14px 12px; min-height: 60px; gap: 9px; } .answer-copy strong { font-size: 12px; } .answer-copy > span { font-size: 9px; } .answer-option svg { width: 17px; } .feedback { padding: 19px; } .feedback-heading h2 { font-size: 16px; } .feedback p { font-size: 11px; } .keyboard-note { display: none; }

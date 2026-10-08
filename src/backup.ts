@@ -1,4 +1,4 @@
-import { getLesson } from './content';
+import { getLesson, usesLoop } from './content';
 import { isEqSource, parseProgress, validAttempt, validResult, type Attempt, type Progress, type Result } from './model';
 
 export const MAX_BACKUP_BYTES = 2 * 1024 * 1024;
@@ -9,7 +9,7 @@ export class BackupError extends Error {
 const object = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
 export const createBackup = (progress: Progress) => ({ format: 'freq-backup', schemaVersion: 1, exportedAt: new Date().toISOString(), progress });
 
-function sourceOf(record: Attempt | Result) { return getLesson(record.lessonId).skill === 'eq' ? record.source ?? 'studio' : null; }
+function sourceOf(record: Attempt | Result) { return usesLoop(getLesson(record.lessonId).skill) ? record.source ?? 'studio' : null; }
 function sameAttempt(a: Attempt, b: Attempt) { return a.lessonId === b.lessonId && a.correct === b.correct && a.at === b.at && sourceOf(a) === sourceOf(b); }
 function sameResult(a: Result, b: Result) { return a.lessonId === b.lessonId && a.correct === b.correct && a.total === b.total && a.at === b.at && sourceOf(a) === sourceOf(b); }
 function unique<T>(records: T[], key: (record: T) => string, same: (a: T, b: T) => boolean): T[] {
@@ -29,7 +29,7 @@ function checkConsistency(p: Progress) {
     if (p.attempts.some(a => a.sessionId === s.id && a.index >= s.answers.length)) throw new BackupError('conflict');
     s.answers.forEach((answer, index) => {
       const a = attempts.get(JSON.stringify([s.id, index]));
-      if (!a || a.lessonId !== s.lessonId || a.correct !== answer.correct || a.at !== answer.at || (getLesson(s.lessonId).skill === 'eq' && sourceOf(a) !== (s.source ?? 'studio'))) throw new BackupError('conflict');
+      if (!a || a.lessonId !== s.lessonId || a.correct !== answer.correct || a.at !== answer.at || (usesLoop(getLesson(s.lessonId).skill) && sourceOf(a) !== (s.source ?? 'studio'))) throw new BackupError('conflict');
     });
   }
   for (const r of p.results) {

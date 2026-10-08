@@ -4,15 +4,17 @@
 
 Ana odak miks ve prodüksiyon kulağı. Temel müzik kulağı ve konservatuvar / müzik bölümüne hazırlık kendi yollarında yer alır. Türkçe ve İngilizce içerik; web, iOS ve Android hedefleri. Ana ekran tek aktif yol ve bir sonraki pratik gösterir. Navigasyon: Bugün, Yollar, Becerilerim, Profil.
 
-## Çalışan sürüm: 0.2
+## Çalışan sürüm: 0.3
 
-Dokuz seviye / beş beceri, önce öğretim ardından pratik. Her derste yanıtı görünen bir örnek var. EQ'da iki örneği, hafızada iki tam melodiyi dinlemeden yanıt düğmeleri açılmaz. Doğru/yanlış sonrası tekrar dinleme serbesttir; tekrar dinleme puanı değiştirmez. Yarım bırakılmış oturum korunur. Başka pratiğe geçerken uyarı gösterilir; eski yanıtlar beceri kaydında kalır.
+15 pratik / yedi beceri, önce öğretim ardından pratik. Her derste yanıtı görünen bir örnek var. EQ ve ses yüksekliğinde iki örneği, hafıza ve ritimde iki tam örneği dinlemeden yanıt düğmeleri açılmaz. Doğru/yanlış sonrası tekrar dinleme serbesttir; tekrar dinleme puanı değiştirmez. Yarım bırakılmış oturum korunur. Başka pratiğe geçerken uyarı gösterilir; eski yanıtlar beceri kaydında kalır.
 
 0.2'de miks kaynağı seçimi ve yanlış yanıtı ses olarak karşılaştırma eklendi. Üç kaynak farklı sentez dokuları sunar. Yanlış frekans seçilince C örneği o frekansa aynı gain/Q uygular; orijinal, hedef ve seçim aynı anda başlayan, ortalama seviyeleri eşitlenmiş döngülerdir. Kaynak değişikliği başlangıçta yapılır; soru sırasında birden çok değişken eklenmez.
 
+0.3'te yollar içerik ailelerine göre bölümlendi. Ses yüksekliği alıştırmalarında aynı kaynağın yalnızca seviyesi değiştirilir veya aynı bırakılır; göreli fark bilerek korunur. Ritim alıştırmalarında sayımdan sonra dört vuruşlu bir ölçü karşılaştırılır. Vuruş sayısı, tempo ve ses rengi sabittir; bir vuruşun yeri bir alt bölüme kayabilir. Çizim bağımsız soruda cevap verilmeden gösterilmez. Bu alıştırma dinleyerek ayırt etmedir; ritim tekrarı veya dokunma puanı değildir. Her iki yeni beceri ayrı ölçülür ve yedeklenir.
+
 Profil'den yedek geri yükleme, mevcut kayıtları birleştirir. Kimliği aynı olan kayıtlar tekrar sayılmaz; çelişkiler yüklemeyi durdurur. Eski 0.1 yedekleri ve yarım oturumlar desteklenir. Dosyalar sunucuya gönderilmez. Kalıcı veri sınırı 2.000 yanıt / 200 sonuçtur; geri yükleme özeti bunu açıklar.
 
-Miks: üç frekans bölgesi → beş frekans noktası → dar bant / yükseltme-kesme. Müzik: yön → aralık → majör/minör. Hazırlık: üç → dört → beş notalı karşılaştırma. Bu son yol, gerçek bir kurum sınavının yerine geçen bir deneme değildir.
+Miks: EQ bölümünde üç frekans bölgesi → beş frekans noktası → dar bant / yükseltme-kesme; ses yüksekliği bölümünde 6 → 3 → 1 dB. Müzik: melodi ve armonide yön → aralık → majör/minör; ritimde sekizlik bölünme → sus/ters vuruş → onaltılık hareket. Hazırlık: üç → dört → beş notalı karşılaştırma. Bu son yol, gerçek bir kurum sınavının yerine geçen bir deneme değildir.
 
 İlk mobil deneyim HTTPS üstünde kurulabilen PWA. Native mağaza uygulamaları ayrı bir teslimat aşaması. Soru modeli (`src/model.ts`) ve dil içerikleri (`src/content.ts`) tarayıcıdan bağımsız tutuldu; native ses ve kalıcı kayıt adaptörleri henüz yazılmadı.
 
@@ -20,11 +22,11 @@ Miks: üç frekans bölgesi → beş frekans noktası → dar bant / yükseltme-
 
 M0: dinleme ve A/B koşulları. M1: frekans bölgeleri. M2: frekans, yükseltme/kesme, gain/Q. M3: timbre ve masking; solo ile bütün miks. M4: transient/sustain, kompresör attack/release, seviye eşitleme. M5: pan, genişlik, mono ve reverb/delay. M6: birden çok sorun ve ilk müdahale. M7: yeni müzikte gerekçeli uygulama. M3–M5 kısmen paralel olabilir; tek bir zorunlu sıra yaratılmaz.
 
-0.2 yalnızca M0–M2'nin ilk kısmını uygular. Özgün sentez döngüleri ilk etkileşimi doğrular; gerçek müzikte aktarım için lisanslı/özgün kayıtlar ve stem'ler gerekir.
+0.3 yalnızca M0–M2'nin ilk kısmını uygular. Özgün sentez döngüleri ilk etkileşimi doğrular; gerçek müzikte aktarım için lisanslı/özgün kayıtlar ve stem'ler gerekir.
 
 ## Müzik, hazırlık ve makam
 
-Tonal merkez, derece / işlev, ritim, dikte ve ileri armoni sıradaki içerik ailesi. Hazırlık paketleri kurumların ilan ettiği formatlara göre yazılır. Makam ayrı bir müzik sistemi olarak seyir, karar/güçlü, bağlama göre entonasyon ve usul içerir; Batı dizisinin farklı isimlerle sunulması yeterli değildir. İçerik için bu alanda uzman ve icracı ortaklığı gerekir.
+Tonal merkez, derece / işlev, ritim tekrarı, dikte ve ileri armoni sıradaki içerik ailesi. Hazırlık paketleri kurumların ilan ettiği formatlara göre yazılır. Makam ayrı bir müzik sistemi olarak seyir, karar/güçlü, bağlama göre entonasyon ve usul içerir; Batı dizisinin farklı isimlerle sunulması yeterli değildir. İçerik için bu alanda uzman ve icracı ortaklığı gerekir.
 
 ## Araştırmadan alınan tasarım kararları
 

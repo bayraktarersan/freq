@@ -3,7 +3,9 @@ export type Text = { tr: string; en: string };
 export const tx = (text: Text, locale: Locale) => text[locale];
 export const text = (tr: string, en: string): Text => ({ tr, en });
 export type PathId = 'mix' | 'music' | 'exam';
-export type SkillId = 'eq' | 'direction' | 'interval' | 'chord' | 'memory';
+export type SkillId = 'eq' | 'loudness' | 'direction' | 'interval' | 'chord' | 'rhythm' | 'memory';
+export const usesLoop = (skill: SkillId) => skill === 'eq' || skill === 'loudness';
+export const usesPair = (skill: SkillId) => usesLoop(skill) || skill === 'memory' || skill === 'rhythm';
 export type EqSource = 'studio' | 'drums' | 'keys';
 export const eqSources: Record<EqSource, { title: Text; description: Text }> = {
   studio: { title: text('Elektronik groove', 'Electronic groove'), description: text('Davul, bas ve arpej dengesi.', 'A balance of drums, bass and arpeggios.') },
@@ -21,7 +23,7 @@ export const paths = {
     description: text('Frekansları duy. Daha bilinçli miks kararları ver.', 'Hear frequencies. Make more deliberate mixing decisions.'),
     label: text('STÜDYO KULAĞI', 'STUDIO EARS'), color: 'lime' },
   music: { title: text('Temel müzik kulağı', 'Musical foundations'), short: text('Müzik kulağı', 'Musicianship'),
-    description: text('Ses yönünden aralıklara, adım adım dinle.', 'From pitch direction to intervals, one step at a time.'),
+    description: text('Melodi, armoni ve ritmi adım adım dinle.', 'Listen to melody, harmony and rhythm, one step at a time.'),
     label: text('MÜZİĞİN TEMELLERİ', 'MUSICAL FOUNDATIONS'), color: 'blue' },
   exam: { title: text('Sınava hazırlık', 'Audition preparation'), short: text('Sınava hazırlık', 'Audition prep'),
     description: text('Melodik hafızanı kısa dinleme pratikleriyle çalıştır.', 'Train melodic memory with short listening exercises.'),
@@ -47,6 +49,12 @@ export const lessons: Lesson[] = [
     learn: text('Q arttıkça EQ daha dar bir bölgeyi etkiler. Bu çalışmada 6 dB yükseltme veya kesme, daha dar bir bantta uygulanır.', 'A higher Q affects a narrower region. This exercise applies a 6 dB boost or cut in a narrower band.'),
     listen: text('A/B karşılaştırmasını dinle. B’de yükseltilen veya kesilen frekansı seç.', 'Listen to the A/B comparison. Choose the frequency boosted or cut in B.'),
     tip: text('Değişimi duyamıyorsan A’ya dönüp tekrar karşılaştır. Bas sorularını küçük telefon hoparlörüyle değerlendirme.', 'If the change is unclear, return to A and compare again. Avoid judging bass questions through a small phone speaker.') },
+  ...[1, 2, 3].map((level): Lesson => ({ id: `loudness-${level}`, path: 'mix', skill: 'loudness', level,
+    title: [text('Belirgin seviye farkları', 'Clear level differences'), text('Küçük seviye farkları', 'Smaller level differences'), text('1 dB farkını dinle', 'Listen for a 1 dB difference')][level - 1],
+    description: text(`${[6, 3, 1][level - 1]} dB farkla daha yüksek, daha düşük veya aynı seviyeyi ayırt et.`, `Identify louder, softer or equal levels with a ${[6, 3, 1][level - 1]} dB difference.`),
+    learn: text('Daha yüksek ses, daha iyiymiş gibi algılanabilir. Burada aynı kaynağın yalnızca seviyesi değişir; EQ, nota ve zamanlama aynı kalır. Bu kez örneklerin seviyeleri bilerek eşitlenmez.', 'A louder sound can seem better. Here only the level of the same source changes; EQ, pitch and timing stay the same. These samples are deliberately not level matched.'),
+    listen: text('A referans, B karşılaştırma. A/B arasında geçiş yap: B daha yüksek mi, daha düşük mü, aynı mı? Karşılaştırırken ses ayarını sabit tut.', 'A is the reference and B the comparison. Switch between A/B: is B louder, softer or the same? Keep your volume setting fixed while comparing.'),
+    tip: text('Bu fark göreli bir sinyal seviyesi farkıdır; kulaklığındaki mutlak ses basıncını ölçmez. Rahat bir ses seviyesi kullan; farkı duymak için sesi yükseltmen gerekmez.', 'This is a relative signal level difference, not a measurement of sound pressure at your headphones. Use a comfortable volume; you do not need to turn it up to hear the difference.') })),
   { id: 'direction-1', path: 'music', skill: 'direction', level: 1,
     title: text('Sesin yönü', 'Pitch direction'),
     description: text('İkinci ses yükseliyor mu, alçalıyor mu?', 'Does the second note rise or fall?'),
@@ -65,6 +73,12 @@ export const lessons: Lesson[] = [
     learn: text('Majör akor kökten 4 ve 7 yarım ses, minör akor 3 ve 7 yarım ses uzaklıktaki notalardan oluşur. Üçlü değişir; beşli aynı kalır.', 'A major triad uses notes 4 and 7 semitones above the root; a minor triad uses 3 and 7. The third changes while the fifth stays the same.'),
     listen: text('Üç notanın birlikte çaldığı akoru dinle. Majör mü, minör mü?', 'Listen to a chord with three simultaneous notes. Is it major or minor?'),
     tip: text('Yalnızca “mutlu / üzgün” etiketlerine dayanma. Üçlünün kökle ilişkisini dinle.', 'Listen to the third in relation to the root rather than relying only on “happy / sad” labels.') },
+  ...[1, 2, 3].map((level): Lesson => ({ id: `rhythm-${level}`, path: 'music', skill: 'rhythm', level,
+    title: [text('Vuruş ve bölünme', 'Beats & subdivisions'), text('Sus ve ters vuruş', 'Rests & offbeats'), text('Onaltılık hareketler', 'Sixteenth-note movement')][level - 1],
+    description: text('Aynı tempoda iki ritim kalıbını karşılaştır.', 'Compare two rhythm patterns at the same tempo.'),
+    learn: text(level === 3 ? 'Dört vuruşlu bir ölçüde her vuruş dört parçaya bölünür: 1 e & a. Bir vuruşun bir alt bölüme kaymasını dinle.' : 'Dört vuruşlu bir ölçüde her vuruş iki parçaya bölünür: 1 & 2 & 3 & 4 &. Vuruş aralarındaki boşlukları ve seslerin yerini dinle.', level === 3 ? 'Each beat in a four-beat bar divides into four: 1 e & a. Listen for a hit moving by one subdivision.' : 'Each beat in a four-beat bar divides into two: 1 & 2 & 3 & 4 &. Listen to the gaps and the positions of the hits.'),
+    listen: text('Önce dört sayım sesi, ardından bir ölçülük ritim duyacaksın. A ve B’yi sonuna kadar dinle. Kalıplar aynı mı, bir vuruşun yeri değişti mi?', 'You will hear four count-in clicks, then one bar of rhythm. Listen to A and B all the way through. Are the patterns the same, or did one hit move?'),
+    tip: text('Her iki örnekte tempo, ses rengi ve vuruş sayısı aynıdır. Değişim yalnızca bir vuruşun yerindedir. Bu çalışma ritim ayırt etmedir; dokunma zamanlaması veya ritim tekrar puanı ölçülmez.', 'Both samples have the same tempo, timbre and number of hits. Only the position of one hit can change. This trains rhythm discrimination; it does not score tapping or rhythm reproduction.') })),
   ...[1, 2, 3].map((level): Lesson => ({ id: `memory-${level}`, path: 'exam', skill: 'memory', level,
     title: text(`${level + 2} notalı hafıza`, `${level + 2}-note memory`),
     description: text('İki kısa melodi arasındaki değişimi yakala.', 'Catch the change between two short melodies.'),
@@ -74,10 +88,17 @@ export const lessons: Lesson[] = [
 ];
 
 export const skillNames: Record<SkillId, Text> = {
-  eq: text('EQ ve frekans', 'EQ & frequency'), direction: text('Ses yönü', 'Pitch direction'),
-  interval: text('Aralıklar', 'Intervals'), chord: text('Akor niteliği', 'Chord quality'), memory: text('Melodik hafıza', 'Melodic memory'),
+  eq: text('EQ ve frekans', 'EQ & frequency'), loudness: text('Ses yüksekliği', 'Loudness'), direction: text('Ses yönü', 'Pitch direction'),
+  interval: text('Aralıklar', 'Intervals'), chord: text('Akor niteliği', 'Chord quality'), rhythm: text('Ritim', 'Rhythm'), memory: text('Melodik hafıza', 'Melodic memory'),
 };
 export const getLesson = (id: string) => lessons.find(l => l.id === id)!;
+
+export const lessonGroups: Record<PathId, { id: string; title: Text; skills: SkillId[] }[]> = {
+  mix: [{ id: 'eq', title: skillNames.eq, skills: ['eq'] }, { id: 'loudness', title: skillNames.loudness, skills: ['loudness'] }],
+  music: [{ id: 'pitch', title: text('Melodi ve armoni', 'Melody & harmony'), skills: ['direction', 'interval', 'chord'] }, { id: 'rhythm', title: skillNames.rhythm, skills: ['rhythm'] }],
+  exam: [{ id: 'memory', title: skillNames.memory, skills: ['memory'] }],
+};
+export const pathCount = (path: PathId) => text(`${lessons.filter(l => l.path === path).length} pratik · ${lessonGroups[path].length} bölüm`, `${lessons.filter(l => l.path === path).length} practices · ${lessonGroups[path].length} ${lessonGroups[path].length === 1 ? 'section' : 'sections'}`);
 
 export const ui = {
   today: text('Bugün', 'Today'), paths: text('Yollar', 'Paths'), skills: text('Becerilerim', 'My skills'), profile: text('Profil', 'Profile'),
@@ -96,7 +117,12 @@ export const ui = {
   headphoneSub: text('Özellikle bas frekanslar için kulaklık ya da uygun hoparlör kullan.', 'Use headphones or suitable speakers, especially for bass frequencies.'),
   before: text('ÖNCE BİR DAKİKA', 'A MOMENT BEFORE YOU START'), listenFor: text('Neyi dinleyeceksin?', 'What are you listening for?'),
   how: text('Nasıl çalışacağız?', 'How does it work?'), begin: text('Hazırım, dinleyelim', 'Ready, let’s listen'),
-  guided: text('Önce örnek dinle', 'Hear a guided example'), guidedCaption: text('Yanıtı açık olan bir örneği A/B ile dinle. Hazır olduğunda bağımsız sorulara geç.', 'Listen to an example with its answer shown. Switch between A and B, then start independent questions when ready.'),
+  guided: text('Önce örnek dinle', 'Hear a guided example'), guidedCaption: text('Yanıtı açık olan örneği dinle. Hazır olduğunda bağımsız sorulara geç.', 'Listen to an example with its answer shown, then start independent questions when ready.'),
+  reference: text('Referans', 'Reference'), comparison: text('Karşılaştırma', 'Comparison'),
+  rhythmA: text('İlk ritim', 'First rhythm'), rhythmB: text('İkinci ritim', 'Second rhythm'),
+  loudnessQuestion: text('B’nin ses seviyesi A’ya göre nasıl?', 'How does B’s level compare with A?'),
+  rhythmQuestion: text('İki ritim kalıbı aynı mı?', 'Are the two rhythm patterns the same?'),
+  listenBoth: text('A ve B’yi sonuna kadar dinle; sonra yanıtını seç.', 'Listen to A and B all the way through, then choose an answer.'),
   question: text('Soru', 'Question'), of: text('/', '/'), original: text('Orijinal', 'Original'), changed: text('EQ uygulanmış', 'With EQ'),
   melodyA: text('İlk melodi', 'First melody'), melodyB: text('İkinci melodi', 'Second melody'),
   play: text('Dinle', 'Listen'), pause: text('Durdur', 'Stop'), preparing: text('Ses hazırlanıyor…', 'Preparing audio…'),
@@ -136,7 +162,7 @@ export const ui = {
   importConflict: text('Yedekte aynı soruya ait çelişen kayıtlar var. Mevcut ilerlemen korunuyor; farklı bir yedek dene.', 'The backup has conflicting records for the same question. Your current progress is safe; try another backup.'),
   importSuccess: text('Yedek birleştirildi. Aynı kayıtlar tekrar sayılmadı.', 'Backup merged. Duplicate records were not counted again.'),
   importUnsaved: text('Yedek bu oturumda yüklendi, ancak tarayıcı kaydedemiyor. Sayfayı kapatmadan ilerlemeyi indir.', 'Backup loaded for this session, but the browser cannot save it. Download your progress before closing the page.'),
-  source: text('Ses kaynağın', 'Your sound source'), sourceCopy: text('Bu pratiğin kaynağını seç. Frekansları farklı dokular içinde dinle; seçimin beş soru boyunca sabit kalacak.', 'Choose the source for this practice. Hear frequencies in different textures; your choice stays fixed across the five questions.'),
+  source: text('Ses kaynağın', 'Your sound source'), sourceCopy: text('Bu pratiğin kaynağını seç. Farklı ses dokularıyla çalış; seçimin beş soru boyunca sabit kalacak.', 'Choose the source for this practice. Work with different sound textures; your choice stays fixed across the five questions.'),
   sourceOriginal: text('Üçü de Freq içinde üretilen özgün döngülerdir.', 'All three are original loops generated inside Freq.'),
   targetEq: text('Doğru EQ', 'Target EQ'), choiceEq: text('Seçtiğin EQ', 'Your chosen EQ'),
   compareCopy: text('C, senin seçtiğin frekansa aynı yükseltme veya kesme uygulanmış halidir. B ve C arasında geçiş yapıp farkı duy; ardından A’ya dön.', 'C applies the same boost or cut at the frequency you chose. Switch between B and C to hear the difference, then return to A.'),
@@ -146,12 +172,12 @@ export const ui = {
   cancel: text('Vazgeç', 'Cancel'), delete: text('Evet, sil', 'Yes, delete'),
   storageError: text('Tarayıcı kayıt yapamıyor. Pratik çalışır; sayfayı kapatırsan ilerleme kaybolabilir.', 'This browser cannot save records. You can practise, but progress may be lost when you close the page.'),
   audioError: text('Ses başlatılamadı. Dinle düğmesiyle tekrar dene; başka ses uygulamalarını kapatmayı deneyebilirsin.', 'Audio could not start. Try Listen again, or close other audio apps.'),
-  early: text('DİNLEME STÜDYOSU · 0.2', 'LISTENING STUDIO · 0.2'),
+  early: text('DİNLEME STÜDYOSU · 0.3', 'LISTENING STUDIO · 0.3'),
   future: text('Bu yolun devamı', 'Further along this path'),
-  roadmapMix: text('Sırada: masking, kompresyon, stereo alan ve gerçek miks üzerinde uygulama. Bu sürüm EQ dinlemesine odaklanır.', 'Next: masking, compression, stereo space and applying skills to real mixes. This edition focuses on EQ listening.'),
-  roadmapMusic: text('Sırada: işlevsel işitme, ritim ve dikte. Makam ve usul bölümü ayrı bir içerik yolu olarak uzmanlarla hazırlanacak.', 'Next: functional hearing, rhythm and dictation. Makam and usul will be a separate content path authored with specialists.'),
+  roadmapMix: text('Sırada: masking, kompresyon, stereo alan ve gerçek miks üzerinde uygulama. Bu sürüm EQ ve ses seviyesi dinlemesi sunar.', 'Next: masking, compression, stereo space and applying skills to real mixes. This edition offers EQ and level listening.'),
+  roadmapMusic: text('Sırada: işlevsel işitme, ritim tekrarı ve dikte. Makam ve usul bölümü ayrı bir içerik yolu olarak uzmanlarla hazırlanacak.', 'Next: functional hearing, rhythm reproduction and dictation. Makam and usul will be a separate content path authored with specialists.'),
   roadmapExam: text('Sırada: ritim tekrarı, dikte ve kurumlara göre sınav paketleri. Bu sürüm melodik hafıza pratiği sunar.', 'Next: rhythm repetition, dictation and institution-specific exam packs. This edition offers melodic memory practice.'),
-  available: text('3 pratik seviyesi', '3 practice levels'), selected: text('Aktif yol', 'Active path'), makeActive: text('Ana yolum yap', 'Set as my main path'),
+  selected: text('Aktif yol', 'Active path'), makeActive: text('Ana yolum yap', 'Set as my main path'),
   learnTip: text('KÜÇÜK BİR DİNLEME NOTU', 'A SMALL LISTENING NOTE'),
   tipHome: text('Bir sesi tanımak için önce karşılaştır.', 'To recognise a sound, first compare it.'),
   tipHomeCopy: text('Aynı kaynağın iki halini dinlemek, değişimin nerede olduğunu daha net duymana yardım eder.', 'Listening to two versions of the same source helps you hear where the change is.'),

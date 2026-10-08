@@ -14,6 +14,24 @@ const load = (p: Progress) => readBackup(JSON.stringify(createBackup(p)));
 const errorCode = (fn: () => unknown) => { try { fn(); } catch (error) { return (error as { code: string }).code; } throw new Error('Expected rejection'); };
 
 describe('backup format', () => {
+  it.each(['loudness-1', 'rhythm-3'])('round trips and completes %s without duplicate scoring', lessonId => {
+    let p: Progress = { ...initialProgress(), session: { id: 'new-practice', lessonId, seed: 2026, index: 0, started: true, answers: [], ...(lessonId.startsWith('loudness') ? { source: 'keys' as const } : {}) } };
+    for (let i = 0; i < 5; i++) {
+      const q = makeQuestion(lessonId, 2026, i, p.session!.source);
+      p = answerQuestion(p, q.correct, `2026-10-08T20:00:0${i}.000Z`);
+      p = mergeProgress(p, load(p));
+      expect(p.attempts).toHaveLength(i + 1);
+      p = advanceQuestion(p);
+    }
+    expect(load(p)).toEqual(p);
+    expect(p.results[0]).toMatchObject({ lessonId, correct: 5, ...(lessonId.startsWith('loudness') ? { source: 'keys' } : {}) });
+  });
+  it('rejects inconsistent loudness source metadata in a backup', () => {
+    const p: Progress = { ...initialProgress(), session: { id: 'level-source', lessonId: 'loudness-1', seed: 2026, index: 0, started: true, answers: [], source: 'keys' } };
+    const answered = answerQuestion(p, makeQuestion('loudness-1', 2026, 0).correct);
+    answered.attempts[0].source = 'drums';
+    expect(errorCode(() => load(answered))).toBe('conflict');
+  });
   it('round trips a saved practice including its source and exact answer', () => {
     const p = practice('a', 3);
     expect(load(p)).toEqual(p);

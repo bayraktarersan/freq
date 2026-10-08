@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { eqSourceIds, eqSources, lessons } from '../../src/content';
+import { eqSourceIds, eqSources, lessons, usesLoop, usesPair } from '../../src/content';
 import { advanceQuestion, answerQuestion, initialProgress, makeQuestion, STORAGE_KEY, type Progress } from '../../src/model';
 import { createBackup } from '../../src/backup';
 import { readFile } from 'node:fs/promises';
@@ -11,23 +11,23 @@ async function chooseLesson(page: Page, lessonId: string) {
   await page.goto('/');
   await page.locator('.sidebar').getByRole('button', { name: 'Yollar', exact: true }).click();
   await page.locator('.full-path').nth(['mix', 'music', 'exam'].indexOf(lesson.path)).getByRole('button', { name: 'Yolu keşfet' }).click();
-  await page.locator('.lesson-row').nth(lesson.level - 1).getByRole('button', { name: 'Pratiğe başla' }).click();
+  await page.getByTestId(`lesson-${lesson.id}`).getByRole('button', { name: 'Pratiğe başla' }).click();
   await expect(page.getByRole('heading', { name: lesson.title.tr, exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Hazırım, dinleyelim' }).click();
 }
 async function listen(page: Page) {
   const p = await progress(page), lesson = lessons.find(l => l.id === p.session!.lessonId)!;
   const player = page.locator('.exercise .audio-player');
-  if (lesson.path === 'mix' || lesson.path === 'exam') {
+  if (usesPair(lesson.skill)) {
     await player.locator('.ab-button').nth(0).click();
-    if (lesson.path === 'exam') await expect(player.getByRole('button', { name: 'Dinle', exact: true })).toBeVisible();
+    if (!usesLoop(lesson.skill)) await expect(player.getByRole('button', { name: 'Dinle', exact: true })).toBeVisible({ timeout: 10_000 });
     await player.locator('.ab-button').nth(1).click();
   } else await player.getByRole('button', { name: 'Dinle', exact: true }).click();
   await expect(page.locator('.answer-option').first()).toBeEnabled({ timeout: 10_000 });
 }
 async function recordAudio(page: Page) {
   await page.addInitScript(() => {
-    const evidence: { when: number; rms: number; peak: number; loop: boolean; signature: number }[] = [];
+    const evidence: { when: number; rms: number; peak: number; loop: boolean; signature: number; rhythmSlots: number[] }[] = [];
     (window as unknown as { audioEvidence: typeof evidence }).audioEvidence = evidence;
     const original = AudioBufferSourceNode.prototype.start;
     AudioBufferSourceNode.prototype.start = function(when = 0, offset = 0, duration?: number) {
@@ -35,7 +35,16 @@ async function recordAudio(page: Page) {
         const data = this.buffer.getChannelData(0);
         let squares = 0, peak = 0, signature = 0;
         for (const [i, value] of data.entries()) { squares += value * value; peak = Math.max(peak, Math.abs(value)); if (i < 4000) signature += value * Math.sin(i * 0.71); }
-        evidence.push({ when, rms: Math.sqrt(squares / data.length), peak, loop: this.loop, signature });
+        const rhythmSlots: number[] = [];
+        if (!this.loop && Math.abs(this.buffer.duration - 5) < 0.001) {
+          for (let slot = 0; slot < 16; slot++) {
+            const start = Math.round((2.4 + slot * 0.15) * this.buffer.sampleRate);
+            const window = data.slice(start, start + Math.round(0.065 * this.buffer.sampleRate));
+            const energy = window.reduce((sum, value) => sum + value * value, 0) / window.length;
+            if (Math.sqrt(energy) > 0.035) rhythmSlots.push(slot);
+          }
+        }
+        evidence.push({ when, rms: Math.sqrt(squares / data.length), peak, loop: this.loop, signature, rhythmSlots });
       }
       if (duration === undefined) return original.call(this, when, offset);
       return original.call(this, when, offset, duration);
@@ -108,6 +117,78 @@ test('actual EQ buffers are level matched, unclipped and start at the same audio
   expect(Math.abs(20 * Math.log10(evidence[0].rms / evidence[1].rms))).toBeLessThan(0.001);
   expect(evidence[0].when).toBe(evidence[1].when);
   expect(Math.max(...evidence.map(e => e.peak))).toBeLessThanOrEqual(0.720001);
+});
+
+for (const level of [1, 2, 3]) {
+  test(`loudness-${level}: real buffers preserve the deliberate dB difference and align`, async ({ page }) => {
+    await recordAudio(page);
+    const lessonId = `loudness-${level}`, expectedDb = [6, -3, 1][level - 1];
+    let seed = 0;
+    while (makeQuestion(lessonId, seed, 0).levelDb !== expectedDb) seed++;
+    const p: Progress = { ...initialProgress(), session: { id: `level-${level}`, lessonId, seed, index: 0, started: true, answers: [], source: 'drums' } };
+    await page.addInitScript(({ key, p }) => localStorage.setItem(key, JSON.stringify(p)), { key: STORAGE_KEY, p });
+    await page.goto('/'); await listen(page);
+    const evidence = await page.evaluate(() => (window as unknown as { audioEvidence: { when: number; rms: number; peak: number; loop: boolean }[] }).audioEvidence.filter(x => x.loop).slice(-2));
+    expect(evidence).toHaveLength(2);
+    expect(20 * Math.log10(evidence[1].rms / evidence[0].rms)).toBeCloseTo(expectedDb, 4);
+    expect(evidence[0].when).toBe(evidence[1].when);
+    expect(Math.max(...evidence.map(e => e.peak))).toBeLessThanOrEqual(0.720001);
+    await expect(page.locator('.level-feedback')).toHaveCount(0);
+    await page.getByTestId(`answer-${makeQuestion(lessonId, seed, 0).correct}`).click();
+    await expect(page.locator('.level-feedback')).toContainText(`${expectedDb > 0 ? '+' : ''}${expectedDb} dB`);
+    expect((await progress(page)).attempts[0].source).toBe('drums');
+    if (level === 3) {
+      await page.setViewportSize({ width: 390, height: 844 });
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+      expect((await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze()).violations.map(v => v.id)).toEqual([]);
+      await page.screenshot({ path: 'test-results/previews/loudness-mobile.png', fullPage: true });
+    }
+  });
+}
+
+test('rhythm requires both complete samples, cancels interrupted listening and keeps the answer on reload', async ({ page }) => {
+  await recordAudio(page);
+  await chooseLesson(page, 'rhythm-3');
+  const player = page.locator('.exercise .audio-player');
+  await expect(page.locator('.rhythm-feedback')).toHaveCount(0);
+  await player.locator('.ab-button').nth(0).click();
+  await expect(player).toHaveClass(/is-playing/);
+  // Switching immediately interrupts A; finishing B must not count A as heard.
+  await player.locator('.ab-button').nth(1).click();
+  await expect(player.getByRole('button', { name: 'Dinle', exact: true })).toBeVisible({ timeout: 10_000 });
+  await expect(page.locator('.answer-option').first()).toBeDisabled();
+  await player.locator('.ab-button').nth(0).click();
+  await expect(page.locator('.answer-option').first()).toBeEnabled({ timeout: 10_000 });
+  const before = (await progress(page)).session!, q = makeQuestion(before.lessonId, before.seed, 0);
+  const rendered = await page.evaluate(() => (window as unknown as { audioEvidence: { rhythmSlots: number[] }[] }).audioEvidence.filter(e => e.rhythmSlots.length));
+  expect(rendered.map(e => e.rhythmSlots)).toEqual([q.rhythmA, q.rhythmB, q.rhythmA]);
+  await page.getByTestId(`answer-${q.correct}`).click();
+  await expect(page.locator('.rhythm-feedback [role="img"]')).toHaveCount(2);
+  await page.locator('.topbar').getByRole('button', { name: 'EN', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Are the two rhythm patterns the same?' })).toBeVisible();
+  const saved = (await progress(page)).session;
+  await page.reload();
+  expect((await progress(page)).session).toEqual(saved);
+  expect((await progress(page)).attempts).toHaveLength(1);
+  await expect(page.locator('.rhythm-feedback')).toBeVisible();
+  await page.setViewportSize({ width: 320, height: 740 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  expect((await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze()).violations.map(v => v.id)).toEqual([]);
+  await page.screenshot({ path: 'test-results/previews/rhythm-mobile.png', fullPage: true });
+});
+
+test('learning paths group each three-level section and show accurate counts on mobile', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('.path-card').first()).toContainText('6 pratik · 2 bölüm');
+  await page.locator('.path-card').first().click();
+  await expect(page.locator('.lesson-section')).toHaveCount(2);
+  await expect(page.getByRole('heading', { name: 'EQ ve frekans', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Ses yüksekliği', exact: true })).toBeVisible();
+  await expect(page.locator('.lesson-row')).toHaveCount(6);
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  expect((await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze()).violations.map(v => v.id)).toEqual([]);
+  await page.screenshot({ path: 'test-results/previews/mixing-path-mobile.png', fullPage: true });
 });
 
 for (const source of eqSourceIds) {

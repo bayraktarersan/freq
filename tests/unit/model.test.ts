@@ -43,6 +43,23 @@ describe('question generation', () => {
       if (q.kind === 'interval') expect(q.notesA[1] - q.notesA[0]).toBe(Number(q.correct));
       if (q.kind === 'chord') expect(q.notesA[1] - q.notesA[0]).toBe(q.correct === 'minor' ? 3 : 4);
       if (q.kind === 'eq') expect(q.frequency).toBe(Number(q.correct));
+      if (q.kind === 'loudness') {
+        expect(q.correct).toBe(q.levelDb! > 0 ? 'louder' : q.levelDb! < 0 ? 'softer' : 'same');
+        expect([0, [6, 3, 1][lesson.level - 1]]).toContain(Math.abs(q.levelDb!));
+      }
+      if (q.kind === 'rhythm') {
+        expect(q.tempo).toBe(100);
+        expect(q.subdivision).toBe(lesson.level === 3 ? 4 : 2);
+        expect(q.rhythmA!.length).toBe(q.rhythmB!.length);
+        expect(q.rhythmA![0]).toBe(0); expect(q.rhythmB![0]).toBe(0);
+        expect(new Set(q.rhythmB).size).toBe(q.rhythmB!.length);
+        const removed = q.rhythmA!.filter(slot => !q.rhythmB!.includes(slot));
+        const added = q.rhythmB!.filter(slot => !q.rhythmA!.includes(slot));
+        expect(removed.length).toBe(q.correct === 'same' ? 0 : 1);
+        expect(added.length).toBe(removed.length);
+        if (added.length) expect(Math.abs(added[0] - removed[0])).toBe(1);
+        expect(q.rhythmB!.every(slot => slot >= 0 && slot < 4 * q.subdivision!)).toBe(true);
+      }
     }
     expect(corrects.size).toBeGreaterThan(1);
   });
