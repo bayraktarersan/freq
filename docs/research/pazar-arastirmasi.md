@@ -432,4 +432,3 @@ Bu sıralama ürün brief'ine göre referans önceliğidir; dünya çapında nes
 Golden Ears için Moulton sitesi 503 yanıtı verdi; güncel satış/uyumluluk doğrulanmadı. iZotope Pro Audio Essentials adresine erişim engeli alındı; aktif ya da kapanmış olduğuna bu sonuçtan hükmedilmedi. Ön incelemede adı geçen Building Blocks, Melodics ve monitör düzeltme araçları bu raporda ayrıntılı doğrulanmış rakipler arasında sayılmadı. SoundGym adıyla bulunan sağlık/fitness uygulamaları ses eğitimi ürünüyle karıştırılmadı.
 
 Kaynaklı inceleme ürün yönünü somutlaştırıyor. Yayından önce ücretli alanların gerçek kullanımı, mikrofon/DSP doğruluğu, cihaz matrisi ve kurumlara özgü müfredat için ayrı ürün doğrulaması gerekir.
-

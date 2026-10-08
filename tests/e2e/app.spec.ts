@@ -141,7 +141,7 @@ test('keyboard answers and mobile layout remain usable', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await expect(page.locator('.mobile-nav')).toBeVisible();
-  await page.screenshot({ path: '/workspace/freq-home-mobile.png', fullPage: true });
+  await page.screenshot({ path: 'test-results/previews/home-mobile.png', fullPage: true });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.getByRole('button', { name: 'Pratiğe başla', exact: true }).click();
   await page.getByRole('button', { name: 'Hazırım, dinleyelim' }).click();
@@ -150,7 +150,7 @@ test('keyboard answers and mobile layout remain usable', async ({ page }) => {
   await page.locator('main').focus(); await page.keyboard.press('1');
   await expect(page.locator('.feedback')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-  await page.screenshot({ path: '/workspace/freq-practice-mobile.png', fullPage: true });
+  await page.screenshot({ path: 'test-results/previews/practice-mobile.png', fullPage: true });
 });
 
 test('desktop home renders without errors', async ({ page }) => {
@@ -158,7 +158,7 @@ test('desktop home renders without errors', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1080 });
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'İyi bir miks, iyi bir dinlemeyle başlar.' })).toBeVisible();
-  await page.screenshot({ path: '/workspace/freq-home-desktop.png', fullPage: true });
+  await page.screenshot({ path: 'test-results/previews/home-desktop.png', fullPage: true });
   expect(errors).toEqual([]);
 });
 
