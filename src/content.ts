@@ -4,6 +4,13 @@ export const tx = (text: Text, locale: Locale) => text[locale];
 export const text = (tr: string, en: string): Text => ({ tr, en });
 export type PathId = 'mix' | 'music' | 'exam';
 export type SkillId = 'eq' | 'direction' | 'interval' | 'chord' | 'memory';
+export type EqSource = 'studio' | 'drums' | 'keys';
+export const eqSources: Record<EqSource, { title: Text; description: Text }> = {
+  studio: { title: text('Elektronik groove', 'Electronic groove'), description: text('Davul, bas ve arpej dengesi.', 'A balance of drums, bass and arpeggios.') },
+  drums: { title: text('Ritim ağırlıklı', 'Rhythm focused'), description: text('Vuruşlar, gövde ve hi-hat dokusu.', 'Hits, body and hi-hat texture.') },
+  keys: { title: text('Arpej ağırlıklı', 'Arpeggio focused'), description: text('Nota katmanları, bas ve parlaklık.', 'Layers of notes, bass and brightness.') },
+};
+export const eqSourceIds = Object.keys(eqSources) as EqSource[];
 export type Lesson = {
   id: string; path: PathId; level: number; skill: SkillId;
   title: Text; description: Text; learn: Text; listen: Text; tip: Text;
@@ -120,12 +127,26 @@ export const ui = {
   installCopy: text('HTTPS üzerinden açıldığında iPhone’da Safari → Paylaş → Ana Ekrana Ekle; Android’de Chrome → menü → Uygulamayı yükle / Ana ekrana ekle. İlk açılıştan sonra bu pratikler çevrimdışı da çalışır.', 'When opened over HTTPS: on iPhone, Safari → Share → Add to Home Screen; on Android, Chrome → menu → Install app / Add to Home Screen. After the first visit, these exercises work offline too.'),
   deviceOnly: text('Hesap gerekmiyor. Kayıtlar bu tarayıcıda kalır; başka cihaza otomatik aktarılmaz. Tarayıcı verilerini temizlemek ilerlemeyi siler.', 'No account needed. Records stay in this browser and do not sync to other devices. Clearing browser data deletes your progress.'),
   export: text('İlerlemeyi indir', 'Download progress'), reset: text('İlerlemeyi sıfırla', 'Reset progress'),
+  import: text('Yedekten geri yükle', 'Restore from backup'), importing: text('Yedek okunuyor…', 'Reading backup…'),
+  importTitle: text('Yedeğini birleştirelim mi?', 'Merge your backup?'), importAction: text('Birleştir ve yükle', 'Merge & restore'),
+  importCopy: text('Kayıtlar bu cihazdaki ilerlemeyle birleştirilecek; aynı yanıtlar iki kez sayılmayacak. Dil ve ses ayarların korunacak. Mevcut yarım pratiğin varsa ona devam edeceksin.', 'Records will merge with progress on this device; duplicate answers will not count twice. Your language and volume settings stay the same. If you have an unfinished practice here, it will stay active.'),
+  importInvalid: text('Bu dosya geçerli bir Freq yedeği değil. Kayıtların değişmedi.', 'This file is not a valid Freq backup. Your records have not changed.'),
+  importFuture: text('Bu yedek daha yeni bir Freq sürümüyle oluşturulmuş. Geri yüklemek için uygulamayı güncelle.', 'This backup was created with a newer Freq version. Update the app to restore it.'),
+  importLarge: text('Yedek dosyası çok büyük. En fazla 2 MB boyutunda bir Freq JSON yedeği seç.', 'The backup is too large. Choose a Freq JSON backup of up to 2 MB.'),
+  importConflict: text('Yedekte aynı soruya ait çelişen kayıtlar var. Mevcut ilerlemen korunuyor; farklı bir yedek dene.', 'The backup has conflicting records for the same question. Your current progress is safe; try another backup.'),
+  importSuccess: text('Yedek birleştirildi. Aynı kayıtlar tekrar sayılmadı.', 'Backup merged. Duplicate records were not counted again.'),
+  importUnsaved: text('Yedek bu oturumda yüklendi, ancak tarayıcı kaydedemiyor. Sayfayı kapatmadan ilerlemeyi indir.', 'Backup loaded for this session, but the browser cannot save it. Download your progress before closing the page.'),
+  source: text('Ses kaynağın', 'Your sound source'), sourceCopy: text('Bu pratiğin kaynağını seç. Frekansları farklı dokular içinde dinle; seçimin beş soru boyunca sabit kalacak.', 'Choose the source for this practice. Hear frequencies in different textures; your choice stays fixed across the five questions.'),
+  sourceOriginal: text('Üçü de Freq içinde üretilen özgün döngülerdir.', 'All three are original loops generated inside Freq.'),
+  targetEq: text('Doğru EQ', 'Target EQ'), choiceEq: text('Seçtiğin EQ', 'Your chosen EQ'),
+  compareCopy: text('C, senin seçtiğin frekansa aynı yükseltme veya kesme uygulanmış halidir. B ve C arasında geçiş yapıp farkı duy; ardından A’ya dön.', 'C applies the same boost or cut at the frequency you chose. Switch between B and C to hear the difference, then return to A.'),
+  shortcutCompare: text('Klavye: boşluk dinle/durdur · A/B/C karşılaştır', 'Keyboard: space listen/stop · A/B/C compare'),
   resetTitle: text('Bu cihazdaki ilerleme silinsin mi?', 'Delete progress on this device?'),
   resetCopy: text('Pratik kayıtları ve yarım kalan oturum silinecek. Önce ilerlemeni indirebilirsin.', 'Practice history and your unfinished session will be deleted. You can download your progress first.'),
   cancel: text('Vazgeç', 'Cancel'), delete: text('Evet, sil', 'Yes, delete'),
   storageError: text('Tarayıcı kayıt yapamıyor. Pratik çalışır; sayfayı kapatırsan ilerleme kaybolabilir.', 'This browser cannot save records. You can practise, but progress may be lost when you close the page.'),
   audioError: text('Ses başlatılamadı. Dinle düğmesiyle tekrar dene; başka ses uygulamalarını kapatmayı deneyebilirsin.', 'Audio could not start. Try Listen again, or close other audio apps.'),
-  early: text('İLK SÜRÜM · 0.1', 'FIRST EDITION · 0.1'),
+  early: text('DİNLEME STÜDYOSU · 0.2', 'LISTENING STUDIO · 0.2'),
   future: text('Bu yolun devamı', 'Further along this path'),
   roadmapMix: text('Sırada: masking, kompresyon, stereo alan ve gerçek miks üzerinde uygulama. Bu sürüm EQ dinlemesine odaklanır.', 'Next: masking, compression, stereo space and applying skills to real mixes. This edition focuses on EQ listening.'),
   roadmapMusic: text('Sırada: işlevsel işitme, ritim ve dikte. Makam ve usul bölümü ayrı bir içerik yolu olarak uzmanlarla hazırlanacak.', 'Next: functional hearing, rhythm and dictation. Makam and usul will be a separate content path authored with specialists.'),

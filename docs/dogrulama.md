@@ -1,4 +1,30 @@
-# İlk sürümün doğrulaması
+# Doğrulama kayıtları
+
+## 0.2
+
+8 Ekim 2026 UTC, Node.js 24 ve sistem Chromium'u ile.
+
+| Kontrol | Sonuç |
+| --- | --- |
+| TypeScript ve üretim build'i | Geçti |
+| Soru, ses materyali, eski kayıt ve yedek birleştirme testleri | 54 / 54 geçti |
+| Tarayıcı / gerçek Web Audio işlev testleri | 29 / 29 geçti |
+| Üç ses kaynağında seçim, yenileme ve kaynakla kayıt | Geçti |
+| Üç kaynakta A/B RMS farkı | 0.001 dB altında |
+| Yanlış yanıttaki A/B/C başlangıcı | Üçünde aynı zaman damgası |
+| A/B/C RMS farkı ve tepe payı | 0.001 dB altında; tepe en fazla 0.720001 |
+| Dosya düğmesinden gerçek yedek indirme, sıfırlama ve geri yükleme | Aynı yanıt ve yarım oturum geri geldi |
+| İkinci yedek yüklemesi ve sayfa yenileme | Kayıtlar ikinci kez sayılmadı ve korundu |
+| Eski 0.1 yedeği, yüklemeyi iptal, bozuk/çelişen/yeni şema/çok büyük dosya | Geçti; reddedilen dosyalar ilerlemeyi değiştirmedi |
+| Mobil kaynak seçimi ve karşılaştırma ekranı | 390 px'te yatay taşma yok |
+| Mobil karşılaştırma ve geri yükleme penceresi için otomatik erişilebilirlik | Seçilen WCAG 2 A/AA ve 2.1 AA kurallarında ihlal bulunmadı |
+| Dokuz seviye, dil, çevrimdışı kullanım ve alt klasör yayını | Önceki işlev kontrolleri tekrar geçti |
+
+Mobil açıklama ve örnek panelinin grid içindeki doğal genişliği ekranı taşıyordu. Çocuk panellerin küçülmesine izin verilerek düzeltildi; taşma gizlenmedi. Kaynak seçimi ekranı yeniden test edildi.
+
+Sentez dokularının fiziksel dinleme kalitesi, iPhone/Android donanımı, Bluetooth, manuel ekran okuyucu ve gerçek müzikte eğitim etkisi hâlâ ayrı pilot kontrolleridir. Native mağaza paketleri bu sürüme dahil değildir. Uzak GitHub CI ve canlı yayın bu yerel sonuçlardan hareketle çalıştırılmış sayılmaz.
+
+## 0.1 (önceki sürüm)
 
 8 Ekim 2026 UTC, bu cloud ortamında Node.js 24 ve sistem Chromium'u ile.
 

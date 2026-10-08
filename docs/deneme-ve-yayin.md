@@ -7,6 +7,8 @@
 
 İlk kullanıcı testi: kulaklık tak; EQ dersinin örneğini dinle; bir doğru ve bir yanlış yanıt ver; yanlış yanıttan sonra tekrar dinle; yarım bırakıp yenile; Türkçe/İngilizce arasında geçiş yap. Sonra ses yönü ve üç notalı hafızayı dene. Kullandığın telefon modeli, tarayıcı ve ses çıkışını not et.
 
+0.2'yi denemek için dersten önce **Ritim ağırlıklı** veya **Arpej ağırlıklı** kaynağı seç. Yanlış bir EQ yanıtı ver; **B: Doğru EQ** ve **C: Seçtiğin EQ** arasında geçiş yap. Profil'den **İlerlemeyi indir** ile yedek al; farklı bir tarayıcıda **Yedekten geri yükle** seç. Birleştirme özetini kontrol et. Aynı dosyayı ikinci kez yüklemek soru sayısını artırmamalı.
+
 ## Kod ile çalışan site farklıdır
 
 GitHub deposunda uygulamanın kaynakları ve dokümanları durur. Çalışan bir bağlantı için web barındırma gerekir. Cloud ortamını yayımlamak geliştirme ortamının anlık görüntüsünü kaydeder; uygulamayı internet sitesine dönüştürmez.

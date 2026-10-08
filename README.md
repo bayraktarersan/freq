@@ -1,6 +1,6 @@
 # Freq
 
-Türkçe ve İngilizce, miks odaklı kulak pratiği. Web ve telefonda kullanılabilen ilk çalışan prototip.
+Türkçe ve İngilizce, miks odaklı kulak pratiği. Web ve telefonda kullanılabilen prototip, sürüm **0.2**.
 
 ## Dosyalar nerede?
 
@@ -20,9 +20,9 @@ npm run dev
 Terminalde gösterilen adresi **kendi bilgisayarındaki** tarayıcıda aç. Kulaklık kullan, rahat bir ses seviyesi seç. Başka bir bilgisayardaki cloud terminalinin adresi doğrudan telefonunda açılmayabilir.
 
 1. **Bugün → Pratiğe başla** ile frekans bölgeleri dersini aç.
-2. Yanıtı gösterilen örneği A/B arasında geçiş yaparak dinle.
+2. Ses kaynağını seç; yanıtı gösterilen örneği A/B arasında geçiş yaparak dinle.
 3. **Hazırım, dinleyelim** ile beş soruluk pratiğe başla.
-4. Her soruda A ve B'yi dinle, değişen bölgeyi seç. Yanıttan sonra EQ eğrisi görünür.
+4. Her soruda A ve B'yi dinle, değişen bölgeyi seç. Yanıttan sonra EQ eğrisi görünür. Yanlış yanıtta **C: Seçtiğin EQ** açılır; B ile C'yi karşılaştırarak kendi seçiminin nasıl duyulduğunu dinle.
 5. **Yollar** bölümünde müzik kulağı ve melodik hafıza çalışmalarını dene.
 6. **TR / EN** ile dili değiştir; **Becerilerim** bölümünde kendi yanıtlarını gör.
 
@@ -56,9 +56,15 @@ Bu sürüm bir **PWA**'dır; App Store / Google Play paketi değildir. iOS ve An
 
 Her pratikte açıklama, yanıtı görünen örnek, beş soru, tekrar dinleme, geri bildirim ve sonuç var. Seviyeleri doğrudan seçebilirsin. Ana ekrandaki öneri, bir seviyede son 10 yanıtın en az 8'i doğruysa sonraki seviyeye geçer. Bu geçici ürün kuralı bilimsel olarak doğrulanmış bir ustalık ölçütü değildir.
 
-EQ örnekleri uygulamada üretilen özgün bir davul/bas/arpej döngüsüdür. A ve B aynı ses saati anında başlar; ortalama RMS seviyeleri eşitlenir ve ortak tepe payı uygulanır. RMS eşitleme her kaynakta algısal ses yüksekliğinin kusursuz eşit olduğu anlamına gelmez; sonraki pilotta farklı kaynaklarla kontrol edilmeli.
+EQ pratiklerinde üç özgün, uygulama içinde üretilen kaynak seçilebilir: elektronik groove, ritim ağırlıklı ve arpej ağırlıklı döngüler. Kaynak, beş soruluk pratik boyunca sabit kalır ve kayıtla birlikte korunur. Bunlar farklı sentez dokularıdır; gerçek kayıt / stem çalışması sonraki aşamadır.
 
-İlerleme bu tarayıcının `localStorage` alanına kaydedilir. Hesap, sunucu, mikrofon veya bulut eşitlemesi yok. Kayıtlar dil değişiminden etkilenmez, yarım kalan oturum yeniden açılabilir. Profil'den JSON dışa aktarımı yapılabilir; **geri içe aktarma henüz yok**. Tarayıcı verileri silinirse kayıtlar kaybolur. Yeni bir HTTPS adresine geçmek de ayrı kayıt alanı oluşturur.
+A orijinal, B hedef EQ'dur. Yanlış yanıttan sonra C, seçtiğin frekansa hedefle aynı gain/Q uygulanmış halidir. A/B/C aynı ses saati anında başlar; bütün örneklerin ortalama RMS seviyeleri eşitlenir ve ortak tepe payı uygulanır. RMS eşitleme her kaynakta algısal ses yüksekliğinin kusursuz eşit olduğu anlamına gelmez; fiziksel dinleme pilotunda ayrıca kontrol edilmeli.
+
+İlerleme bu tarayıcının `localStorage` alanına kaydedilir. Hesap, sunucu, mikrofon veya bulut eşitlemesi yok. Kayıtlar dil değişiminden etkilenmez, yarım kalan oturum yeniden açılabilir. Profil'den JSON yedeği indirip **Yedekten geri yükle** ile başka tarayıcıya taşıyabilirsin. Dosya cihazında okunur; sunucuya yüklenmez.
+
+Geri yükleme öncesinde onay özeti gösterilir. Kayıtlar mevcut ilerlemeyle birleştirilir; aynı yanıt ve sonuç iki kez sayılmaz. Mevcut dil/ses tercihleri korunur. İki farklı yarım pratik varsa cihazdaki oturum devam eder; mevcut oturum yoksa yedekteki geri alınır. Aynı oturumun iki kopyası varsa daha ileri kopya kullanılır. Bozuk, çelişen, desteklenmeyen veya 2 MB'dan büyük dosyalar mevcut kayıtları değiştirmez. 0.1 sürümünün eski JSON yedekleri de desteklenir.
+
+Son 2.000 yanıt ve 200 tamamlanmış pratik tutulur. Tarayıcı verileri silinirse kayıtlar kaybolur; bu işlemden önce yedeği indir. Yeni bir HTTPS adresine geçmek ayrı kayıt alanı oluşturur; yedeği orada geri yükleyebilirsin.
 
 ## Sonraki kapsam
 
@@ -78,4 +84,4 @@ npm run test:e2e
 
 Cloud ortamındaki sistem Chromium'u için `CHROMIUM_PATH=/usr/bin/chromium npm run test:e2e` kullanılır. Linux'ta Playwright tarayıcısının sistem bağımlılıkları ayrıca gerekebilir.
 
-Tarayıcı testleri gerçek Web Audio buffer'larını, A/B zamanlamasını, dokuz seviyenin geri bildirimini, kayıt/yenileme, dil değişimi, çevrimdışı kullanım, alt klasör yayını, klavye ve mobil görünümü kontrol eder. Otomatik erişilebilirlik kontrolü manuel ekran okuyucu testinin yerine geçmez.
+Tarayıcı testleri gerçek Web Audio buffer'larını, üç kaynakta seviye eşleştirmeyi, A/B/C zamanlamasını, dokuz seviyenin geri bildirimini, gerçek dosya indirme/geri yüklemeyi, kayıt/yenileme, dil değişimi, çevrimdışı kullanım, alt klasör yayını, klavye ve mobil görünümü kontrol eder. Otomatik erişilebilirlik kontrolü manuel ekran okuyucu testinin yerine geçmez.

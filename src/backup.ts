@@ -1,0 +1,82 @@
+import { getLesson } from './content';
+import { isEqSource, parseProgress, validAttempt, validResult, type Attempt, type Progress, type Result } from './model';
+
+export const MAX_BACKUP_BYTES = 2 * 1024 * 1024;
+export type BackupErrorCode = 'invalid' | 'future' | 'large' | 'conflict';
+export class BackupError extends Error {
+  constructor(public code: BackupErrorCode) { super(`Freq backup: ${code}`); }
+}
+const object = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
+export const createBackup = (progress: Progress) => ({ format: 'freq-backup', schemaVersion: 1, exportedAt: new Date().toISOString(), progress });
+
+function sourceOf(record: Attempt | Result) { return getLesson(record.lessonId).skill === 'eq' ? record.source ?? 'studio' : null; }
+function sameAttempt(a: Attempt, b: Attempt) { return a.lessonId === b.lessonId && a.correct === b.correct && a.at === b.at && sourceOf(a) === sourceOf(b); }
+function sameResult(a: Result, b: Result) { return a.lessonId === b.lessonId && a.correct === b.correct && a.total === b.total && a.at === b.at && sourceOf(a) === sourceOf(b); }
+function unique<T>(records: T[], key: (record: T) => string, same: (a: T, b: T) => boolean): T[] {
+  const byId = new Map<string, T>();
+  for (const record of records) {
+    const id = key(record), previous = byId.get(id);
+    if (previous && !same(previous, record)) throw new BackupError('conflict');
+    byId.set(id, previous ?? record);
+  }
+  return [...byId.values()];
+}
+const attemptKey = (a: Attempt) => JSON.stringify([a.sessionId, a.index]);
+function checkConsistency(p: Progress) {
+  const attempts = new Map(p.attempts.map(a => [attemptKey(a), a]));
+  if (p.session) {
+    const s = p.session;
+    if (p.attempts.some(a => a.sessionId === s.id && a.index >= s.answers.length)) throw new BackupError('conflict');
+    s.answers.forEach((answer, index) => {
+      const a = attempts.get(JSON.stringify([s.id, index]));
+      if (!a || a.lessonId !== s.lessonId || a.correct !== answer.correct || a.at !== answer.at || (getLesson(s.lessonId).skill === 'eq' && sourceOf(a) !== (s.source ?? 'studio'))) throw new BackupError('conflict');
+    });
+  }
+  for (const r of p.results) {
+    const recorded = p.attempts.filter(a => a.sessionId === r.id);
+    if (recorded.some(a => a.lessonId !== r.lessonId || sourceOf(a) !== sourceOf(r)) || recorded.length === r.total && recorded.filter(a => a.correct).length !== r.correct) throw new BackupError('conflict');
+  }
+}
+
+/** Strict imports never silently turn a malformed file into empty progress. */
+export function readBackup(raw: string): Progress {
+  if (new TextEncoder().encode(raw).byteLength > MAX_BACKUP_BYTES) throw new BackupError('large');
+  let root: unknown;
+  try { root = JSON.parse(raw); } catch { throw new BackupError('invalid'); }
+  if (!object(root)) throw new BackupError('invalid');
+  let value: unknown = root;
+  if (root.format === 'freq-backup') {
+    if (typeof root.schemaVersion === 'number' && root.schemaVersion > 1) throw new BackupError('future');
+    if (root.schemaVersion !== 1 || typeof root.exportedAt !== 'string' || !Number.isFinite(Date.parse(root.exportedAt))) throw new BackupError('invalid');
+    value = root.progress;
+  } else if ('format' in root) throw new BackupError('invalid');
+  if (!object(value)) throw new BackupError('invalid');
+  if (typeof value.version === 'number' && value.version > 1) throw new BackupError('future');
+  if (value.version !== 1 || !['tr', 'en'].includes(value.locale as string) || !['mix', 'music', 'exam'].includes(value.path as string) || typeof value.volume !== 'number' || !Number.isFinite(value.volume) || value.volume < 0.05 || value.volume > 0.8 || value.eqSource !== undefined && !isEqSource(value.eqSource) || !Array.isArray(value.attempts) || value.attempts.length > 2000 || !value.attempts.every(validAttempt) || !Array.isArray(value.results) || value.results.length > 200 || !value.results.every(validResult) || value.session === undefined) throw new BackupError('invalid');
+  const p = parseProgress(JSON.stringify(value));
+  if (value.session !== null && !p.session) throw new BackupError('invalid');
+  p.attempts = unique(p.attempts, attemptKey, sameAttempt);
+  p.results = unique(p.results, r => r.id, sameResult);
+  checkConsistency(p);
+  return p;
+}
+
+/** Merge without replacing current preferences or an unfinished local session. */
+export function mergeProgress(current: Progress, incoming: Progress): Progress {
+  const attempts = unique([...current.attempts, ...incoming.attempts], attemptKey, sameAttempt).sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
+  const results = unique([...current.results, ...incoming.results], r => r.id, sameResult).sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
+  const completed = new Set(results.map(r => r.id));
+  let session = [current.session, incoming.session].find(s => s && !completed.has(s.id)) ?? null;
+  const a = current.session, b = incoming.session;
+  if (session && a && b && a.id === b.id) {
+    if (a.lessonId !== b.lessonId || a.seed !== b.seed || (a.source ?? 'studio') !== (b.source ?? 'studio') || a.answers.some((answer, i) => b.answers[i] && JSON.stringify(answer) !== JSON.stringify(b.answers[i]))) throw new BackupError('conflict');
+    if (b.answers.length > a.answers.length || b.answers.length === a.answers.length && (b.index > a.index || b.index === a.index && b.started)) session = b;
+  }
+  const merged = { ...current, attempts, results, session };
+  checkConsistency(merged);
+  // Keep the active session's answered questions even if a backup contains
+  // future timestamps. Losing these would make the next exported file invalid.
+  const active = attempts.filter(a => a.sessionId === session?.id);
+  const retained = attempts.filter(a => a.sessionId !== session?.id).slice(-(2000 - active.length));
+  return { ...merged, attempts: [...retained, ...active].sort((a, b) => Date.parse(a.at) - Date.parse(b.at)), results: results.slice(-200) };
+}

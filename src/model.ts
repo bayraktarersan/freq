@@ -1,26 +1,27 @@
-import { getLesson, lessons, text, type Locale, type PathId, type SkillId, type Text } from './content';
+import { eqSourceIds, getLesson, lessons, text, type EqSource, type Locale, type PathId, type SkillId, type Text } from './content';
 
 export const ROUND_COUNT = 5;
 export type Option = { id: string; label: Text; detail?: Text };
 export type Question = {
   kind: SkillId; options: Option[]; correct: string; notesA: number[]; notesB: number[];
-  frequency?: number; gain?: number; q?: number; seed: number; explanation: Text;
+  frequency?: number; gain?: number; q?: number; source?: EqSource; comparisonFrequency?: number; seed: number; explanation: Text;
 };
 export type Answer = { choice: string; correct: boolean; at: string };
-export type Session = { id: string; lessonId: string; seed: number; index: number; started: boolean; answers: Answer[] };
-export type Result = { id: string; lessonId: string; correct: number; total: number; at: string };
-export type Attempt = { sessionId: string; index: number; correct: boolean; at: string; lessonId: string };
+export type Session = { id: string; lessonId: string; seed: number; index: number; started: boolean; answers: Answer[]; source?: EqSource };
+export type Result = { id: string; lessonId: string; correct: number; total: number; at: string; source?: EqSource };
+export type Attempt = { sessionId: string; index: number; correct: boolean; at: string; lessonId: string; source?: EqSource };
 export type Progress = {
-  version: 1; locale: Locale; path: PathId; volume: number; session: Session | null;
+  version: 1; locale: Locale; path: PathId; volume: number; session: Session | null; eqSource?: EqSource;
   attempts: Attempt[]; results: Result[];
 };
 export const STORAGE_KEY = 'freq.progress.v1';
-export const initialProgress = (): Progress => ({ version: 1, locale: 'tr', path: 'mix', volume: 0.35, session: null, attempts: [], results: [] });
+export const initialProgress = (): Progress => ({ version: 1, locale: 'tr', path: 'mix', volume: 0.35, eqSource: 'studio', session: null, attempts: [], results: [] });
+export const isEqSource = (v: unknown): v is EqSource => typeof v === 'string' && eqSourceIds.includes(v as EqSource);
 export function random(seed: number) {
   let a = seed >>> 0;
   return () => { a += 0x6D2B79F5; let t = a; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
 }
-export function makeQuestion(lessonId: string, seed: number, index: number): Question {
+export function makeQuestion(lessonId: string, seed: number, index: number, source: EqSource = 'studio'): Question {
   const lesson = getLesson(lessonId);
   const questionSeed = (seed + index * 2654435761) >>> 0;
   const rng = random(questionSeed);
@@ -34,7 +35,7 @@ export function makeQuestion(lessonId: string, seed: number, index: number): Que
     const frequency = pick(frequencies);
     const gain = lesson.level === 3 ? pick([-6, 6]) : 9;
     const q = lesson.level === 1 ? 0.65 : lesson.level === 2 ? 1 : 3;
-    return { ...common, frequency, gain, q, correct: String(frequency),
+    return { ...common, frequency, gain, q, source, correct: String(frequency),
       options: frequencies.map((hz, i) => ({ id: String(hz), label: lesson.level === 1 ? labels[i] : text(formatHz(hz), formatHz(hz)), detail: lesson.level === 1 ? details[i] : undefined })),
       explanation: text(`${formatHz(frequency)} çevresine ${gain > 0 ? 'yükseltme' : 'kesme'} uygulandı (${gain > 0 ? '+' : ''}${gain} dB, Q ${q}). A/B ile rengin nasıl değiştiğini tekrar dinle.`, `A ${gain > 0 ? 'boost' : 'cut'} was applied around ${formatHz(frequency)} (${gain > 0 ? '+' : ''}${gain} dB, Q ${q}). Compare A/B again to hear the change in tone.`) };
   }
@@ -71,22 +72,26 @@ export function makeQuestion(lessonId: string, seed: number, index: number): Que
     explanation: text(same ? 'İki melodinin bütün notaları aynı. A ve B’yi bir daha dinleyerek doğrula.' : `B melodisinde ${changeAt + 1}. nota değişti. A ve B’de o noktayı karşılaştır.`, same ? 'Every note in the two melodies is the same. Listen to A and B again to confirm.' : `Note ${changeAt + 1} changed in melody B. Compare that moment in A and B.`) };
 }
 export const formatHz = (hz: number) => hz >= 1000 ? `${hz / 1000} kHz` : `${hz} Hz`;
-export const newSession = (lessonId: string): Session => ({ id: crypto.randomUUID(), lessonId, seed: crypto.getRandomValues(new Uint32Array(1))[0], index: 0, started: false, answers: [] });
+export const newSession = (lessonId: string, source: EqSource = 'studio'): Session => ({ id: crypto.randomUUID(), lessonId, seed: crypto.getRandomValues(new Uint32Array(1))[0], index: 0, started: false, answers: [], ...(getLesson(lessonId).skill === 'eq' ? { source } : {}) });
+export function withEqComparison(question: Question, choice: string): Question {
+  if (question.kind !== 'eq' || choice === question.correct || !question.options.some(o => o.id === choice)) return question;
+  return { ...question, comparisonFrequency: Number(choice) };
+}
 
 export function answerQuestion(progress: Progress, choice: string, at = new Date().toISOString()): Progress {
   const s = progress.session;
   if (!s || !s.started || s.answers[s.index]) return progress;
-  const question = makeQuestion(s.lessonId, s.seed, s.index);
+  const question = makeQuestion(s.lessonId, s.seed, s.index, s.source);
   if (!question.options.some(o => o.id === choice)) return progress;
   const correct = question.correct === choice;
   return { ...progress, session: { ...s, answers: [...s.answers, { choice, correct, at }] },
-    attempts: [...progress.attempts, { sessionId: s.id, index: s.index, lessonId: s.lessonId, correct, at }].slice(-2000) };
+    attempts: [...progress.attempts, { sessionId: s.id, index: s.index, lessonId: s.lessonId, correct, at, ...(question.kind === 'eq' ? { source: s.source ?? 'studio' } : {}) }].slice(-2000) };
 }
 export function advanceQuestion(progress: Progress, at = new Date().toISOString()): Progress {
   const s = progress.session;
   if (!s || !s.answers[s.index]) return progress;
   if (s.index < ROUND_COUNT - 1) return { ...progress, session: { ...s, index: s.index + 1 } };
-  const result: Result = { id: s.id, lessonId: s.lessonId, correct: s.answers.filter(a => a.correct).length, total: ROUND_COUNT, at };
+  const result: Result = { id: s.id, lessonId: s.lessonId, correct: s.answers.filter(a => a.correct).length, total: ROUND_COUNT, at, ...(getLesson(s.lessonId).skill === 'eq' ? { source: s.source ?? 'studio' } : {}) };
   return { ...progress, session: null, results: [...progress.results, result].slice(-200) };
 }
 export function recommendedLesson(progress: Progress) {
@@ -105,6 +110,9 @@ export function skillStats(progress: Progress, skill: SkillId) {
 const object = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
 const knownLesson = (v: unknown): v is string => typeof v === 'string' && lessons.some(l => l.id === v);
 const validDate = (v: unknown): v is string => typeof v === 'string' && Number.isFinite(Date.parse(v));
+const validSource = (v: Record<string, unknown>) => v.source === undefined || isEqSource(v.source);
+export const validAttempt = (a: unknown): a is Attempt => object(a) && knownLesson(a.lessonId) && typeof a.sessionId === 'string' && a.sessionId.length > 0 && Number.isInteger(a.index) && (a.index as number) >= 0 && (a.index as number) < ROUND_COUNT && typeof a.correct === 'boolean' && validDate(a.at) && validSource(a);
+export const validResult = (r: unknown): r is Result => object(r) && typeof r.id === 'string' && r.id.length > 0 && knownLesson(r.lessonId) && Number.isInteger(r.correct) && (r.correct as number) >= 0 && (r.correct as number) <= ROUND_COUNT && r.total === ROUND_COUNT && validDate(r.at) && validSource(r);
 export function parseProgress(raw: string | null): Progress {
   const fallback = initialProgress();
   if (!raw) return fallback;
@@ -113,16 +121,17 @@ export function parseProgress(raw: string | null): Progress {
     if (!object(v) || v.version !== 1) return fallback;
     const p: Progress = { ...fallback, locale: v.locale === 'en' ? 'en' : 'tr',
       path: v.path === 'music' || v.path === 'exam' ? v.path : 'mix',
-      volume: typeof v.volume === 'number' && Number.isFinite(v.volume) ? Math.min(0.8, Math.max(0.05, v.volume)) : fallback.volume };
-    if (Array.isArray(v.attempts)) p.attempts = v.attempts.filter((a): a is Attempt => object(a) && knownLesson(a.lessonId) && typeof a.sessionId === 'string' && Number.isInteger(a.index) && (a.index as number) >= 0 && (a.index as number) < ROUND_COUNT && typeof a.correct === 'boolean' && validDate(a.at)).slice(-2000);
-    if (Array.isArray(v.results)) p.results = v.results.filter((r): r is Result => object(r) && typeof r.id === 'string' && knownLesson(r.lessonId) && Number.isInteger(r.correct) && (r.correct as number) >= 0 && (r.correct as number) <= ROUND_COUNT && r.total === ROUND_COUNT && validDate(r.at)).slice(-200);
+      volume: typeof v.volume === 'number' && Number.isFinite(v.volume) ? Math.min(0.8, Math.max(0.05, v.volume)) : fallback.volume,
+      eqSource: isEqSource(v.eqSource) ? v.eqSource : 'studio' };
+    if (Array.isArray(v.attempts)) p.attempts = v.attempts.filter(validAttempt).map(a => ({ sessionId: a.sessionId, index: a.index, lessonId: a.lessonId, correct: a.correct, at: a.at, ...(a.source ? { source: a.source } : {}) })).slice(-2000);
+    if (Array.isArray(v.results)) p.results = v.results.filter(validResult).map(r => ({ id: r.id, lessonId: r.lessonId, correct: r.correct, total: r.total, at: r.at, ...(r.source ? { source: r.source } : {}) })).slice(-200);
     const s = v.session;
-    if (object(s) && typeof s.id === 'string' && knownLesson(s.lessonId) && Number.isInteger(s.seed) && (s.seed as number) >= 0 && (s.seed as number) <= 0xffffffff && Number.isInteger(s.index) && (s.index as number) >= 0 && (s.index as number) < ROUND_COUNT && typeof s.started === 'boolean' && Array.isArray(s.answers) && (s.answers.length === s.index || s.answers.length === (s.index as number) + 1)) {
+    if (object(s) && typeof s.id === 'string' && s.id.length > 0 && knownLesson(s.lessonId) && validSource(s) && Number.isInteger(s.seed) && (s.seed as number) >= 0 && (s.seed as number) <= 0xffffffff && Number.isInteger(s.index) && (s.index as number) >= 0 && (s.index as number) < ROUND_COUNT && typeof s.started === 'boolean' && Array.isArray(s.answers) && (s.answers.length === s.index || s.answers.length === (s.index as number) + 1)) {
       const valid = s.answers.every((a, i) => {
-        const q = makeQuestion(s.lessonId as string, s.seed as number, i);
+        const q = makeQuestion(s.lessonId as string, s.seed as number, i, s.source as EqSource | undefined);
         return object(a) && typeof a.choice === 'string' && q.options.some(o => o.id === a.choice) && a.correct === (a.choice === q.correct) && validDate(a.at);
       });
-      if (valid && (s.started || s.answers.length === 0 && s.index === 0)) p.session = s as Session;
+      if (valid && (s.started || s.answers.length === 0 && s.index === 0)) p.session = { id: s.id, lessonId: s.lessonId, seed: s.seed as number, index: s.index as number, started: s.started, answers: s.answers.map(a => ({ choice: a.choice, correct: a.correct, at: a.at })), ...(s.source ? { source: s.source as EqSource } : {}) };
     }
     return p;
   } catch { return fallback; }

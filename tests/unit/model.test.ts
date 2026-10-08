@@ -1,10 +1,28 @@
 import { describe, expect, it } from 'vitest';
-import { lessons } from '../../src/content';
-import { advanceQuestion, answerQuestion, initialProgress, makeQuestion, parseProgress, recommendedLesson, ROUND_COUNT, skillStats, type Progress } from '../../src/model';
+import { eqSourceIds, lessons } from '../../src/content';
+import { advanceQuestion, answerQuestion, initialProgress, makeQuestion, parseProgress, recommendedLesson, ROUND_COUNT, skillStats, withEqComparison, type Progress } from '../../src/model';
 
 const practice = (id = 'eq-1'): Progress => ({ ...initialProgress(), session: { id: 'session-1', lessonId: id, seed: 4294967295, index: 0, started: true, answers: [] } });
 
 describe('question generation', () => {
+  it('changing the source preserves the target and the old answer sequence', () => {
+    for (const source of eqSourceIds) {
+      const q = makeQuestion('eq-3', 123, 2, source);
+      expect(q.correct).toBe(makeQuestion('eq-3', 123, 2).correct);
+      expect(q.source).toBe(source);
+      expect(q.gain).toBe(makeQuestion('eq-3', 123, 2).gain);
+    }
+  });
+  it('adds a comparison at the chosen frequency only for an incorrect EQ answer', () => {
+    const q = makeQuestion('eq-3', 123, 0);
+    const wrong = q.options.find(o => o.id !== q.correct)!;
+    const c = withEqComparison(q, wrong.id);
+    expect(c.comparisonFrequency).toBe(Number(wrong.id));
+    expect(c.frequency).toBe(q.frequency);
+    expect(c.gain).toBe(q.gain); expect(c.q).toBe(q.q);
+    expect(withEqComparison(q, q.correct)).toBe(q);
+    expect(withEqComparison(q, 'invalid')).toBe(q);
+  });
   it.each(lessons)('$id: deterministic, valid and varied over seeds', lesson => {
     const corrects = new Set<string>();
     for (let seed = 0; seed < 100; seed++) {
