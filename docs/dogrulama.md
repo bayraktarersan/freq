@@ -1,5 +1,39 @@
 # Doğrulama kayıtları
 
+## 0.4
+
+9 Ekim 2026 (Europe/Istanbul), Node.js 24 ve sistem Chromium’u ile.
+
+| Kontrol | Sonuç |
+| --- | --- |
+| TypeScript ve üretim build’i | Geçti; 14 statik dosya çevrimdışı önbelleğe dahil |
+| Soru, ilerleme, yedek, DSP ve kayıt testleri | 146 / 146 geçti |
+| Tam tarayıcı / gerçek Web Audio turu | 76 / 76 geçti |
+| Son stereo masking / geri bildirim düzenlemesinden sonra ileri akışlar | 13 / 13 ilgili tarayıcı kontrolü yeniden geçti |
+| Önceki 0.3 soruları | 15 ders × 200 tohum × beş soru: 15.000 soru birebir aynı |
+| 21 yeni pratiğin tüm yanıt alternatifleri | Gerçek kayıt katmanlarıyla doğru / yanlış ayarlar farklı; iki kanal sonlu; ortak RMS ve en fazla 0.720001 tepe |
+| Kompresör ve attack/release | Eşik üstü azaltma, kanal bağlantısı, hızlı atağın kenarı bastırması, uzun bırakmanın sessiz aralığa taşınması doğrulandı |
+| Stereo / mono / polarite | Equal-power pan, M/S mid korunması, ilişkili kanallarda mono iptali, gerçek gain node’un explicit speaker downmix’i doğrulandı |
+| Reverb / delay | Pre-delay wet yanıtı doğru sample miktarında kaydırıyor; uzun nominal kuyruk daha fazla geç enerji bırakıyor; delay aralığı, feedback ve ping-pong kanalları sample düzeyinde doğru |
+| Gerçek kayıtlar | Beş WAV’ın SHA-256, 22.05 kHz / mono PCM16 biçimi, dört saniye süresi, sınır fade’i, RMS ve tepe sınırı kontrol edildi |
+| Kayıtlı A/B/C tarayıcı buffer’ları | Yedi yeni beceride iki kanal, ortak saat başlangıcı, RMS farkı <0.001 dB ve tepe payı doğrulandı |
+| Öğretim / yanıt gizleme | Etiketli örneklerde tüm seçenekler dinlenebilir; bağımsız soruda parametre tablosu ve ölçüm grafiği yok; yanlış yanıtta C seçilen ayarı çalar |
+| Stereo kurulumu | Başlangıçta devam düğmesi kapalı; sol test yalnızca sola, sağ test yalnızca sağa gidiyor; kullanıcı kutuyu işaretleyince devam açılıyor |
+| Kendi ses dosyası | Gerçek dosya input’u stereo WAV açıyor; ilk sekiz saniye; yalnızca aynı-origin uygulama istekleri; ilerlemeye/sunucuya/yedeğe ses veya dosya adı yazılmıyor |
+| İşlenmiş WAV indirme | Gerçek indirme, RIFF/PCM16 stereo başlık, sekiz saniye; reverb’de ek dört saniye kuyruk doğrulandı |
+| Ayrı eşlikle kendi masking’i | Eşlik olmadan player açılmıyor; stereo hedef/eşlik kanalları korunuyor; EQ değişiminde solo hedefin dalga şekli korunuyor |
+| Hatalı / büyük ses dosyası | Decode hatası ve >20 MiB dosya geçerli mevcut kaynağı koruyor; kullanıcıya yeniden seçme açıklaması veriliyor |
+| Yedi yeni becerinin yedeği | 21 dersin kaynak/yarım oturum/tam sonucu korunuyor; yeniden birleştirme puanı artırmıyor |
+| Mobil / erişilebilirlik | Yeni yol, ders, geri bildirim ve laboratuvar: 390 ve 320 px; yatay taşma yok; seçilen WCAG 2 A/AA ve 2.1 AA kurallarında ihlal yok |
+| Çevrimdışı / alt klasör | /freq/ altında hazır akustik laboratuvar, reverb dersi ve WAV asset yüklemeleri internetsiz çalışıyor |
+| Önceki EQ / loudness / ritim / yedek / klavye | Tam turda tekrar geçti |
+
+İlk tarayıcı turunda yeni testlerin sekizi arayüzdeki “Akustik piyano” yerine “Akustik kayıt” adını arıyordu. İki eski sayım beklentisi de 0.3’ün altı pratiğine göre kalmıştı. Test seçicileri gerçek kaynak başlığından türetildi; toplam 27 / görünür temel altı pratik ayrı kontrol edildi. Son tam tur 76 test geçti. Bundan sonra stereo masking’de kullanıcı hedef ve eşlik dosyasının iki kanalı korunacak şekilde düzeltme yapıldı; yeni unit testi ve ilgili ileri akışlar ayrıca doğrulandı. Uygulama testlerinde bekleme sınırını artırarak ses yükleme sorunu örtülmedi.
+
+Kayıtlar gerçek akustik single-note / hit örneklerinden özgün kısa düzenlemelerdir; ticari şarkı veya tam grup multitrack’i değildir. RMS sinyal enerjisidir; kusursuz algısal loudness veya fiziksel kulaklık ses basıncı değildir. Kompresör ms değerleri model zaman sabitleri, reverb süresi nominal decay’dir; ticari plugin / gerçek oda emülasyonu sayılmaz. Ayrıntılar [araştırma belgesinde](research/ileri-miks-arastirmasi.md).
+
+Gerçek iPhone/Android, Bluetooth, manuel ekran okuyucu, fiziksel dinleme kalitesi ve öğrenme/aktarımı bu kontrollerin kapsamında değildir. Native mağaza paketleri yoktur. Uzak CI ve canlı yayın bu yerel sonuçlarla çalıştırılmış sayılmaz.
+
 ## 0.3
 
 8 Ekim 2026 UTC, Node.js 24 ve sistem Chromium'u ile.

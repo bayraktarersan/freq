@@ -4,9 +4,9 @@
 
 Ana odak miks ve prodüksiyon kulağı. Temel müzik kulağı ve konservatuvar / müzik bölümüne hazırlık kendi yollarında yer alır. Türkçe ve İngilizce içerik; web, iOS ve Android hedefleri. Ana ekran tek aktif yol ve bir sonraki pratik gösterir. Navigasyon: Bugün, Yollar, Becerilerim, Profil.
 
-## Çalışan sürüm: 0.3
+## Çalışan sürüm: 0.4
 
-15 pratik / yedi beceri, önce öğretim ardından pratik. Her derste yanıtı görünen bir örnek var. EQ ve ses yüksekliğinde iki örneği, hafıza ve ritimde iki tam örneği dinlemeden yanıt düğmeleri açılmaz. Doğru/yanlış sonrası tekrar dinleme serbesttir; tekrar dinleme puanı değiştirmez. Yarım bırakılmış oturum korunur. Başka pratiğe geçerken uyarı gösterilir; eski yanıtlar beceri kaydında kalır.
+36 pratik / 14 beceri, önce öğretim ardından pratik. Her derste yanıtı görünen bir örnek var. EQ ve ses yüksekliğinde iki örneği, hafıza ve ritimde iki tam örneği dinlemeden yanıt düğmeleri açılmaz. Doğru/yanlış sonrası tekrar dinleme serbesttir; tekrar dinleme puanı değiştirmez. Yarım bırakılmış oturum korunur. Başka pratiğe geçerken uyarı gösterilir; eski yanıtlar beceri kaydında kalır.
 
 0.2'de miks kaynağı seçimi ve yanlış yanıtı ses olarak karşılaştırma eklendi. Üç kaynak farklı sentez dokuları sunar. Yanlış frekans seçilince C örneği o frekansa aynı gain/Q uygular; orijinal, hedef ve seçim aynı anda başlayan, ortalama seviyeleri eşitlenmiş döngülerdir. Kaynak değişikliği başlangıçta yapılır; soru sırasında birden çok değişken eklenmez.
 
@@ -22,7 +22,9 @@ Miks: EQ bölümünde üç frekans bölgesi → beş frekans noktası → dar ba
 
 M0: dinleme ve A/B koşulları. M1: frekans bölgeleri. M2: frekans, yükseltme/kesme, gain/Q. M3: timbre ve masking; solo ile bütün miks. M4: transient/sustain, kompresör attack/release, seviye eşitleme. M5: pan, genişlik, mono ve reverb/delay. M6: birden çok sorun ve ilk müdahale. M7: yeni müzikte gerekçeli uygulama. M3–M5 kısmen paralel olabilir; tek bir zorunlu sıra yaratılmaz.
 
-0.3 yalnızca M0–M2'nin ilk kısmını uygular. Özgün sentez döngüleri ilk etkileşimi doğrular; gerçek müzikte aktarım için lisanslı/özgün kayıtlar ve stem'ler gerekir.
+0.4, M3–M5 için 21 yeni pratik ekler: kompresyon, atak, bırakma, masking, pan/genişlik/mono, reverb ve delay. Beş kaynak, etiketli örnek ayarları, yanlış yanıtta seçilen ayarı çalan C ve yanıttan sonra gerçek buffer ölçümleri bulunur. İleri bölümler açılır başlıklarla düzenlenir; karmaşık tek bir ayar ekranında toplanmaz.
+
+CC0 tek nota/vuruş kayıtlarından hazırlanmış iki akustik düzenleme ve ayrı hedef/eşlik katmanları vardır. Kendi kaydın laboratuvarında ilk sekiz saniye cihazda işlenir; A/B, mono, solo ve işlenmiş WAV indirme kullanılır. Bu alan puansızdır, dosya yedeğe veya sunucuya gönderilmez. Daha geniş müzik/stem kütüphanesi ve M6–M7 bağlam aktarımı ilerleyen kapsamdır. [Araştırma ve ses modelleri](research/ileri-miks-arastirmasi.md).
 
 ## Müzik, hazırlık ve makam
 

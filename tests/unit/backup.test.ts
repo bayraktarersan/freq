@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { createBackup, MAX_BACKUP_BYTES, mergeProgress, readBackup } from '../../src/backup';
 import { advanceQuestion, answerQuestion, initialProgress, makeQuestion, type Progress } from '../../src/model';
+import { usesLoop } from '../../src/content';
+import { advancedLessons } from '../../src/advanced-content';
 
 function practice(id: string, answered = 1): Progress {
   let p: Progress = { ...initialProgress(), session: { id, lessonId: 'eq-1', seed: 12345, index: 0, started: true, source: 'drums', answers: [] } };
@@ -14,8 +16,9 @@ const load = (p: Progress) => readBackup(JSON.stringify(createBackup(p)));
 const errorCode = (fn: () => unknown) => { try { fn(); } catch (error) { return (error as { code: string }).code; } throw new Error('Expected rejection'); };
 
 describe('backup format', () => {
-  it.each(['loudness-1', 'rhythm-3'])('round trips and completes %s without duplicate scoring', lessonId => {
-    let p: Progress = { ...initialProgress(), session: { id: 'new-practice', lessonId, seed: 2026, index: 0, started: true, answers: [], ...(lessonId.startsWith('loudness') ? { source: 'keys' as const } : {}) } };
+  it.each(['loudness-1', 'rhythm-3', ...advancedLessons.map(l => l.id)])('round trips and completes %s without duplicate scoring', lessonId => {
+    const loop = usesLoop(lessonId.split('-')[0] as Parameters<typeof usesLoop>[0]);
+    let p: Progress = { ...initialProgress(), session: { id: 'new-practice', lessonId, seed: 2026, index: 0, started: true, answers: [], ...(loop ? { source: 'acoustic' as const } : {}) } };
     for (let i = 0; i < 5; i++) {
       const q = makeQuestion(lessonId, 2026, i, p.session!.source);
       p = answerQuestion(p, q.correct, `2026-10-08T20:00:0${i}.000Z`);
@@ -24,7 +27,7 @@ describe('backup format', () => {
       p = advanceQuestion(p);
     }
     expect(load(p)).toEqual(p);
-    expect(p.results[0]).toMatchObject({ lessonId, correct: 5, ...(lessonId.startsWith('loudness') ? { source: 'keys' } : {}) });
+    expect(p.results[0]).toMatchObject({ lessonId, correct: 5, ...(loop ? { source: 'acoustic' } : {}) });
   });
   it('rejects inconsistent loudness source metadata in a backup', () => {
     const p: Progress = { ...initialProgress(), session: { id: 'level-source', lessonId: 'loudness-1', seed: 2026, index: 0, started: true, answers: [], source: 'keys' } };

@@ -1,5 +1,17 @@
 # Sürüm değişiklikleri
 
+## 0.4
+
+- Kompresyon, attack, release, masking, stereo, reverb ve delay için üçer seviye: 21 yeni pratik; toplam 36 pratik / 14 beceri. Miks yolu altı açılır bölümde düzenlenir.
+- Sorulardan önce tüm etiketli ayarlar dinlenebilir. Soru sırasında ayarlar ve grafik gizlenir; yanıttan sonra doğru ayar, gerçek ses zarfı / crest factor ve stereo korelasyonu açılır. Yanlış yanıtta C seçilen ayarı çalar.
+- İki kanallı DSP; A/B/C aynı saatte başlar, ortak RMS eşitleme ve tepe payı kullanır. Mono kontrolü, solo hedef ve stereo kulaklık doğrulaması eklendi. Reverb/delay’de dört saniyelik kuyruk alanı var.
+- VSCO 2 CC0 gerçek piyano/vurmalı kayıtlarından iki kısa düzenleme. Yerel WAV’lar, kaynak lisansı, görünür krediler, sabit commit / hash kayıtları ve bakım script’i eklendi.
+- Miks laboratuvarında hazır örnek veya kendi mono/stereo dosyası: kompresyon parametreleri, ayrı eşlik EQ, pan/width/polarite, reverb/delay ve işlenmiş WAV indirme. En fazla 20 MiB / ilk sekiz saniye; ses dosyası sunucuya veya yedeğe gitmez, alandan çıkınca yeniden seçilir.
+- Yedi yeni becerinin ilerlemesi, kaynak ve yarım oturumu eski yerel kayıt / yedek biçimiyle korunur. Önceki 15 dersin 15.000 sorusu 0.3 ile birebir aynı.
+- [İleri miks araştırması](research/ileri-miks-arastirmasi.md), kayıt hakları ve model sınırları belgelendi. Türkçe/İngilizce, mobil ve çevrimdışı akışlar güncellendi.
+
+Deneme: Yollar → Miks ve prodüksiyon; ileri bölüm başlıklarını veya Laboratuvarı aç düğmesini seç. Güncel kaynak ve hazır web paketleri 0.4’tür. Canlı Pages yayını için yayın workflow’unu yeniden çalıştır.
+
 ## 0.3
 
 - Ses yüksekliği için üç seviye: ±6, ±3 ve ±1 dB veya aynı seviye. Üç kaynak seçilebilir; aynı kaynağın A/B örnekleri aynı ses saatinde çalar. Yalnızca seviye değişir; kasıtlı fark RMS eşitlemesiyle kaldırılmaz. Yanıttan sonra göreli dB farkı gösterilir.

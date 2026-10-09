@@ -1,3 +1,6 @@
+import { isAdvanced } from './advanced-content';
+import { makeAdvancedQuestion } from './advanced-model';
+import type { MixSpec } from './mix-types';
 import { eqSourceIds, getLesson, lessons, text, usesLoop, type EqSource, type Locale, type PathId, type SkillId, type Text } from './content';
 
 export const ROUND_COUNT = 5;
@@ -5,7 +8,7 @@ export type Option = { id: string; label: Text; detail?: Text };
 export type Question = {
   kind: SkillId; options: Option[]; correct: string; notesA: number[]; notesB: number[];
   frequency?: number; gain?: number; q?: number; source?: EqSource; comparisonFrequency?: number; seed: number; explanation: Text;
-  levelDb?: number; rhythmA?: number[]; rhythmB?: number[]; subdivision?: number; tempo?: number;
+  levelDb?: number; rhythmA?: number[]; rhythmB?: number[]; subdivision?: number; tempo?: number; mix?: MixSpec; customId?: string;
 };
 export type Answer = { choice: string; correct: boolean; at: string };
 export type Session = { id: string; lessonId: string; seed: number; index: number; started: boolean; answers: Answer[]; source?: EqSource };
@@ -29,6 +32,7 @@ export function makeQuestion(lessonId: string, seed: number, index: number, sour
   const pick = <T,>(values: T[]): T => values[Math.floor(rng() * values.length)];
   const base = 52 + Math.floor(rng() * 13);
   const common = { kind: lesson.skill, notesA: [] as number[], notesB: [] as number[], seed: questionSeed };
+  if (isAdvanced(lesson.skill)) return makeAdvancedQuestion(lesson, questionSeed, source, rng);
   if (lesson.skill === 'eq') {
     const frequencies = lesson.level === 1 ? [120, 1000, 6000] : lesson.level === 2 ? [100, 300, 1000, 3000, 7000] : [100, 250, 700, 1500, 3500, 7000];
     const labels = [text('Bas', 'Lows'), text('Orta', 'Mids'), text('Tiz', 'Highs')];
@@ -97,6 +101,12 @@ export const newSession = (lessonId: string, source: EqSource = 'studio'): Sessi
 export function withEqComparison(question: Question, choice: string): Question {
   if (question.kind !== 'eq' || choice === question.correct || !question.options.some(o => o.id === choice)) return question;
   return { ...question, comparisonFrequency: Number(choice) };
+}
+
+export function withAnswerComparison(question: Question, choice: string): Question {
+  if (!question.mix) return withEqComparison(question, choice);
+  if (choice === question.correct || !question.mix.alternatives[choice]) return question;
+  return { ...question, mix: { ...question.mix, comparison: question.mix.alternatives[choice] } };
 }
 
 export function answerQuestion(progress: Progress, choice: string, at = new Date().toISOString()): Progress {

@@ -11,8 +11,12 @@ async function chooseLesson(page: Page, lessonId: string) {
   await page.goto('/');
   await page.locator('.sidebar').getByRole('button', { name: 'Yollar', exact: true }).click();
   await page.locator('.full-path').nth(['mix', 'music', 'exam'].indexOf(lesson.path)).getByRole('button', { name: 'Yolu keşfet' }).click();
+  const section = page.getByTestId(`lesson-${lesson.id}`).locator('xpath=ancestor::details');
+  if (!(await section.evaluate(el => (el as HTMLDetailsElement).open))) await section.locator('summary').click();
   await page.getByTestId(`lesson-${lesson.id}`).getByRole('button', { name: 'Pratiğe başla' }).click();
   await expect(page.getByRole('heading', { name: lesson.title.tr, exact: true })).toBeVisible();
+  const check = page.locator('.stereo-check input');
+  if (await check.count()) await check.check();
   await page.getByRole('button', { name: 'Hazırım, dinleyelim' }).click();
 }
 async function listen(page: Page) {
@@ -179,12 +183,13 @@ test('rhythm requires both complete samples, cancels interrupted listening and k
 
 test('learning paths group each three-level section and show accurate counts on mobile', async ({ page }) => {
   await page.goto('/');
-  await expect(page.locator('.path-card').first()).toContainText('6 pratik · 2 bölüm');
+  await expect(page.locator('.path-card').first()).toContainText('27 pratik · 6 bölüm');
   await page.locator('.path-card').first().click();
-  await expect(page.locator('.lesson-section')).toHaveCount(2);
+  await expect(page.locator('.lesson-section')).toHaveCount(6);
   await expect(page.getByRole('heading', { name: 'EQ ve frekans', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Ses yüksekliği', exact: true })).toBeVisible();
-  await expect(page.locator('.lesson-row')).toHaveCount(6);
+  await expect(page.locator('.lesson-row')).toHaveCount(27);
+  await expect(page.locator('.lesson-section[open] .lesson-row')).toHaveCount(6);
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   expect((await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze()).violations.map(v => v.id)).toEqual([]);

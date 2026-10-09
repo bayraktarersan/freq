@@ -1,9 +1,12 @@
 import { random, type Question } from './model';
 import { usesLoop, type EqSource } from './content';
+import { isRecording, recordedMaterial, recording } from './recordings';
+import { monoSum, renderMix, signalInfo, type SignalInfo } from './mix-dsp';
+import type { Material, Stereo } from './mix-types';
 
-export type Variant = 'a' | 'b' | 'c';
+export type Variant = 'a' | 'b' | 'c' | 'solo';
 export type AudioStatus = 'idle' | 'preparing' | 'playing' | 'error';
-type Pair = { a: AudioBuffer; b: AudioBuffer; c?: AudioBuffer };
+type Pair = { a: AudioBuffer; b: AudioBuffer; c?: AudioBuffer; solo?: AudioBuffer; evidence?: { a: SignalInfo; b: SignalInfo; c?: SignalInfo } };
 export const rms = (data: Float32Array) => Math.sqrt(data.reduce((sum, x) => sum + x * x, 0) / Math.max(1, data.length));
 export const peak = (data: Float32Array) => data.reduce((max, x) => Math.max(max, Math.abs(x)), 0);
 
@@ -55,7 +58,7 @@ export function makeRhythm(rate: number, slots: number[], subdivision: number, t
 
 // Original synthesized material: kick, bass, arpeggio, hi-hat and air.
 // No network, microphone, commercial recordings or external audio assets.
-export function makeLoop(rate: number, seed: number, source: EqSource = 'studio'): Float32Array<ArrayBuffer> {
+export function makeLoop(rate: number, seed: number, source: 'studio' | 'drums' | 'keys' = 'studio'): Float32Array<ArrayBuffer> {
   const data = new Float32Array(rate * 4);
   const rng = random(seed);
   const roots = [55, 65.406, 73.416];
@@ -118,6 +121,10 @@ export class AudioEngine {
   private activeKey = '';
   private token = 0;
   private volume = 0.35;
+  private mono = false;
+  private loadToken = 0;
+  private custom: { id: string; stereo: Stereo; bed?: Stereo } | null = null;
+  private lastEvidence: { key: string; data: NonNullable<Pair['evidence']> } | null = null;
   status: AudioStatus = 'idle';
   diagnostics: { dryRms: number; wetRms: number; maxPeak: number } | null = null;
 
@@ -127,6 +134,9 @@ export class AudioEngine {
     if (!this.context) {
       this.context = new AudioContext();
       this.master = this.context.createGain();
+      this.master.channelCountMode = 'explicit';
+      this.master.channelInterpretation = 'speakers';
+      this.master.channelCount = this.mono ? 1 : 2;
       this.master.gain.value = this.volume;
       this.master.connect(this.context.destination);
       this.context.addEventListener('statechange', () => { if (this.context?.state !== 'running' && this.status === 'playing') this.stop(); });
@@ -137,6 +147,38 @@ export class AudioEngine {
     this.volume = Math.max(0.05, Math.min(0.8, value));
     if (this.context && this.master) this.master.gain.setTargetAtTime(this.volume, this.context.currentTime, 0.015);
   }
+  setMono(value: boolean) {
+    this.mono = value;
+    // Web Audio speaker downmix: mono = (L + R) / 2, then upmixed to both ears.
+    if (this.master) this.master.channelCount = value ? 1 : 2;
+  }
+  clearCustom() { this.loadToken++; this.custom = null; this.cache.clear(); this.stop(); }
+  getEvidence(question: Question) { return this.lastEvidence?.key === this.key(question) ? this.lastEvidence.data : null; }
+  async processedPreview(question: Question) { const pair = await this.prepare(question, this.init().sampleRate); return pair.b; }
+  async loadFile(file: File, backing = false) {
+    if (!file.size || file.size > 20 * 1024 * 1024) throw new Error('size');
+    if (backing && !this.custom) throw new Error('target');
+    const token = ++this.loadToken;
+    this.stop();
+    const context = this.init();
+    const decoded = await context.decodeAudioData(await file.arrayBuffer());
+    if (token !== this.loadToken) throw new Error('cancelled');
+    if (decoded.numberOfChannels > 2 || decoded.duration < 0.25) throw new Error('format');
+    const length = Math.min(decoded.length, context.sampleRate * 8);
+    const stereo: Stereo = [new Float32Array(decoded.getChannelData(0).slice(0, length)), new Float32Array(decoded.getChannelData(decoded.numberOfChannels === 1 ? 0 : 1).slice(0, length))];
+    // Preserve the start/time relationship. Fade only the end of the preview clip.
+    const fade = Math.min(length, Math.round(context.sampleRate * 0.01));
+    for (const channel of stereo) for (let i = 0; i < fade; i++) channel[length - 1 - i] *= i / fade;
+    const id = crypto.randomUUID();
+    if (backing) {
+      const length = this.custom!.stereo[0].length;
+      const bed: Stereo = [new Float32Array(length), new Float32Array(length)];
+      for (const channel of [0, 1] as const) bed[channel].set(stereo[channel].slice(0, length));
+      this.custom = { ...this.custom!, id, bed };
+    } else this.custom = { id, stereo };
+    this.cache.clear();
+    return { id, name: file.name, duration: length / context.sampleRate, channels: decoded.numberOfChannels };
+  }
   stop() {
     this.token++;
     this.sources.forEach(s => { s.onended = null; try { s.stop(); } catch { /* already ended */ } s.disconnect(); });
@@ -144,14 +186,32 @@ export class AudioEngine {
     this.sources = []; this.gains = []; this.activeKey = '';
     this.emit('idle');
   }
-  private key(q: Question) { return `${q.kind}:${q.seed}:${q.frequency}:${q.gain}:${q.q}:${q.source}:${q.comparisonFrequency}:${q.levelDb}:${q.tempo}:${q.subdivision}:${q.rhythmA?.join(',')}:${q.rhythmB?.join(',')}:${q.notesA.join(',')}:${q.notesB.join(',')}`; }
+  private key(q: Question) { return `${q.kind}:${q.seed}:${q.frequency}:${q.gain}:${q.q}:${q.source}:${q.comparisonFrequency}:${q.levelDb}:${q.tempo}:${q.subdivision}:${q.rhythmA?.join(',')}:${q.rhythmB?.join(',')}:${q.notesA.join(',')}:${q.notesB.join(',')}:${JSON.stringify(q.mix)}:${q.customId}`; }
   private prepare(q: Question, rate: number): Promise<Pair> {
     const key = this.key(q);
     const cached = this.cache.get(key);
     if (cached) return cached;
     const work = (async () => {
+      const context = this.init();
+      const makeStereo = (channels: Stereo) => {
+        const buffer = context.createBuffer(2, channels[0].length, rate);
+        buffer.copyToChannel(channels[0], 0); buffer.copyToChannel(channels[1], 1); return buffer;
+      };
+      const sourceData = () => isRecording(q.source ?? 'studio') ? recording(context, q.source!) : Promise.resolve(makeLoop(rate, q.seed, q.source as 'studio' | 'drums' | 'keys'));
+      if (q.mix) {
+        let material: Material, customStereo: Stereo | undefined;
+        if (q.customId) {
+          if (!this.custom || this.custom.id !== q.customId) throw new Error('Recording needs reselecting');
+          customStereo = this.custom.stereo;
+          const lead = monoSum(customStereo), empty = new Float32Array(lead.length);
+          material = { lead, bed: this.custom.bed ? monoSum(this.custom.bed) : empty, hits: empty, backingStereo: this.custom.bed };
+        } else material = isRecording(q.source ?? 'studio') ? await recordedMaterial(context) : { lead: makeLoop(rate, q.seed + 14, 'keys'), bed: makeLoop(rate, q.seed + 712, 'studio'), hits: makeLoop(rate, q.seed, 'drums') };
+        const rendered = renderMix(material, rate, q.mix, q.seed, q.source ?? 'studio', customStereo);
+        return { a: makeStereo(rendered.a), b: makeStereo(rendered.b), c: rendered.c ? makeStereo(rendered.c) : undefined, solo: rendered.solo ? makeStereo(rendered.solo) : undefined,
+          evidence: { a: signalInfo(rendered.a), b: signalInfo(rendered.b), c: rendered.c ? signalInfo(rendered.c) : undefined } };
+      }
       if (q.kind === 'eq') {
-        const data = makeLoop(rate, q.seed, q.source);
+        const data = await sourceData();
         const dry = this.init().createBuffer(1, data.length, rate);
         dry.copyToChannel(data, 0);
         const render = async (frequency: number) => {
@@ -175,7 +235,7 @@ export class AudioEngine {
         buffer.copyToChannel(data as Float32Array<ArrayBuffer>, 0); return buffer;
       };
       if (q.kind === 'loudness') {
-        const pair = makeLevelPair(makeLoop(rate, q.seed, q.source), q.levelDb!);
+        const pair = makeLevelPair(await sourceData(), q.levelDb!);
         return { a: make(pair.a), b: make(pair.b) };
       }
       if (q.kind === 'rhythm') return { a: make(makeRhythm(rate, q.rhythmA!, q.subdivision!, q.tempo!)), b: make(makeRhythm(rate, q.rhythmB!, q.subdivision!, q.tempo!)) };
@@ -191,7 +251,7 @@ export class AudioEngine {
   }
   async play(q: Question, variant: Variant = 'a', onComplete?: () => void): Promise<boolean> {
     const key = this.key(q);
-    if (usesLoop(q.kind) && this.status === 'playing' && this.activeKey === key) {
+    if (variant !== 'solo' && usesLoop(q.kind) && this.gains.length > 0 && this.status === 'playing' && this.activeKey === key) {
       this.switchVariant(variant); return true;
     }
     this.stop();
@@ -204,9 +264,10 @@ export class AudioEngine {
       if (context.state !== 'running') throw new Error('Audio context is suspended');
       const pair = await this.prepare(q, context.sampleRate);
       if (token !== this.token) return false;
+      if (pair.evidence) this.lastEvidence = { key, data: pair.evidence };
       if (!pair[variant]) throw new Error('Unavailable audio variant');
       const start = context.currentTime + 0.025;
-      if (usesLoop(q.kind)) {
+      if (usesLoop(q.kind) && variant !== 'solo') {
         for (const [index, buffer] of [pair.a, pair.b, ...(pair.c ? [pair.c] : [])].entries()) {
           const s = context.createBufferSource(); s.buffer = buffer; s.loop = true;
           const g = context.createGain(); g.gain.value = index === ['a', 'b', 'c'].indexOf(variant) ? 1 : 0;

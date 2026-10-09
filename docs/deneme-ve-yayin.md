@@ -3,13 +3,23 @@
 ## İndirdiğin paketler
 
 - **freq-source.zip**: proje kaynakları, araştırma, testler ve bu yönergeler. Açıp Node.js 24 ile `npm ci`, ardından `npm run dev` çalıştır.
-- **freq-web.zip**: `npm run build` sonucunun hazır web dosyaları. ZIP'i aç; içindeki `index.html`, `assets/`, `sw.js`, ikonlar ve manifest birlikte yayımlanmalı.
+- **freq-web.zip**: `npm run build` sonucunun hazır web dosyaları. ZIP'i aç; içindeki `index.html`, `assets/`, `audio/`, `sw.js`, ikonlar ve manifest birlikte yayımlanmalı.
 
 İlk kullanıcı testi: kulaklık tak; EQ dersinin örneğini dinle; bir doğru ve bir yanlış yanıt ver; yanlış yanıttan sonra tekrar dinle; yarım bırakıp yenile; Türkçe/İngilizce arasında geçiş yap. Sonra ses yönü ve üç notalı hafızayı dene. Kullandığın telefon modeli, tarayıcı ve ses çıkışını not et.
 
 0.2'yi denemek için dersten önce **Ritim ağırlıklı** veya **Arpej ağırlıklı** kaynağı seç. Yanlış bir EQ yanıtı ver; **B: Doğru EQ** ve **C: Seçtiğin EQ** arasında geçiş yap. Profil'den **İlerlemeyi indir** ile yedek al; farklı bir tarayıcıda **Yedekten geri yükle** seç. Birleştirme özetini kontrol et. Aynı dosyayı ikinci kez yüklemek soru sayısını artırmamalı.
 
 0.3'te **Yollar → Miks ve prodüksiyon → Ses yüksekliği** bölümünü aç. Üç seviyede B'nin daha yüksek, daha düşük veya aynı olmasını dinle. Karşılaştırırken ses ayarını sabit tut; yanıtından sonra dB farkı görünür. **Temel müzik kulağı → Ritim** bölümünde dört sayımdan sonraki ritme odaklan. A ve B tamamlanınca yanıt açılır; bir örneği yarıda kesersen onu tekrar tamamlaman gerekir. Yanıttan sonra iki kalıbın vuruş noktalarını karşılaştır. Son seviyede kulaklık kullanarak küçük farkın anlaşılmasını kontrol et.
+
+## 0.4 ileri miks denemesi
+
+Miks yolunda **Dinamikler, Masking, Stereo alan, Reverb ve delay** başlıklarını aç. Birinci seviyedeki etiketli örnekleri farklı ayarlarda dinle; ikinci ve üçüncü seviyeye geçerken farkların anlaşılmasını değerlendir. Beş soruluk pratikte ölçümler gizli kalmalı; yanlış yanıttan sonra C senin seçtiğin ayarı çalmalı. Akustik piyano ve kaydedilmiş vurmalılar kaynaklarını ayrı ayrı dene.
+
+Stereo ve ping-pong’da sol/sağ kulaklık testini dinle; gerçekten iki ayrı kulaktan geliyorsa kutuyu işaretle. Polarite örneğini Mono’ya al: ters sağ kanal içeren uç örnek toplamda iptal olur, Stereo’ya dönünce tekrar duyulur. Kompresyonda ses seviyesini değiştirmeden vuruş/gövdeyi, release’te vuruşlar arasını dinle. Reverb/delay’de son vuruş sonrası kuyruğu bekle.
+
+**Laboratuvarı aç**: önce hazır akustik örneği kullan, sonra bir mono ve bir stereo WAV seç. En fazla 20 MiB ve ilk sekiz saniye kullanılır. Ayarı değiştirdikten sonra Dinle’ye bas; A/B ve mono ile karşılaştır. İşlenmiş WAV indir; reverb/delay çıktısında dört saniye ek kuyruk bulunmalı. Masking için aynı zaman başlangıcındaki ayrı melodi/eşlik dosyalarını seç. Dosya cihazda kalır; sayfa yenilenince veya laboratuvardan çıkınca yeniden seçmen gerekir. Bu alan puan üretmez.
+
+Fiziksel dinleme sırasında telefon modeli, tarayıcı, kablolu/Bluetooth çıkış ve hangi ayarın anlaşılmadığını not et. Otomatik testler gerçek kulaklık dinleme kalitesini onaylamaz. Uçak modunda hazır akustik örneği ve laboratuvarı yeniden aç; bunun için ilk çevrimiçi kurulumun tamamlanmış olması gerekir.
 
 ## Kod ile çalışan site farklıdır
 

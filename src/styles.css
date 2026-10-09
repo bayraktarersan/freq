@@ -1,12 +1,12 @@
 :root { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #eeefe8; background: #101310; font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; --accent: #c8ed86; --muted: #959b90; --line: #30362d; --panel: #191e18; }
 * { box-sizing: border-box; }
 body { margin: 0; }
-button, input { font: inherit; }
+button, input, select { font: inherit; }
 button { cursor: pointer; }
 button { color: inherit; }
 button:disabled { cursor: default; }
 button, a, input { -webkit-tap-highlight-color: transparent; }
-button:focus-visible, a:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
 button { transition: background .16s, border-color .16s, transform .16s; }
 button:not(:disabled):active { transform: translateY(1px); }
 h1, h2, h3, p { margin: 0; }
@@ -335,3 +335,69 @@ h1 { font-size: clamp(32px, 3.6vw, 53px); line-height: 1.12; letter-spacing: -1.
 }
 @media (max-width: 370px) { .main-content { padding-inline: 17px; } .next-footer { flex-wrap: wrap; } .next-footer .button { width: 100%; } .answer-options.options-5, .answer-options.options-6 { grid-template-columns: 1fr; } .page-footer > span:last-child { display: none; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+
+/* Advanced listening tools share the same compact lesson layout. */
+.lesson-section > summary { cursor: pointer; list-style: none; padding: 16px 0; }
+.lesson-section > summary::-webkit-details-marker { display: none; }
+.lesson-section > summary > span { display: flex; align-items: center; gap: 14px; white-space: nowrap; }
+.section-chevron { display: inline-block; transition: transform .16s; font-size: 19px; }
+.lesson-section[open] .section-chevron { transform: rotate(180deg); }
+.lab-entry { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 25px; margin: 25px 0 32px; border: 1px solid #52653c; border-radius: 12px; background: #202c18; }
+.lab-entry h2 { font-size: 22px; font-weight: 500; margin: 13px 0 10px; line-height: 1.4; }
+.lab-entry p { color: #afc39a; font-size: 12px; line-height: 1.9; }
+.lab-entry .button { flex-shrink: 0; }
+.mix-listen-tools { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin: 4px 0 18px; }
+.mix-listen-tools > div { display: flex; border: 1px solid #52613f; border-radius: 6px; padding: 3px; gap: 3px; }
+.mix-listen-tools > div button { background: none; color: #b8c7a9; border: 0; border-radius: 4px; padding: 8px 14px; font-size: 11px; }
+.mix-listen-tools > div button[aria-pressed="true"] { color: #e2f4cb; background: #35492a; }
+.mix-listen-tools > .text-button { font-size: 11px; }
+.mix-feedback { margin: 20px 0; padding: 18px; border: 1px solid #465438; border-radius: 9px; background: #192115; }
+.mix-setting-rows { display: grid; gap: 13px; }
+.mix-setting-rows > div { display: flex; align-items: flex-start; gap: 12px; }
+.mix-setting-rows strong { width: 19px; color: var(--accent); font-size: 13px; flex-shrink: 0; }
+.mix-setting-rows > div > div { display: flex; flex-wrap: wrap; gap: 6px 13px; }
+.mix-setting-rows span { font-size: 11px; color: #c0d1ae; line-height: 1.6; }
+.mix-feedback > .small-copy { margin: 13px 0 0; font-size: 10px; line-height: 1.85; }
+.signal-scope { margin: 17px 0; color: #b5c4a7; }
+.signal-scope svg { width: 100%; display: block; max-height: 160px; }
+.signal-scope > p { font-size: 10px; line-height: 1.8; margin: 6px 0 13px; }
+.signal-readings { display: flex; flex-direction: column; gap: 8px; font-size: 10px; line-height: 1.8; }
+.stereo-check { margin: 25px 0; padding: 23px; border: 1px solid #5a7144; border-radius: 10px; background: #202c19; }
+.stereo-check h2 { font-size: 17px; font-weight: 500; display: flex; align-items: center; gap: 10px; }
+.stereo-check p { font-size: 12px; line-height: 1.9; color: #bdceac; margin: 15px 0; }
+.stereo-check > div { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 17px; }
+.stereo-check label, .lab-checkbox { display: flex; align-items: flex-start; gap: 11px; font-size: 12px; line-height: 1.8; cursor: pointer; }
+.stereo-check input, .lab-checkbox input { width: 16px; height: 16px; margin: 3px 0 0; accent-color: var(--accent); flex-shrink: 0; }
+.intro-start:disabled { opacity: .45; }
+.credit-links { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 17px; }
+.credit-links a { font-size: 12px; color: var(--accent); line-height: 1.8; text-underline-offset: 4px; }
+.lab-source { margin-bottom: 25px; }
+.file-button { position: relative; cursor: pointer; margin: 16px 0 7px; width: fit-content; }
+.file-button input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.file-button:focus-within { outline: 2px solid var(--accent); outline-offset: 5px; }
+.file-details { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px; margin-top: 13px; font-size: 12px; }
+.file-details > span { overflow-wrap: anywhere; min-width: 0; }
+.lab-columns { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.2fr); gap: 25px; align-items: start; }
+.lab-listening { min-width: 0; }
+.effect-select { display: flex; flex-direction: column; gap: 15px; font-size: 13px; font-weight: 500; }
+.effect-select select { max-width: 100%; width: 100%; color: #e5ecd9; background: #242f1c; border: 1px solid #64784e; border-radius: 6px; padding: 12px 9px; font-size: 12px; }
+.lab-controls { margin: 25px 0; display: grid; gap: 23px; }
+.lab-controls label { display: flex; flex-direction: column; gap: 10px; }
+.lab-controls label > span { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; font-size: 12px; color: #c1ceaf; line-height: 1.8; }
+.lab-controls output { color: var(--accent); flex-shrink: 0; font-family: ui-monospace, monospace; font-size: 11px; }
+.lab-controls input { width: 100%; accent-color: var(--accent); cursor: pointer; min-height: 28px; }
+.lab-checkbox { margin: 20px 0; }
+@media (max-width: 1150px) { .lab-columns { grid-template-columns: 1fr; } }
+@media (max-width: 640px) {
+  .lab-entry { padding: 21px; flex-direction: column; align-items: flex-start; gap: 17px; }
+  .lab-entry h2 { font-size: 20px; } .lab-entry .eyebrow { font-size: 9px; }
+  .lesson-section-heading h2 { font-size: 16px; } .lesson-section-heading > span { font-size: 10px; gap: 9px; }
+  .lesson-row-copy .eyebrow { font-size: 8px; line-height: 1.8; flex-wrap: wrap; }
+  .stereo-check { padding: 18px; } .stereo-check > div { gap: 8px; } .stereo-check .button { font-size: 11px; padding-inline: 11px; }
+  .mix-feedback { padding: 14px; } .mix-setting-rows span { font-size: 10px; }
+  .lab-columns { gap: 19px; } .file-details { flex-direction: column; align-items: flex-start; }
+}
+
+.known-examples { display: flex; flex-wrap: wrap; gap: 9px; margin: 17px 0; }
+.known-examples button { font-size: 11px; padding: 10px 13px; }
+.known-examples button[aria-pressed="true"] { background: #354727; border-color: var(--accent); }

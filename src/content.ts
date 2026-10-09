@@ -1,18 +1,20 @@
-export type Locale = 'tr' | 'en';
-export type Text = { tr: string; en: string };
-export const tx = (text: Text, locale: Locale) => text[locale];
-export const text = (tr: string, en: string): Text => ({ tr, en });
+import { text, type Text } from './i18n';
+export { text, tx, type Locale, type Text } from './i18n';
+import { advancedLessons, isAdvanced, mixSkillNames } from './advanced-content';
+import type { MixSkill } from './mix-types';
 export type PathId = 'mix' | 'music' | 'exam';
-export type SkillId = 'eq' | 'loudness' | 'direction' | 'interval' | 'chord' | 'rhythm' | 'memory';
-export const usesLoop = (skill: SkillId) => skill === 'eq' || skill === 'loudness';
+export type SkillId = 'eq' | 'loudness' | 'direction' | 'interval' | 'chord' | 'rhythm' | 'memory' | MixSkill;
+export const usesLoop = (skill: SkillId) => skill === 'eq' || skill === 'loudness' || isAdvanced(skill);
 export const usesPair = (skill: SkillId) => usesLoop(skill) || skill === 'memory' || skill === 'rhythm';
-export type EqSource = 'studio' | 'drums' | 'keys';
+export type EqSource = 'studio' | 'drums' | 'keys' | 'acoustic' | 'recorded-drums';
 export const eqSources: Record<EqSource, { title: Text; description: Text }> = {
+  acoustic: { title: text('Akustik piyano', 'Acoustic piano'), description: text('Gerçek piyano ve vurmalı kayıtlarından düzenleme · CC0.', 'An arrangement of recorded piano and percussion · CC0.') },
+  'recorded-drums': { title: text('Kaydedilmiş vurmalılar', 'Recorded percussion'), description: text('Gerçek kick, trampet ve claves · CC0.', 'Recorded bass drum, snare and claves · CC0.') },
   studio: { title: text('Elektronik groove', 'Electronic groove'), description: text('Davul, bas ve arpej dengesi.', 'A balance of drums, bass and arpeggios.') },
   drums: { title: text('Ritim ağırlıklı', 'Rhythm focused'), description: text('Vuruşlar, gövde ve hi-hat dokusu.', 'Hits, body and hi-hat texture.') },
   keys: { title: text('Arpej ağırlıklı', 'Arpeggio focused'), description: text('Nota katmanları, bas ve parlaklık.', 'Layers of notes, bass and brightness.') },
 };
-export const eqSourceIds = Object.keys(eqSources) as EqSource[];
+export const eqSourceIds: EqSource[] = ['studio', 'drums', 'keys', 'acoustic', 'recorded-drums'];
 export type Lesson = {
   id: string; path: PathId; level: number; skill: SkillId;
   title: Text; description: Text; learn: Text; listen: Text; tip: Text;
@@ -20,7 +22,7 @@ export type Lesson = {
 
 export const paths = {
   mix: { title: text('Miks ve prodüksiyon', 'Mixing & production'), short: text('Miks', 'Mixing'),
-    description: text('Frekansları duy. Daha bilinçli miks kararları ver.', 'Hear frequencies. Make more deliberate mixing decisions.'),
+    description: text('EQ, dinamikler ve mekânı duy. Daha bilinçli miks kararları ver.', 'Hear EQ, dynamics and space. Make more deliberate mixing decisions.'),
     label: text('STÜDYO KULAĞI', 'STUDIO EARS'), color: 'lime' },
   music: { title: text('Temel müzik kulağı', 'Musical foundations'), short: text('Müzik kulağı', 'Musicianship'),
     description: text('Melodi, armoni ve ritmi adım adım dinle.', 'Listen to melody, harmony and rhythm, one step at a time.'),
@@ -55,6 +57,7 @@ export const lessons: Lesson[] = [
     learn: text('Daha yüksek ses, daha iyiymiş gibi algılanabilir. Burada aynı kaynağın yalnızca seviyesi değişir; EQ, nota ve zamanlama aynı kalır. Bu kez örneklerin seviyeleri bilerek eşitlenmez.', 'A louder sound can seem better. Here only the level of the same source changes; EQ, pitch and timing stay the same. These samples are deliberately not level matched.'),
     listen: text('A referans, B karşılaştırma. A/B arasında geçiş yap: B daha yüksek mi, daha düşük mü, aynı mı? Karşılaştırırken ses ayarını sabit tut.', 'A is the reference and B the comparison. Switch between A/B: is B louder, softer or the same? Keep your volume setting fixed while comparing.'),
     tip: text('Bu fark göreli bir sinyal seviyesi farkıdır; kulaklığındaki mutlak ses basıncını ölçmez. Rahat bir ses seviyesi kullan; farkı duymak için sesi yükseltmen gerekmez.', 'This is a relative signal level difference, not a measurement of sound pressure at your headphones. Use a comfortable volume; you do not need to turn it up to hear the difference.') })),
+  ...advancedLessons,
   { id: 'direction-1', path: 'music', skill: 'direction', level: 1,
     title: text('Sesin yönü', 'Pitch direction'),
     description: text('İkinci ses yükseliyor mu, alçalıyor mu?', 'Does the second note rise or fall?'),
@@ -88,13 +91,17 @@ export const lessons: Lesson[] = [
 ];
 
 export const skillNames: Record<SkillId, Text> = {
-  eq: text('EQ ve frekans', 'EQ & frequency'), loudness: text('Ses yüksekliği', 'Loudness'), direction: text('Ses yönü', 'Pitch direction'),
+  eq: text('EQ ve frekans', 'EQ & frequency'), loudness: text('Ses yüksekliği', 'Loudness'), ...mixSkillNames, direction: text('Ses yönü', 'Pitch direction'),
   interval: text('Aralıklar', 'Intervals'), chord: text('Akor niteliği', 'Chord quality'), rhythm: text('Ritim', 'Rhythm'), memory: text('Melodik hafıza', 'Melodic memory'),
 };
 export const getLesson = (id: string) => lessons.find(l => l.id === id)!;
 
 export const lessonGroups: Record<PathId, { id: string; title: Text; skills: SkillId[] }[]> = {
-  mix: [{ id: 'eq', title: skillNames.eq, skills: ['eq'] }, { id: 'loudness', title: skillNames.loudness, skills: ['loudness'] }],
+  mix: [{ id: 'eq', title: skillNames.eq, skills: ['eq'] }, { id: 'loudness', title: skillNames.loudness, skills: ['loudness'] },
+    { id: 'dynamics', title: text('Dinamikler', 'Dynamics'), skills: ['compression', 'attack', 'release'] },
+    { id: 'masking', title: text('Masking ve ayrışma', 'Masking & separation'), skills: ['masking'] },
+    { id: 'stereo', title: skillNames.stereo, skills: ['stereo'] },
+    { id: 'space', title: text('Reverb ve delay', 'Reverb & delay'), skills: ['reverb', 'delay'] }],
   music: [{ id: 'pitch', title: text('Melodi ve armoni', 'Melody & harmony'), skills: ['direction', 'interval', 'chord'] }, { id: 'rhythm', title: skillNames.rhythm, skills: ['rhythm'] }],
   exam: [{ id: 'memory', title: skillNames.memory, skills: ['memory'] }],
 };
@@ -163,7 +170,7 @@ export const ui = {
   importSuccess: text('Yedek birleştirildi. Aynı kayıtlar tekrar sayılmadı.', 'Backup merged. Duplicate records were not counted again.'),
   importUnsaved: text('Yedek bu oturumda yüklendi, ancak tarayıcı kaydedemiyor. Sayfayı kapatmadan ilerlemeyi indir.', 'Backup loaded for this session, but the browser cannot save it. Download your progress before closing the page.'),
   source: text('Ses kaynağın', 'Your sound source'), sourceCopy: text('Bu pratiğin kaynağını seç. Farklı ses dokularıyla çalış; seçimin beş soru boyunca sabit kalacak.', 'Choose the source for this practice. Work with different sound textures; your choice stays fixed across the five questions.'),
-  sourceOriginal: text('Üçü de Freq içinde üretilen özgün döngülerdir.', 'All three are original loops generated inside Freq.'),
+  sourceOriginal: text('Üç özgün sentez dokusu ve CC0 akustik kayıtlardan iki düzenleme.', 'Three original synthesized textures and two arrangements from CC0 acoustic recordings.'),
   targetEq: text('Doğru EQ', 'Target EQ'), choiceEq: text('Seçtiğin EQ', 'Your chosen EQ'),
   compareCopy: text('C, senin seçtiğin frekansa aynı yükseltme veya kesme uygulanmış halidir. B ve C arasında geçiş yapıp farkı duy; ardından A’ya dön.', 'C applies the same boost or cut at the frequency you chose. Switch between B and C to hear the difference, then return to A.'),
   shortcutCompare: text('Klavye: boşluk dinle/durdur · A/B/C karşılaştır', 'Keyboard: space listen/stop · A/B/C compare'),
@@ -172,9 +179,9 @@ export const ui = {
   cancel: text('Vazgeç', 'Cancel'), delete: text('Evet, sil', 'Yes, delete'),
   storageError: text('Tarayıcı kayıt yapamıyor. Pratik çalışır; sayfayı kapatırsan ilerleme kaybolabilir.', 'This browser cannot save records. You can practise, but progress may be lost when you close the page.'),
   audioError: text('Ses başlatılamadı. Dinle düğmesiyle tekrar dene; başka ses uygulamalarını kapatmayı deneyebilirsin.', 'Audio could not start. Try Listen again, or close other audio apps.'),
-  early: text('DİNLEME STÜDYOSU · 0.3', 'LISTENING STUDIO · 0.3'),
+  early: text('DİNLEME STÜDYOSU · 0.4', 'LISTENING STUDIO · 0.4'),
   future: text('Bu yolun devamı', 'Further along this path'),
-  roadmapMix: text('Sırada: masking, kompresyon, stereo alan ve gerçek miks üzerinde uygulama. Bu sürüm EQ ve ses seviyesi dinlemesi sunar.', 'Next: masking, compression, stereo space and applying skills to real mixes. This edition offers EQ and level listening.'),
+  roadmapMix: text('Sırada: daha geniş kayıt kütüphanesi, çoklu sorunları teşhis ve yeni müziklerde beceri aktarımı. İleri miks pratiklerini veya Kendi kaydın alanını keşfet.', 'Next: a larger recording library, diagnosing multiple issues and transfer to new music. Explore advanced mixing practice or Your recording.'),
   roadmapMusic: text('Sırada: işlevsel işitme, ritim tekrarı ve dikte. Makam ve usul bölümü ayrı bir içerik yolu olarak uzmanlarla hazırlanacak.', 'Next: functional hearing, rhythm reproduction and dictation. Makam and usul will be a separate content path authored with specialists.'),
   roadmapExam: text('Sırada: ritim tekrarı, dikte ve kurumlara göre sınav paketleri. Bu sürüm melodik hafıza pratiği sunar.', 'Next: rhythm repetition, dictation and institution-specific exam packs. This edition offers melodic memory practice.'),
   selected: text('Aktif yol', 'Active path'), makeActive: text('Ana yolum yap', 'Set as my main path'),

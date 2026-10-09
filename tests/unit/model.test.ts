@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { eqSourceIds, lessons } from '../../src/content';
-import { advanceQuestion, answerQuestion, initialProgress, makeQuestion, parseProgress, recommendedLesson, ROUND_COUNT, skillStats, withEqComparison, type Progress } from '../../src/model';
+import { advanceQuestion, answerQuestion, initialProgress, makeQuestion, parseProgress, recommendedLesson, ROUND_COUNT, skillStats, withEqComparison, withAnswerComparison, type Progress } from '../../src/model';
 
 const practice = (id = 'eq-1'): Progress => ({ ...initialProgress(), session: { id: 'session-1', lessonId: id, seed: 4294967295, index: 0, started: true, answers: [] } });
 
@@ -43,6 +43,15 @@ describe('question generation', () => {
       if (q.kind === 'interval') expect(q.notesA[1] - q.notesA[0]).toBe(Number(q.correct));
       if (q.kind === 'chord') expect(q.notesA[1] - q.notesA[0]).toBe(q.correct === 'minor' ? 3 : 4);
       if (q.kind === 'eq') expect(q.frequency).toBe(Number(q.correct));
+      if (q.mix) {
+        expect(q.mix.target).toEqual(q.mix.alternatives[q.correct]);
+        const wrong = q.options.find(o => o.id !== q.correct)!;
+        const comparison = withAnswerComparison(q, wrong.id);
+        expect(comparison.mix?.comparison).toEqual(q.mix.alternatives[wrong.id]);
+        expect(comparison.mix?.target).toEqual(q.mix.target);
+        expect(withAnswerComparison(q, q.correct)).toBe(q);
+        expect(withAnswerComparison(q, 'invalid')).toBe(q);
+      }
       if (q.kind === 'loudness') {
         expect(q.correct).toBe(q.levelDb! > 0 ? 'louder' : q.levelDb! < 0 ? 'softer' : 'same');
         expect([0, [6, 3, 1][lesson.level - 1]]).toContain(Math.abs(q.levelDb!));

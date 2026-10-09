@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { makeLevelPair, makeLoop, makeNotes, makeRhythm, matchLevelGroup, matchLevels, peak, rms } from '../../src/audio';
-import { eqSourceIds } from '../../src/content';
+const syntheticSourceIds = ['studio', 'drums', 'keys'] as const;
 
 describe('audio material', () => {
   it.each([-6, -3, -1, 0, 1, 3, 6])('preserves the intentional %s dB difference with identical timing and timbre', db => {
@@ -59,7 +59,7 @@ describe('audio material', () => {
     expect(a).not.toEqual(b);
     expect(peak(makeNotes(16000, [60, 64, 67], true))).toBeLessThan(1);
   });
-  it.each(eqSourceIds)('%s source is deterministic, audible and unclipped', source => {
+  it.each(syntheticSourceIds)('%s source is deterministic, audible and unclipped', source => {
     const a = makeLoop(16000, 75, source);
     expect(a).toEqual(makeLoop(16000, 75, source));
     expect(rms(a)).toBeGreaterThan(0.03);
@@ -67,7 +67,7 @@ describe('audio material', () => {
     expect(a.every(Number.isFinite)).toBe(true);
   });
   it('source choices actually produce different material', () => {
-    const buffers = eqSourceIds.map(source => makeLoop(16000, 75, source));
+    const buffers = syntheticSourceIds.map(source => makeLoop(16000, 75, source));
     for (let i = 0; i < buffers.length; i++) for (let j = i + 1; j < buffers.length; j++) expect(buffers[i]).not.toEqual(buffers[j]);
   });
   it('matches all three comparison buffers using shared headroom', () => {
