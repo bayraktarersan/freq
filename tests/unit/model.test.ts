@@ -1,3 +1,4 @@
+import { evaluateAnswer } from '../../src/music-model';
 import { describe, expect, it } from 'vitest';
 import { eqSourceIds, lessons } from '../../src/content';
 import { advanceQuestion, answerQuestion, initialProgress, makeQuestion, parseProgress, recommendedLesson, ROUND_COUNT, skillStats, withEqComparison, withAnswerComparison, type Progress } from '../../src/model';
@@ -28,7 +29,8 @@ describe('question generation', () => {
     for (let seed = 0; seed < 100; seed++) {
       const q = makeQuestion(lesson.id, seed, 0);
       expect(q).toEqual(makeQuestion(lesson.id, seed, 0));
-      expect(q.options.filter(o => o.id === q.correct)).toHaveLength(1);
+      if (q.music && q.music.response !== 'choice') expect(evaluateAnswer(q, q.correct)).toBe(true);
+      else expect(q.options.filter(o => o.id === q.correct)).toHaveLength(1);
       expect(new Set(q.options.map(o => o.id)).size).toBe(q.options.length);
       corrects.add(q.correct);
       if (q.kind === 'memory') {

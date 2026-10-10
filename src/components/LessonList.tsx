@@ -4,7 +4,7 @@ import type { Progress } from '../model';
 
 export function LessonList({ path, progress, locale, onStart }: { path: PathId; progress: Progress; locale: Locale; onStart: (id: string) => void }) {
   const t = (value: Parameters<typeof tx>[0]) => tx(value, locale);
-  return <div className="lesson-sections">{lessonGroups[path].map(group => <details key={group.id} className="lesson-section" open={path !== 'mix' || ['eq', 'loudness'].includes(group.id) || group.skills.includes(lessons.find(l => l.id === progress.session?.lessonId)?.skill as typeof group.skills[number])}>
+  return <div className="lesson-sections">{lessonGroups[path].map(group => <details key={group.id} className="lesson-section" open={path === 'exam' || ['eq', 'loudness', 'pitch', 'rhythm'].includes(group.id) || group.skills.includes(lessons.find(l => l.id === progress.session?.lessonId)?.skill as typeof group.skills[number])}>
     <summary className="lesson-section-heading"><h2>{t(group.title)}</h2><span>{lessons.filter(l => l.path === path && group.skills.includes(l.skill)).length} {t(text('pratik', 'practices'))}<span className="section-chevron" aria-hidden="true">⌄</span></span></summary>
     <div className="lesson-list">{lessons.filter(l => l.path === path && group.skills.includes(l.skill)).map(lesson => {
       const attempts = progress.attempts.filter(a => a.lessonId === lesson.id);

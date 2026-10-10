@@ -1,9 +1,11 @@
 import { text, type Text } from './i18n';
 export { text, tx, type Locale, type Text } from './i18n';
 import { advancedLessons, isAdvanced, mixSkillNames } from './advanced-content';
+import { musicLessons, musicSkillNames } from './music-content';
+import type { MusicSkill } from './music-types';
 import type { MixSkill } from './mix-types';
 export type PathId = 'mix' | 'music' | 'exam';
-export type SkillId = 'eq' | 'loudness' | 'direction' | 'interval' | 'chord' | 'rhythm' | 'memory' | MixSkill;
+export type SkillId = 'eq' | 'loudness' | 'direction' | 'interval' | 'chord' | 'rhythm' | 'memory' | MixSkill | MusicSkill;
 export const usesLoop = (skill: SkillId) => skill === 'eq' || skill === 'loudness' || isAdvanced(skill);
 export const usesPair = (skill: SkillId) => usesLoop(skill) || skill === 'memory' || skill === 'rhythm';
 export type EqSource = 'studio' | 'drums' | 'keys' | 'acoustic' | 'recorded-drums';
@@ -24,7 +26,7 @@ export const paths = {
   mix: { title: text('Miks ve prodüksiyon', 'Mixing & production'), short: text('Miks', 'Mixing'),
     description: text('EQ, dinamikler ve mekânı duy. Daha bilinçli miks kararları ver.', 'Hear EQ, dynamics and space. Make more deliberate mixing decisions.'),
     label: text('STÜDYO KULAĞI', 'STUDIO EARS'), color: 'lime' },
-  music: { title: text('Temel müzik kulağı', 'Musical foundations'), short: text('Müzik kulağı', 'Musicianship'),
+  music: { title: text('Müzik kulağı', 'Musicianship'), short: text('Müzik kulağı', 'Musicianship'),
     description: text('Melodi, armoni ve ritmi adım adım dinle.', 'Listen to melody, harmony and rhythm, one step at a time.'),
     label: text('MÜZİĞİN TEMELLERİ', 'MUSICAL FOUNDATIONS'), color: 'blue' },
   exam: { title: text('Sınava hazırlık', 'Audition preparation'), short: text('Sınava hazırlık', 'Audition prep'),
@@ -82,6 +84,7 @@ export const lessons: Lesson[] = [
     learn: text(level === 3 ? 'Dört vuruşlu bir ölçüde her vuruş dört parçaya bölünür: 1 e & a. Bir vuruşun bir alt bölüme kaymasını dinle.' : 'Dört vuruşlu bir ölçüde her vuruş iki parçaya bölünür: 1 & 2 & 3 & 4 &. Vuruş aralarındaki boşlukları ve seslerin yerini dinle.', level === 3 ? 'Each beat in a four-beat bar divides into four: 1 e & a. Listen for a hit moving by one subdivision.' : 'Each beat in a four-beat bar divides into two: 1 & 2 & 3 & 4 &. Listen to the gaps and the positions of the hits.'),
     listen: text('Önce dört sayım sesi, ardından bir ölçülük ritim duyacaksın. A ve B’yi sonuna kadar dinle. Kalıplar aynı mı, bir vuruşun yeri değişti mi?', 'You will hear four count-in clicks, then one bar of rhythm. Listen to A and B all the way through. Are the patterns the same, or did one hit move?'),
     tip: text('Her iki örnekte tempo, ses rengi ve vuruş sayısı aynıdır. Değişim yalnızca bir vuruşun yerindedir. Bu çalışma ritim ayırt etmedir; dokunma zamanlaması veya ritim tekrar puanı ölçülmez.', 'Both samples have the same tempo, timbre and number of hits. Only the position of one hit can change. This trains rhythm discrimination; it does not score tapping or rhythm reproduction.') })),
+  ...musicLessons,
   ...[1, 2, 3].map((level): Lesson => ({ id: `memory-${level}`, path: 'exam', skill: 'memory', level,
     title: text(`${level + 2} notalı hafıza`, `${level + 2}-note memory`),
     description: text('İki kısa melodi arasındaki değişimi yakala.', 'Catch the change between two short melodies.'),
@@ -92,7 +95,7 @@ export const lessons: Lesson[] = [
 
 export const skillNames: Record<SkillId, Text> = {
   eq: text('EQ ve frekans', 'EQ & frequency'), loudness: text('Ses yüksekliği', 'Loudness'), ...mixSkillNames, direction: text('Ses yönü', 'Pitch direction'),
-  interval: text('Aralıklar', 'Intervals'), chord: text('Akor niteliği', 'Chord quality'), rhythm: text('Ritim', 'Rhythm'), memory: text('Melodik hafıza', 'Melodic memory'),
+  interval: text('Aralıklar', 'Intervals'), chord: text('Akor niteliği', 'Chord quality'), rhythm: text('Ritim', 'Rhythm'), memory: text('Melodik hafıza', 'Melodic memory'), ...musicSkillNames,
 };
 export const getLesson = (id: string) => lessons.find(l => l.id === id)!;
 
@@ -102,7 +105,11 @@ export const lessonGroups: Record<PathId, { id: string; title: Text; skills: Ski
     { id: 'masking', title: text('Masking ve ayrışma', 'Masking & separation'), skills: ['masking'] },
     { id: 'stereo', title: skillNames.stereo, skills: ['stereo'] },
     { id: 'space', title: text('Reverb ve delay', 'Reverb & delay'), skills: ['reverb', 'delay'] }],
-  music: [{ id: 'pitch', title: text('Melodi ve armoni', 'Melody & harmony'), skills: ['direction', 'interval', 'chord'] }, { id: 'rhythm', title: skillNames.rhythm, skills: ['rhythm'] }],
+  music: [{ id: 'pitch', title: text('Melodi ve armoni', 'Melody & harmony'), skills: ['direction', 'interval', 'chord'] }, { id: 'rhythm', title: skillNames.rhythm, skills: ['rhythm'] },
+    { id: 'tonality', title: text('Tonal merkez ve dereceler', 'Tonal centre & degrees'), skills: ['tonic', 'degree'] },
+    { id: 'function', title: musicSkillNames.function, skills: ['function'] },
+    { id: 'dictation', title: text('Dikte atölyesi', 'Dictation workshop'), skills: ['melodic-dictation', 'rhythmic-dictation'] },
+    { id: 'reproduction', title: musicSkillNames['rhythm-repeat'], skills: ['rhythm-repeat'] }],
   exam: [{ id: 'memory', title: skillNames.memory, skills: ['memory'] }],
 };
 export const pathCount = (path: PathId) => text(`${lessons.filter(l => l.path === path).length} pratik · ${lessonGroups[path].length} bölüm`, `${lessons.filter(l => l.path === path).length} practices · ${lessonGroups[path].length} ${lessonGroups[path].length === 1 ? 'section' : 'sections'}`);
@@ -179,11 +186,11 @@ export const ui = {
   cancel: text('Vazgeç', 'Cancel'), delete: text('Evet, sil', 'Yes, delete'),
   storageError: text('Tarayıcı kayıt yapamıyor. Pratik çalışır; sayfayı kapatırsan ilerleme kaybolabilir.', 'This browser cannot save records. You can practise, but progress may be lost when you close the page.'),
   audioError: text('Ses başlatılamadı. Dinle düğmesiyle tekrar dene; başka ses uygulamalarını kapatmayı deneyebilirsin.', 'Audio could not start. Try Listen again, or close other audio apps.'),
-  early: text('DİNLEME STÜDYOSU · 0.4', 'LISTENING STUDIO · 0.4'),
+  early: text('DİNLEME STÜDYOSU · 0.5', 'LISTENING STUDIO · 0.5'),
   future: text('Bu yolun devamı', 'Further along this path'),
   roadmapMix: text('Sırada: daha geniş kayıt kütüphanesi, çoklu sorunları teşhis ve yeni müziklerde beceri aktarımı. İleri miks pratiklerini veya Kendi kaydın alanını keşfet.', 'Next: a larger recording library, diagnosing multiple issues and transfer to new music. Explore advanced mixing practice or Your recording.'),
-  roadmapMusic: text('Sırada: işlevsel işitme, ritim tekrarı ve dikte. Makam ve usul bölümü ayrı bir içerik yolu olarak uzmanlarla hazırlanacak.', 'Next: functional hearing, rhythm reproduction and dictation. Makam and usul will be a separate content path authored with specialists.'),
-  roadmapExam: text('Sırada: ritim tekrarı, dikte ve kurumlara göre sınav paketleri. Bu sürüm melodik hafıza pratiği sunar.', 'Next: rhythm repetition, dictation and institution-specific exam packs. This edition offers melodic memory practice.'),
+  roadmapMusic: text('Sırada: minör/kromatik bağlam, porte ve daha uzun dikte. Makam ve usul ayrı bir içerik yolu olarak uzmanlarla hazırlanacak.', 'Next: minor/chromatic context, staff notation and longer dictation. Makam and usul will be a separate content path authored with specialists.'),
+  roadmapExam: text('Dikte ve ritim tekrarını Müzik kulağı yolunda çalışabilirsin. Bu yol melodik hafıza sunar; kurumların sınav formatlarına özel paketler sıradadır.', 'Practise dictation and rhythm reproduction in the Musicianship path. This path offers melodic memory; institution-specific exam packs are next.'),
   selected: text('Aktif yol', 'Active path'), makeActive: text('Ana yolum yap', 'Set as my main path'),
   learnTip: text('KÜÇÜK BİR DİNLEME NOTU', 'A SMALL LISTENING NOTE'),
   tipHome: text('Bir sesi tanımak için önce karşılaştır.', 'To recognise a sound, first compare it.'),

@@ -1,5 +1,16 @@
 # Sürüm değişiklikleri
 
+## 0.5
+
+- Tonal merkez, dizi dereceleri, işlevsel işitme, melodik dikte, ritmik dikte ve ritim tekrarı için üçer seviye: 18 yeni pratik. Toplam 54 pratik / 20 beceri; müzik yolu 24 pratik / altı açılır bölüm.
+- Majör kadans, değişen tonikler ve aday ses dinleme. Etiketli öğretici örnekler; hedef ve seçilen cevabın sesle karşılaştırması. Sayılar göreli dereceleri gösterir.
+- Düzenlenebilir derece ve ritim konumları, taslak dinleme, konum bazında geri bildirim. Tam dizi eşleşmesiyle puanlama; gönderilmeyen taslak çıkınca temizlenir.
+- Dokunma/Space ile ses saatine bağlı ritim tekrarı. Açık sayım/örnek/hazırlık/yanıt aşamaları, yeniden deneme ve kullanıcı gönderince puanlama. Sabit ofset, vuruş sayısı ve sapmalar ayrı gösterilir. Mikrofon kullanılmaz.
+- Yazılan cevaplar ve tekrar zamanları pratik tamamlandıktan sonra da yerel kayıtta/JSON yedeğinde korunur. Becerilerim son beş müzik yanıtını tekrar çalıştırır; tekrar dinleme puanı değiştirmez. Eski 36 dersin 36.000 sorusu 0.4 ile birebir aynı.
+- Türkçe/İngilizce, mobil girişler, otomatik erişilebilirlik ve kök/alt klasör çevrimdışı kullanım; [kaynaklı müzik araştırması](research/muzik-kulagi-arastirmasi.md). Makam/usul uzman içerik aşaması olarak korunur.
+
+Deneme: Yollar → Müzik kulağı → Tonal merkez ve dereceler / İşlevsel işitme / Dikte atölyesi / Ritim tekrarı. Güncel paketler 0.5’tir. Canlı Pages için yayın workflow’unu yeniden çalıştır.
+
 ## 0.4
 
 - Kompresyon, attack, release, masking, stereo, reverb ve delay için üçer seviye: 21 yeni pratik; toplam 36 pratik / 14 beceri. Miks yolu altı açılır bölümde düzenlenir.
@@ -10,7 +21,7 @@
 - Yedi yeni becerinin ilerlemesi, kaynak ve yarım oturumu eski yerel kayıt / yedek biçimiyle korunur. Önceki 15 dersin 15.000 sorusu 0.3 ile birebir aynı.
 - [İleri miks araştırması](research/ileri-miks-arastirmasi.md), kayıt hakları ve model sınırları belgelendi. Türkçe/İngilizce, mobil ve çevrimdışı akışlar güncellendi.
 
-Deneme: Yollar → Miks ve prodüksiyon; ileri bölüm başlıklarını veya Laboratuvarı aç düğmesini seç. Güncel kaynak ve hazır web paketleri 0.4’tür. Canlı Pages yayını için yayın workflow’unu yeniden çalıştır.
+Deneme: Yollar → Miks ve prodüksiyon; ileri bölüm başlıklarını veya Laboratuvarı aç düğmesini seç. Bu bölüm 0.4 teslimatını anlatır. Canlı Pages yayını için yayın workflow’unu yeniden çalıştır.
 
 ## 0.3
 
@@ -21,7 +32,7 @@ Deneme: Yollar → Miks ve prodüksiyon; ileri bölüm başlıklarını veya Lab
 - Yeni beceriler ayrı ölçülür; ses kaynağı, yarım oturum ve sonuçlar yerel kayıt/yedek akışına dahildir. Önceki EQ öneri sırası ve eski oturumların soru hedefleri korunur.
 - Türkçe ve İngilizce ders açıklamaları, geri bildirim ve mobil görünüm güncellendi.
 
-Deneme: Yollar → Miks ve prodüksiyon → Ses yüksekliği; Yollar → Temel müzik kulağı → Ritim. Güncel kaynak ve hazır web paketleri 0.3'tür. Pages yayını için yayın workflow'unu yeniden çalıştır.
+Deneme: Yollar → Miks ve prodüksiyon → Ses yüksekliği; Yollar → Temel müzik kulağı → Ritim. Bu bölüm 0.3 teslimatını anlatır. Pages yayını için yayın workflow'unu yeniden çalıştır.
 
 ## 0.2
 

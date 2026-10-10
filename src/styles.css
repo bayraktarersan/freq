@@ -401,3 +401,51 @@ h1 { font-size: clamp(32px, 3.6vw, 53px); line-height: 1.12; letter-spacing: -1.
 .known-examples { display: flex; flex-wrap: wrap; gap: 9px; margin: 17px 0; }
 .known-examples button { font-size: 11px; padding: 10px 13px; }
 .known-examples button[aria-pressed="true"] { background: #354727; border-color: var(--accent); }
+
+/* Musical practice: four beat groups remain readable on small screens. */
+.music-listen-tools, .music-editor, .music-feedback { margin-top: 20px; }
+.music-comparison, .tonal-candidates, .degree-palette, .music-guide-options, .editor-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.music-listen-tools > .text-button { margin: 4px 16px 14px 0; }
+.music-guide-options { margin: 14px 0; }
+.music-guide-options [aria-pressed="true"] { border-color: var(--accent); }
+.melody-entry, .degree-notation { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 16px; }
+.melody-entry button, .degree-notation > div { min-width: 64px; min-height: 84px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); color: #eeefe8; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 10px; }
+.melody-entry button.selected { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.melody-entry small, .degree-notation > div > span { color: var(--muted); font-size: 12px; }
+.melody-entry strong, .degree-notation strong { font-size: 24px; }
+.degree-notation .matched { border-color: var(--accent); }
+.degree-notation .different { border-color: #e7a387; }
+.degree-palette .button { min-width: 48px; justify-content: center; }
+.editor-actions { margin: 22px 0 12px; }
+.rhythm-map { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 12px 0 24px; }
+.rhythm-beat { min-width: 0; }
+.rhythm-beat > span { display: block; color: var(--muted); font-size: 12px; margin-bottom: 8px; }
+.rhythm-beat > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; }
+.rhythm-cell { min-height: 44px; border: 1px solid var(--line); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-direction: column; background: var(--panel); color: var(--muted); font-size: 18px; padding: 7px; }
+.rhythm-cell.hit { background: #c8ed8615; color: var(--accent); border-color: #c8ed8655; }
+.rhythm-cell small { font-size: 11px; }
+.tap-recorder { border: 1px solid var(--line); border-radius: 18px; padding: 24px; }
+.tap-phase { min-height: 44px; font-weight: 600; }
+.tap-count { font-size: 42px; font-weight: 600; margin: 8px 0 20px; }
+.tap-count span { color: var(--muted); font-size: 18px; margin-left: 8px; }
+.tap-pad { width: 100%; min-height: 140px; border: 1px solid var(--line); border-radius: 15px; background: var(--panel); color: #eeefe8; font-size: 28px; font-weight: 700; touch-action: none; user-select: none; }
+.tap-pad span { display: block; font-size: 14px; font-weight: 400; margin-top: 10px; }
+.tap-pad.recording { background: #c8ed86; color: #17220c; }
+.tap-pad:active { transform: scale(.99); }
+.tap-hit-count { color: var(--muted); margin: 16px 0; }
+.tap-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 20px 0; }
+.tap-metrics span { color: var(--muted); font-size: 12px; }
+.tap-metrics strong { display: block; color: #eeefe8; margin-top: 6px; font-size: 20px; }
+.timing-table { overflow-x: auto; }
+.timing-table table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.timing-table caption { text-align: left; color: var(--muted); margin-bottom: 12px; }
+.timing-table th, .timing-table td { text-align: left; padding: 10px; border-bottom: 1px solid var(--line); }
+@media (max-width: 600px) { .rhythm-map { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; } .rhythm-beat > div { grid-template-columns: repeat(4, minmax(0, 1fr)); } .rhythm-entry .rhythm-beat > div { grid-template-columns: repeat(2, minmax(0, 1fr)); } .tap-recorder { padding: 16px; } .melody-entry button, .degree-notation > div { min-width: 58px; } .tap-metrics { grid-template-columns: 1fr; } .editor-actions > .button { flex: 1 1 160px; justify-content: center; } }
+
+.music-history { margin-top: 32px; border-top: 1px solid var(--line); padding-top: 28px; }
+.music-history h2 { font-size: 22px; margin-bottom: 12px; }
+.history-options { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+.history-options .button { white-space: normal; text-align: left; }
+.history-options [aria-pressed="true"] { border-color: var(--accent); }
+.history-detail { border: 1px solid var(--line); padding: 20px; border-radius: 16px; }
+.history-detail > p { margin-bottom: 12px; line-height: 1.6; }

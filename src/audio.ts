@@ -1,12 +1,14 @@
+import { makeCandidateAudio, makeMusicAudio } from './music-dsp';
+import { degreeMidi } from './music-model';
 import { random, type Question } from './model';
 import { usesLoop, type EqSource } from './content';
 import { isRecording, recordedMaterial, recording } from './recordings';
 import { monoSum, renderMix, signalInfo, type SignalInfo } from './mix-dsp';
 import type { Material, Stereo } from './mix-types';
 
-export type Variant = 'a' | 'b' | 'c' | 'solo';
+export type Variant = 'a' | 'b' | 'c' | 'solo' | 'context' | 'resolution' | 'capture';
 export type AudioStatus = 'idle' | 'preparing' | 'playing' | 'error';
-type Pair = { a: AudioBuffer; b: AudioBuffer; c?: AudioBuffer; solo?: AudioBuffer; evidence?: { a: SignalInfo; b: SignalInfo; c?: SignalInfo } };
+type Pair = { a: AudioBuffer; b: AudioBuffer; c?: AudioBuffer; solo?: AudioBuffer; context?: AudioBuffer; resolution?: AudioBuffer; capture?: AudioBuffer; evidence?: { a: SignalInfo; b: SignalInfo; c?: SignalInfo } };
 export const rms = (data: Float32Array) => Math.sqrt(data.reduce((sum, x) => sum + x * x, 0) / Math.max(1, data.length));
 export const peak = (data: Float32Array) => data.reduce((max, x) => Math.max(max, Math.abs(x)), 0);
 
@@ -120,12 +122,16 @@ export class AudioEngine {
   private cache = new Map<string, Promise<Pair>>();
   private activeKey = '';
   private token = 0;
+  private captureRequested = false;
   private volume = 0.35;
   private mono = false;
   private loadToken = 0;
   private custom: { id: string; stereo: Stereo; bed?: Stereo } | null = null;
   private lastEvidence: { key: string; data: NonNullable<Pair['evidence']> } | null = null;
   status: AudioStatus = 'idle';
+  activeTiming: { start: number; variant: Variant; responseStart?: number; responseEnd?: number } | null = null;
+  get currentTime() { return this.context?.currentTime ?? 0; }
+  get capturing() { return this.captureRequested || this.activeTiming?.variant === 'capture'; }
   diagnostics: { dryRms: number; wetRms: number; maxPeak: number } | null = null;
 
   subscribe(listener: (status: AudioStatus) => void) { this.listeners.add(listener); return () => { this.listeners.delete(listener); }; }
@@ -180,13 +186,13 @@ export class AudioEngine {
     return { id, name: file.name, duration: length / context.sampleRate, channels: decoded.numberOfChannels };
   }
   stop() {
-    this.token++;
+    this.token++; this.captureRequested = false;
     this.sources.forEach(s => { s.onended = null; try { s.stop(); } catch { /* already ended */ } s.disconnect(); });
     this.gains.forEach(g => g.disconnect());
-    this.sources = []; this.gains = []; this.activeKey = '';
+    this.sources = []; this.gains = []; this.activeKey = ''; this.activeTiming = null;
     this.emit('idle');
   }
-  private key(q: Question) { return `${q.kind}:${q.seed}:${q.frequency}:${q.gain}:${q.q}:${q.source}:${q.comparisonFrequency}:${q.levelDb}:${q.tempo}:${q.subdivision}:${q.rhythmA?.join(',')}:${q.rhythmB?.join(',')}:${q.notesA.join(',')}:${q.notesB.join(',')}:${JSON.stringify(q.mix)}:${q.customId}`; }
+  private key(q: Question) { return `${q.kind}:${q.seed}:${q.frequency}:${q.gain}:${q.q}:${q.source}:${q.comparisonFrequency}:${q.levelDb}:${q.tempo}:${q.subdivision}:${q.rhythmA?.join(',')}:${q.rhythmB?.join(',')}:${q.notesA.join(',')}:${q.notesB.join(',')}:${JSON.stringify(q.mix)}:${JSON.stringify(q.music)}:${q.customId}`; }
   private prepare(q: Question, rate: number): Promise<Pair> {
     const key = this.key(q);
     const cached = this.cache.get(key);
@@ -198,6 +204,13 @@ export class AudioEngine {
         buffer.copyToChannel(channels[0], 0); buffer.copyToChannel(channels[1], 1); return buffer;
       };
       const sourceData = () => isRecording(q.source ?? 'studio') ? recording(context, q.source!) : Promise.resolve(makeLoop(rate, q.seed, q.source as 'studio' | 'drums' | 'keys'));
+      if (q.music) {
+        const make = (data: Float32Array<ArrayBuffer>) => { const buffer = context.createBuffer(1, data.length, rate); buffer.copyToChannel(data, 0); return buffer; };
+        const a = make(makeMusicAudio(rate, q.music));
+        return { a, b: a, c: q.music.comparisonChoice ? make(makeMusicAudio(rate, q.music, 'c')) : undefined,
+          context: ['tonic', 'degree', 'function', 'melodic-dictation'].includes(q.kind) ? make(makeMusicAudio(rate, q.music, 'context')) : undefined, resolution: q.kind === 'degree' ? make(makeMusicAudio(rate, q.music, 'resolution')) : undefined,
+          capture: q.kind === 'rhythm-repeat' ? make(makeMusicAudio(rate, q.music, 'capture')) : undefined };
+      }
       if (q.mix) {
         let material: Material, customStereo: Stereo | undefined;
         if (q.customId) {
@@ -256,6 +269,7 @@ export class AudioEngine {
     }
     this.stop();
     const token = this.token;
+    this.captureRequested = variant === 'capture';
     this.emit('preparing');
     try {
       const context = this.init();
@@ -280,7 +294,21 @@ export class AudioEngine {
         s.onended = () => { if (token === this.token) { onComplete?.(); this.stop(); } };
         this.sources.push(s);
       }
+      this.activeTiming = { start, variant, ...(variant === 'capture' && q.music ? { responseStart: start + 12 * 60 / q.music.tempo, responseEnd: start + 16 * 60 / q.music.tempo } : {}) };
       this.activeKey = key; this.emit('playing'); return true;
+    } catch { if (token === this.token) { this.captureRequested = false; this.emit('error'); } return false; }
+  }
+  async playCandidate(q: Question, id: string): Promise<boolean> {
+    if (!q.music || !q.options.some(o => o.id === id)) return false;
+    this.stop(); const token = this.token; this.emit('preparing');
+    try {
+      const context = this.init(); await context.resume();
+      if (token !== this.token) return false;
+      if (context.state !== 'running') throw new Error('Audio context is suspended');
+      const notes = q.music.candidates[id] ?? [[degreeMidi(q.music.tonic, Number(id))]];
+      const data = makeCandidateAudio(context.sampleRate, notes), buffer = context.createBuffer(1, data.length, context.sampleRate); buffer.copyToChannel(data, 0);
+      const source = context.createBufferSource(); source.buffer = buffer; source.connect(this.master!); this.sources.push(source);
+      source.onended = () => { if (token === this.token) this.stop(); }; source.start(context.currentTime + 0.025); this.emit('playing'); return true;
     } catch { if (token === this.token) this.emit('error'); return false; }
   }
   switchVariant(variant: Variant) {

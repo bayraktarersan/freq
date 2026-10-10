@@ -4,9 +4,9 @@
 
 Ana odak miks ve prodüksiyon kulağı. Temel müzik kulağı ve konservatuvar / müzik bölümüne hazırlık kendi yollarında yer alır. Türkçe ve İngilizce içerik; web, iOS ve Android hedefleri. Ana ekran tek aktif yol ve bir sonraki pratik gösterir. Navigasyon: Bugün, Yollar, Becerilerim, Profil.
 
-## Çalışan sürüm: 0.4
+## Çalışan sürüm: 0.5
 
-36 pratik / 14 beceri, önce öğretim ardından pratik. Her derste yanıtı görünen bir örnek var. EQ ve ses yüksekliğinde iki örneği, hafıza ve ritimde iki tam örneği dinlemeden yanıt düğmeleri açılmaz. Doğru/yanlış sonrası tekrar dinleme serbesttir; tekrar dinleme puanı değiştirmez. Yarım bırakılmış oturum korunur. Başka pratiğe geçerken uyarı gösterilir; eski yanıtlar beceri kaydında kalır.
+54 pratik / 20 beceri, önce öğretim ardından pratik. Her derste yanıtı görünen bir örnek var. EQ ve ses yüksekliğinde iki örneği, hafıza ve ritimde iki tam örneği dinlemeden yanıt düğmeleri açılmaz. Doğru/yanlış sonrası tekrar dinleme serbesttir; tekrar dinleme puanı değiştirmez. Yarım bırakılmış oturum korunur. Başka pratiğe geçerken uyarı gösterilir; eski yanıtlar beceri kaydında kalır.
 
 0.2'de miks kaynağı seçimi ve yanlış yanıtı ses olarak karşılaştırma eklendi. Üç kaynak farklı sentez dokuları sunar. Yanlış frekans seçilince C örneği o frekansa aynı gain/Q uygular; orijinal, hedef ve seçim aynı anda başlayan, ortalama seviyeleri eşitlenmiş döngülerdir. Kaynak değişikliği başlangıçta yapılır; soru sırasında birden çok değişken eklenmez.
 
@@ -28,7 +28,7 @@ CC0 tek nota/vuruş kayıtlarından hazırlanmış iki akustik düzenleme ve ayr
 
 ## Müzik, hazırlık ve makam
 
-Tonal merkez, derece / işlev, ritim tekrarı, dikte ve ileri armoni sıradaki içerik ailesi. Hazırlık paketleri kurumların ilan ettiği formatlara göre yazılır. Makam ayrı bir müzik sistemi olarak seyir, karar/güçlü, bağlama göre entonasyon ve usul içerir; Batı dizisinin farklı isimlerle sunulması yeterli değildir. İçerik için bu alanda uzman ve icracı ortaklığı gerekir.
+0.5, tonal merkez, dizi dereceleri, işlevsel işitme, melodik/ritmik dikte ve ritim tekrarı için üçer seviyeli 18 pratik ekler. Müzik yolunda 24 pratik / altı bölüm bulunur. Dikte girişleri düzenlenebilir ve dinlenebilir; tekrar, dokunma/Space ile bir ölçüyü üretir. Gönderilmiş cevaplar yedeklenir ve Becerilerim altında son beş müzik yanıtı yeniden dinlenir; taslak çıkınca temizlenir. Yanıttan önce hedef çizimi gösterilmez. [Öğretim ve değerlendirme sınırları](research/muzik-kulagi-arastirmasi.md). Minör/kromatik işitme, tam porte/süre diktesi, sesle tekrar ve ileri armoni sonraki içerik ailesidir. Hazırlık paketleri kurumların ilan ettiği formatlara göre yazılır. Makam ayrı bir müzik sistemi olarak seyir, karar/güçlü, bağlama göre entonasyon ve usul içerir; Batı dizisinin farklı isimlerle sunulması yeterli değildir. İçerik için bu alanda uzman ve icracı ortaklığı gerekir.
 
 ## Araştırmadan alınan tasarım kararları
 

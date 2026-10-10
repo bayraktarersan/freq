@@ -1,3 +1,4 @@
+import { isMusicianship } from '../../src/music-types';
 import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { eqSourceIds, eqSources, lessons, usesLoop, usesPair } from '../../src/content';
@@ -94,7 +95,7 @@ test('completes a five-question EQ practice and resumes without double scoring',
   expect(p.results[0].correct).toBe(5);
 });
 
-for (const lesson of lessons) {
+for (const lesson of lessons.filter(l => !isMusicianship(l.skill) || ['tonic', 'degree', 'function'].includes(l.skill))) {
   test(`${lesson.id}: real audio, incorrect feedback and safe replay`, async ({ page }) => {
     await chooseLesson(page, lesson.id);
     await listen(page);

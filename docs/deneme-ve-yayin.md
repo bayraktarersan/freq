@@ -21,6 +21,18 @@ Stereo ve ping-pong’da sol/sağ kulaklık testini dinle; gerçekten iki ayrı 
 
 Fiziksel dinleme sırasında telefon modeli, tarayıcı, kablolu/Bluetooth çıkış ve hangi ayarın anlaşılmadığını not et. Otomatik testler gerçek kulaklık dinleme kalitesini onaylamaz. Uçak modunda hazır akustik örneği ve laboratuvarı yeniden aç; bunun için ilk çevrimiçi kurulumun tamamlanmış olması gerekir.
 
+## 0.5 müzik kulağını deneme
+
+**Yollar → Müzik kulağı** altında yeni dört başlık bulunur. Tonal merkezde önce kadans/melodiyi, ardından aday sesleri dinle. Son sesin tonik olmadığı örnekleri dene. Derece/işlevde etiketli öğretici örnekleri sırayla seç; sorudaki hedef tamamlanmadan yanıt açılamamalı.
+
+**Dikte atölyesi:** melodide bir kutu seçip dereceyi yaz; üçüncü seviyede sus kullan. Bir girişi değiştir, taslağını dinle, gönder. Ritmik diktede kutulara dokunarak ses/boşluk seç; dört vuruş grubunu karşılaştır. Bir yanlış cevapta “Yanıtını dinle” yazdığın kalıbı çalmalı. Sayfayı yenileyince gönderilen yanıt ve tek puan kaydı korunmalı. Gönderilmeyen taslak, alandan çıkınca temizlenir.
+
+**Ritim tekrarı:** örneği tamamla, tekrarı başlat. Dört sayım, örnek, dört hazırlık sayımı sonrası yeşil alanda dokun/Space ile çal. Önce yeniden dene; sonra gönder. Basılı tutulan Space ek vuruş üretmemeli. Yanıt sonrası sayıyı, dengelenen ofseti ve vuruş sapmalarını incele. Bir vuruş eksik/fazla deneyerek geri bildirimi kontrol et. Tekrarı durdurmak veya arka plana almak puan oluşturmamalı.
+
+Her altı beceride seviye 1–3, TR/EN, 320–390 px, klavye ve ekran okuyucuyla dene. Profil’den yeni bir dikte/tekrar yanıtının yedeğini indir ve aynı dosyayı iki kez geri yükle: kayıtlar artmamalı. İlk çevrimiçi kurulumdan sonra uçak modunda yeni bir pratik aç. Telefon/tarayıcı ve kablolu/Bluetooth çıkışı not et; ofset dengelemesi cihaz kalibrasyonu değildir.
+
+0.5'te **Becerilerim → Son müzik yanıtlarını tekrar çalış** alanı son beş gönderilmiş müzik yanıtını açar. Pratik bittikten sonra da doğru kalıp ve kendi cevabını karşılaştırabilirsin. Bu dinleme puan üretmez. Daha eski müzik yanıtları son 2.000 soru saklama sınırında yedekte korunur; ekrandaki tekrar listesi beşle sınırlıdır.
+
 ## Kod ile çalışan site farklıdır
 
 GitHub deposunda uygulamanın kaynakları ve dokümanları durur. Çalışan bir bağlantı için web barındırma gerekir. Cloud ortamını yayımlamak geliştirme ortamının anlık görüntüsünü kaydeder; uygulamayı internet sitesine dönüştürmez.

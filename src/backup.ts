@@ -10,7 +10,7 @@ const object = (v: unknown): v is Record<string, unknown> => !!v && typeof v ===
 export const createBackup = (progress: Progress) => ({ format: 'freq-backup', schemaVersion: 1, exportedAt: new Date().toISOString(), progress });
 
 function sourceOf(record: Attempt | Result) { return usesLoop(getLesson(record.lessonId).skill) ? record.source ?? 'studio' : null; }
-function sameAttempt(a: Attempt, b: Attempt) { return a.lessonId === b.lessonId && a.correct === b.correct && a.at === b.at && sourceOf(a) === sourceOf(b); }
+function sameAttempt(a: Attempt, b: Attempt) { return a.lessonId === b.lessonId && a.correct === b.correct && a.at === b.at && sourceOf(a) === sourceOf(b) && a.response?.seed === b.response?.seed && a.response?.choice === b.response?.choice; }
 function sameResult(a: Result, b: Result) { return a.lessonId === b.lessonId && a.correct === b.correct && a.total === b.total && a.at === b.at && sourceOf(a) === sourceOf(b); }
 function unique<T>(records: T[], key: (record: T) => string, same: (a: T, b: T) => boolean): T[] {
   const byId = new Map<string, T>();
@@ -29,7 +29,7 @@ function checkConsistency(p: Progress) {
     if (p.attempts.some(a => a.sessionId === s.id && a.index >= s.answers.length)) throw new BackupError('conflict');
     s.answers.forEach((answer, index) => {
       const a = attempts.get(JSON.stringify([s.id, index]));
-      if (!a || a.lessonId !== s.lessonId || a.correct !== answer.correct || a.at !== answer.at || (usesLoop(getLesson(s.lessonId).skill) && sourceOf(a) !== (s.source ?? 'studio'))) throw new BackupError('conflict');
+      if (!a || a.lessonId !== s.lessonId || a.correct !== answer.correct || a.at !== answer.at || (a.response && (a.response.seed !== s.seed || a.response.choice !== answer.choice)) || (usesLoop(getLesson(s.lessonId).skill) && sourceOf(a) !== (s.source ?? 'studio'))) throw new BackupError('conflict');
     });
   }
   for (const r of p.results) {

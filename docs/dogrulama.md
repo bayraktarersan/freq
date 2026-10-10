@@ -1,5 +1,35 @@
 # Doğrulama kayıtları
 
+## 0.5
+
+10 Ekim 2026 (Europe/Istanbul), Node.js 24 ve sistem Chromium’u ile.
+
+| Kontrol | Sonuç |
+| --- | --- |
+| TypeScript ve üretim build’i | Geçti; 14 statik dosya çevrimdışı önbelleğe dahil |
+| Soru, ilerleme, yedek ve ses/DSP testleri | Son tur 219 / 219 geçti |
+| Tam tarayıcı / gerçek Web Audio turu | 100 / 100 geçti |
+| Son tepe payı, ses hata durumu ve yönerge düzeltmelerinden sonra müzik akışları | 16 / 16 geçti; yeni ses hata testi dahil |
+| Önceki 0.4 soru üreticisi | 36 ders × 200 tohum × beş soru = 36.000 soru birebir aynı |
+| Yeni içerik ve düzen | 18 yeni pratik; toplam 54 pratik / 20 beceri; müzik 24 pratik / altı bölüm; eski başlangıç önerileri korunuyor |
+| Tonal işitme | Değişen tonikler, göreli derece/perde, tonikte bitmeyen cümleler; aday ve yalnız bağlam dinlemek yanıtı açmıyor |
+| Ses üretimi | 44.1/48 kHz; derece frekansı spektral kontrol, suslarda sessizlik, hedef/yanıt notaları ve ritim konumları tutarlı; son tepe payı testinde sık yanlış dokunuşlar da kırpılmıyor |
+| Dikte | Üçer seviyede yazma/düzenleme, taslak/yanıt sesi, konum geri bildirimi, tek sefer puanlama, dil ve yenileme |
+| Ritim tekrarı | Üç seviyede gerçek Web Audio saatine göre pointerdown ve Space olayları; basılı Space tekrarları sayılmıyor; gönderme öncesi puan yok; kayıt, tekrar sesi, sapma tablosu ve yenileme |
+| Ritim değerlendirme | Sabit ±240 ms örnek ofsetler dengeleniyor; eksik/fazla vuruş, tempo sapması, yerel hata ve tolerans sınırları ayrı kontrol edildi |
+| İptal ve ses hatası | Tekrarı durdurma, görünürlük/ses askısı puan oluşturmuyor; aday ses başlatılamazsa hata mesajı var, hazırlanıyor durumunda takılmıyor |
+| Yeni yedekler / arşiv | 18 dersin beş cevabı ve tamamlanmış sonuçları, dikte dizileri ve dokunma zamanları korunuyor; birleştirme idempotent, çelişen/bozuk cevaplar reddediliyor |
+| Tekrar çalışma | Becerilerim altında son beş müzik cevabı tamamlanan oturumdan sonra açılıyor; dinleme puanı artırmıyor |
+| Mobil / erişilebilirlik | 320/390 px yeni giriş ve geri bildirimlerde taşma yok; seçilen WCAG 2 A/AA ve 2.1 AA kurallarında ihlal yok; klavye diktesi beş soruluk oturumu tamamlıyor |
+| Çevrimdışı / alt klasör | Yeni ritmik dikte kök URL’de, melodik dikte /freq/ altında çevrimdışı ses ve puanlama ile çalışıyor |
+| Eski özellikler | İleri miks, dosya/WAV, A/B/C, stereo, kaynaklar, yedek, mobil, klavye, offline akışları tam turda geçti |
+
+İlk tarayıcı turunda kardeş bileşenlerde aynı React anahtarının kullanılması ve tonal bağlamdan sonra ana düğmenin bağlamı yeniden çalması bulundu; ayrı anahtarlar ve soru/bağlam oynatma ayrımıyla düzeltildi. Space olay testleri gerçek odaklanmış girişe yönlendirildi; pencere hedefli olaylar da hata üretmiyor. Beş tam kadans/sayım/melodi örneği en az 35 saniye sürdüğü için yalnız beş soruluk uçtan uca testin toplam süresi 60 saniyedir; tek örnek bekleme sınırı 10 saniye kalır.
+
+Son tam turdan sonra yalnız yeni müzik sesinde sık yanlış dokunuşlar için tepe payı, aday sesin askıda kalması durumunda hata, dikte/tekrar yönergeleri ve hazırlık yolundaki mevcut içeriğe yönlendirme düzeltildi. 219 birim testi ve son build geçti; ilgili müzik akışlarının tamamı 16 testle yeniden doğrulandı. Eski miks ses modelleri bu son düzenlemede değişmedi.
+
+Bu testlerdeki dokunuşlar otomatik tarayıcı olaylarıdır; insanın veya fiziksel telefonun zamanlama doğruluğu değildir. Telafi edilen ofset cihaz kalibrasyonu sayılmaz. Majör tonalite, eşit zamanlı kısa monofonik dikte ve bir 4/4 ölçü kapsamı; tam porte/süre diktesi, mikrofonla tekrar, minör/kromatik, makam/usul ve kurum sınavlarının bütünü yoktur. Gerçek iPhone/Android, kablolu/Bluetooth, manuel VoiceOver/TalkBack, müzik öğretmeniyle ses/anahtar örneklem kontrolü ve öğrenme etkisi pilotu yapılmadı. Uzak CI ve canlı yayın bu yerel sonuçlarla çalıştırılmış sayılmaz. [Kaynaklar ve model sınırları](research/muzik-kulagi-arastirmasi.md).
+
 ## 0.4
 
 9 Ekim 2026 (Europe/Istanbul), Node.js 24 ve sistem Chromium’u ile.
