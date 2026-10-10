@@ -449,3 +449,67 @@ h1 { font-size: clamp(32px, 3.6vw, 53px); line-height: 1.12; letter-spacing: -1.
 .history-options [aria-pressed="true"] { border-color: var(--accent); }
 .history-detail { border: 1px solid var(--line); padding: 20px; border-radius: 16px; }
 .history-detail > p { margin-bottom: 12px; line-height: 1.6; }
+
+/* Audition preparation */
+.exam-studio { margin: 28px 0 40px; }
+.exam-tabs, .exam-levels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+.exam-tabs button, .exam-levels button { min-height: 44px; padding: 12px 17px; background: #1a2018; border: 1px solid var(--line); border-radius: 8px; font-size: 13px; display: inline-flex; gap: 9px; align-items: center; }
+.exam-tabs button[aria-pressed=true], .exam-levels button[aria-pressed=true] { color: var(--accent); border-color: var(--accent); background: #272b22; }
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+.exam-section-heading { max-width: 760px; margin-bottom: 24px; }
+.exam-studio h2 { font-size: 28px; font-weight: 500; letter-spacing: -.7px; margin: 14px 0; }
+.exam-studio h3 { font-size: 18px; font-weight: 500; margin: 18px 0; }
+.exam-studio p { line-height: 1.8; color: #b6bbae; margin: 13px 0; font-size: 14px; }
+.exam-studio .small-copy { font-size: 12px; }
+.exam-studio a { color: var(--accent); overflow-wrap: anywhere; }
+.exam-select, .exam-note, .exam-volume { display: flex; flex-direction: column; gap: 10px; font-size: 13px; margin: 20px 0; }
+.exam-select select { width: 100%; max-width: 700px; min-height: 48px; background: #1c211a; border: 1px solid #4a5243; border-radius: 8px; padding: 12px; color: #eeefe8; }
+.exam-profile, .exam-mock, .exam-review, .exam-lesson { padding: 26px; border: 1px solid #3e4238; border-radius: 14px; background: #181d16; margin-bottom: 28px; }
+.exam-scope-list details { border-top: 1px solid var(--line); padding: 16px 0; }
+.exam-scope-list summary { cursor: pointer; min-height: 34px; padding: 5px 0; }
+.exam-sources small { display: block; font-size: 11px; color: #b1b7a7; margin-top: 6px; }
+.exam-course-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; }
+.exam-course-card { background: #1a2018; border: 1px solid #41483a; border-radius: 12px; padding: 22px; text-align: left; display: flex; flex-direction: column; gap: 15px; }
+.exam-course-card:hover { border-color: var(--accent); }
+.exam-course-card strong { font-size: 19px; font-weight: 500; }
+.exam-course-card > span:not(.eyebrow):not(.text-button) { color: #b4bcab; font-size: 13px; line-height: 1.8; }
+.exam-course-card .text-button { margin-top: auto; }
+.exam-method { padding-left: 23px; color: #bdc2b5; line-height: 1.85; font-size: 14px; }
+.exam-method li { padding: 8px 0 8px 6px; }
+.exam-rules, .exam-listen, .exam-mock-actions, .exam-resume { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; margin: 23px 0; }
+.exam-rules span { display: inline-flex; gap: 8px; align-items: center; font-size: 13px; }
+.exam-listen > span { color: #b9c0ae; font-size: 12px; }
+.exam-timer { font-variant-numeric: tabular-nums; color: var(--accent); font-size: 22px; }
+.exam-confirm { background: #262b20; border: 1px solid #535d45; border-radius: 10px; padding: 20px; margin: 20px 0; }
+.exam-volume input { accent-color: var(--accent); max-width: 260px; min-height: 32px; }
+.exam-history { margin-top: 36px; }
+.exam-history .recent-row { width: 100%; text-align: left; background: transparent; border: 0; border-bottom: 1px solid var(--line); min-height: 70px; gap: 18px; }
+.exam-history .recent-row > span { display: flex; gap: 12px; align-items: center; white-space: nowrap; }
+.exam-result-score { display: flex; align-items: center; flex-wrap: wrap; gap: 18px; padding: 15px 0; }
+.exam-result-score strong { color: var(--accent); font-size: 42px; font-weight: 500; }
+.exam-result-score span { color: #b4bcaa; font-size: 13px; }
+.exam-focus { border-bottom: 1px solid var(--line); padding-bottom: 20px; }
+.exam-checks { border: 1px solid #49523f; border-radius: 10px; margin: 30px 0 20px; padding: 16px; }
+.exam-checks legend { font-size: 13px; padding: 0 8px; }
+.exam-checks label { display: flex; align-items: center; gap: 12px; min-height: 46px; font-size: 14px; line-height: 1.5; }
+.exam-checks input { width: 19px; height: 19px; flex-shrink: 0; accent-color: var(--accent); }
+.exam-note textarea { width: 100%; min-height: 96px; resize: vertical; border: 1px solid #48533f; border-radius: 8px; padding: 12px; background: #10160f; color: #eeefe8; font: inherit; }
+.exam-note textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.exam-note textarea::placeholder { color: #9fa896; }
+.exam-rehearsal-history > div { padding: 15px 0; border-top: 1px solid var(--line); font-size: 13px; }
+.exam-rehearsal-history p { overflow-wrap: anywhere; }
+.exam-staff { background: #21281c; border: 1px solid #414c35; border-radius: 10px; padding: 15px; margin: 20px 0; }
+.exam-staff svg { width: 100%; height: auto; color: #eef1e6; }
+.exam-staff-lines { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 12px; }
+.exam-foundation { margin-top: 35px; padding-top: 20px; border-top: 1px solid var(--line); }
+.exam-resume { border: 1px solid #5b634d; background: #242d1c; border-radius: 10px; padding: 18px; justify-content: space-between; }
+@media (max-width: 650px) {
+  .exam-course-grid { grid-template-columns: 1fr; }
+  .exam-profile, .exam-mock, .exam-review, .exam-lesson { padding: 17px; }
+  .exam-tabs { gap: 6px; }
+  .exam-tabs button { flex: 1; padding: 10px 9px; font-size: 12px; }
+  .exam-studio h2 { font-size: 25px; }
+  .exam-studio .button { white-space: normal; text-align: left; }
+  .exam-mock .answer-options { grid-template-columns: 1fr; }
+  .exam-rules { gap: 12px; }
+}

@@ -4,7 +4,7 @@
 
 Ana odak miks ve prodüksiyon kulağı. Temel müzik kulağı ve konservatuvar / müzik bölümüne hazırlık kendi yollarında yer alır. Türkçe ve İngilizce içerik; web, iOS ve Android hedefleri. Ana ekran tek aktif yol ve bir sonraki pratik gösterir. Navigasyon: Bugün, Yollar, Becerilerim, Profil.
 
-## Çalışan sürüm: 0.5
+## Çalışan sürüm: 0.6 önizleme
 
 54 pratik / 20 beceri, önce öğretim ardından pratik. Her derste yanıtı görünen bir örnek var. EQ ve ses yüksekliğinde iki örneği, hafıza ve ritimde iki tam örneği dinlemeden yanıt düğmeleri açılmaz. Doğru/yanlış sonrası tekrar dinleme serbesttir; tekrar dinleme puanı değiştirmez. Yarım bırakılmış oturum korunur. Başka pratiğe geçerken uyarı gösterilir; eski yanıtlar beceri kaydında kalır.
 
@@ -29,6 +29,12 @@ CC0 tek nota/vuruş kayıtlarından hazırlanmış iki akustik düzenleme ve ayr
 ## Müzik, hazırlık ve makam
 
 0.5, tonal merkez, dizi dereceleri, işlevsel işitme, melodik/ritmik dikte ve ritim tekrarı için üçer seviyeli 18 pratik ekler. Müzik yolunda 24 pratik / altı bölüm bulunur. Dikte girişleri düzenlenebilir ve dinlenebilir; tekrar, dokunma/Space ile bir ölçüyü üretir. Gönderilmiş cevaplar yedeklenir ve Becerilerim altında son beş müzik yanıtı yeniden dinlenir; taslak çıkınca temizlenir. Yanıttan önce hedef çizimi gösterilmez. [Öğretim ve değerlendirme sınırları](research/muzik-kulagi-arastirmasi.md). Minör/kromatik işitme, tam porte/süre diktesi, sesle tekrar ve ileri armoni sonraki içerik ailesidir. Hazırlık paketleri kurumların ilan ettiği formatlara göre yazılır. Makam ayrı bir müzik sistemi olarak seyir, karar/güçlü, bağlama göre entonasyon ve usul içerir; Batı dizisinin farklı isimlerle sunulması yeterli değildir. İçerik için bu alanda uzman ve icracı ortaklığı gerekir.
+
+## Sınav atölyesi önizlemesi ve bekleyen araştırma
+
+Yedi ders ailesi / üçer seviye, öz değerlendirme notları, Sol anahtarlı Do majör 4/4 solfej örneği ve 6/8/10 soruluk süreli ortak deneme çalışır. Ders ve deneme alanları ayrı sekmelerde; eski beş soruluk hafıza pratikleri korunur. Deneme sırasında cevap açılmaz; sonunda her soru geri dinlenir ve eksik beceriye yönlendirilir. Süre, soru sayısı ve dinleme sınırı Freq varsayımıdır. Otomatik sonuç jüri/icra puanı içermez.
+
+Kurumlara özel doğrulanmış kapsam ve denemeler tamamlanmadı. Hacettepe, MSGSÜ, İTÜ, İstanbul, Ankara, Dokuz Eylül, Gazi ve Marmara alanları ortam taslağına eklendi; çalışan erişim açılınca resmî program/yıl kılavuzları karşılaştırılacak. [Araştırma durumu](research/sinav-hazirligi-arastirma-durumu.md).
 
 ## Araştırmadan alınan tasarım kararları
 

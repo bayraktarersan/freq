@@ -4,6 +4,7 @@ import { advancedLessons, isAdvanced, mixSkillNames } from './advanced-content';
 import { musicLessons, musicSkillNames } from './music-content';
 import type { MusicSkill } from './music-types';
 import type { MixSkill } from './mix-types';
+import { examCourses } from './exam-content';
 export type PathId = 'mix' | 'music' | 'exam';
 export type SkillId = 'eq' | 'loudness' | 'direction' | 'interval' | 'chord' | 'rhythm' | 'memory' | MixSkill | MusicSkill;
 export const usesLoop = (skill: SkillId) => skill === 'eq' || skill === 'loudness' || isAdvanced(skill);
@@ -30,8 +31,8 @@ export const paths = {
     description: text('Melodi, armoni ve ritmi adım adım dinle.', 'Listen to melody, harmony and rhythm, one step at a time.'),
     label: text('MÜZİĞİN TEMELLERİ', 'MUSICAL FOUNDATIONS'), color: 'blue' },
   exam: { title: text('Sınava hazırlık', 'Audition preparation'), short: text('Sınava hazırlık', 'Audition prep'),
-    description: text('Melodik hafızanı kısa dinleme pratikleriyle çalıştır.', 'Train melodic memory with short listening exercises.'),
-    label: text('DİNLEME VE HAFIZA', 'LISTENING & MEMORY'), color: 'peach' },
+    description: text('Hedefinin kapsamını tanı. İşitme dersleri, jüri provaları ve süreli denemelerle hazırlan.', 'Know your target. Prepare with aural lessons, jury rehearsals and timed mocks.'),
+    label: text('SINAV ATÖLYESİ', 'AUDITION STUDIO'), color: 'peach' },
 } as const;
 
 export const lessons: Lesson[] = [
@@ -112,7 +113,7 @@ export const lessonGroups: Record<PathId, { id: string; title: Text; skills: Ski
     { id: 'reproduction', title: musicSkillNames['rhythm-repeat'], skills: ['rhythm-repeat'] }],
   exam: [{ id: 'memory', title: skillNames.memory, skills: ['memory'] }],
 };
-export const pathCount = (path: PathId) => text(`${lessons.filter(l => l.path === path).length} pratik · ${lessonGroups[path].length} bölüm`, `${lessons.filter(l => l.path === path).length} practices · ${lessonGroups[path].length} ${lessonGroups[path].length === 1 ? 'section' : 'sections'}`);
+export const pathCount = (path: PathId) => path === 'exam' ? text(`${examCourses.length} ders · 3 deneme seviyesi`, `${examCourses.length} lessons · 3 mock levels`) : text(`${lessons.filter(l => l.path === path).length} pratik · ${lessonGroups[path].length} bölüm`, `${lessons.filter(l => l.path === path).length} practices · ${lessonGroups[path].length} ${lessonGroups[path].length === 1 ? 'section' : 'sections'}`);
 
 export const ui = {
   today: text('Bugün', 'Today'), paths: text('Yollar', 'Paths'), skills: text('Becerilerim', 'My skills'), profile: text('Profil', 'Profile'),
@@ -186,11 +187,11 @@ export const ui = {
   cancel: text('Vazgeç', 'Cancel'), delete: text('Evet, sil', 'Yes, delete'),
   storageError: text('Tarayıcı kayıt yapamıyor. Pratik çalışır; sayfayı kapatırsan ilerleme kaybolabilir.', 'This browser cannot save records. You can practise, but progress may be lost when you close the page.'),
   audioError: text('Ses başlatılamadı. Dinle düğmesiyle tekrar dene; başka ses uygulamalarını kapatmayı deneyebilirsin.', 'Audio could not start. Try Listen again, or close other audio apps.'),
-  early: text('DİNLEME STÜDYOSU · 0.5', 'LISTENING STUDIO · 0.5'),
+  early: text('DİNLEME STÜDYOSU · 0.6 ÖNİZLEME', 'LISTENING STUDIO · 0.6 PREVIEW'),
   future: text('Bu yolun devamı', 'Further along this path'),
   roadmapMix: text('Sırada: daha geniş kayıt kütüphanesi, çoklu sorunları teşhis ve yeni müziklerde beceri aktarımı. İleri miks pratiklerini veya Kendi kaydın alanını keşfet.', 'Next: a larger recording library, diagnosing multiple issues and transfer to new music. Explore advanced mixing practice or Your recording.'),
   roadmapMusic: text('Sırada: minör/kromatik bağlam, porte ve daha uzun dikte. Makam ve usul ayrı bir içerik yolu olarak uzmanlarla hazırlanacak.', 'Next: minor/chromatic context, staff notation and longer dictation. Makam and usul will be a separate content path authored with specialists.'),
-  roadmapExam: text('Dikte ve ritim tekrarını Müzik kulağı yolunda çalışabilirsin. Bu yol melodik hafıza sunar; kurumların sınav formatlarına özel paketler sıradadır.', 'Practise dictation and rhythm reproduction in the Musicianship path. This path offers melodic memory; institution-specific exam packs are next.'),
+  roadmapExam: text('Sınav atölyesi işitme hazırlığı ve öz değerlendirmeli jüri provaları sunar. Makam/usul, programına özel ileri repertuvar ve vokal entonasyon değerlendirmesi uzman desteği gerektirir.', 'The audition studio offers aural preparation and jury rehearsals with self-assessment. Makam/usul, advanced programme-specific repertoire and vocal intonation assessment require specialist support.'),
   selected: text('Aktif yol', 'Active path'), makeActive: text('Ana yolum yap', 'Set as my main path'),
   learnTip: text('KÜÇÜK BİR DİNLEME NOTU', 'A SMALL LISTENING NOTE'),
   tipHome: text('Bir sesi tanımak için önce karşılaştır.', 'To recognise a sound, first compare it.'),

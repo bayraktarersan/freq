@@ -51,6 +51,8 @@ for (const level of [1, 2, 3]) {
   test(`rhythm reproduction level ${level}: audio-clock pointer/Space timing, explicit submit and reload`, async ({ page }) => {
     const q = makeQuestion(`rhythm-repeat-${level}`, 7, 0), m = q.music!;
     await page.addInitScript(({ tempo, slots, subdivision }) => {
+      const observation=window as typeof window & { freqTestTapRanges:number[][] };
+      observation.freqTestTapRanges=[];
       const original = AudioBufferSourceNode.prototype.start;
       AudioBufferSourceNode.prototype.start = function(when = 0, offset = 0, duration?: number) {
         if (this.buffer && this.buffer.duration > 9) {
@@ -60,8 +62,10 @@ for (const level of [1, 2, 3]) {
           const dispatch = () => {
             while (i < times.length && ctx.currentTime >= times[i]) {
               const pad = document.querySelector('[data-testid="tap-pad"]') as HTMLButtonElement;
+              const before=Math.round((ctx.currentTime-target)*1000);
               if (i % 2 === 0) pad?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0, isPrimary: true }));
               else { pad?.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, code: 'Space', key: ' ' })); pad?.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, code: 'Space', key: ' ', repeat: true })); pad?.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true, code: 'Space', key: ' ' })); }
+              observation.freqTestTapRanges.push([before,Math.round((ctx.currentTime-target)*1000)]);
               i++;
             }
             if (i < times.length) requestAnimationFrame(dispatch);
@@ -78,9 +82,20 @@ for (const level of [1, 2, 3]) {
     await expect(page.getByTestId('submit-music')).toBeEnabled();
     await page.getByRole('button', { name: 'Tekrarını dinle', exact: true }).click();
     expect((await saved(page)).attempts).toHaveLength(0);
-    await page.getByTestId('submit-music').click(); await expect(page.locator('.feedback')).toContainText('Evet, duydun.');
+    const ranges=await page.evaluate(()=>(window as typeof window & {freqTestTapRanges:number[][]}).freqTestTapRanges);
+    expect(ranges).toHaveLength(m.slots.length);
+    await page.getByTestId('submit-music').click();
     const answer = (await saved(page)).session!.answers[0], taps = readSequence(answer.choice, 'tap')!;
-    expect(taps).toHaveLength(m.slots.length); expect(taps[0]).toBeGreaterThanOrEqual(80); expect(taps[0]).toBeLessThan(150);
+    expect(taps).toHaveLength(m.slots.length); expect(taps[0]).toBeGreaterThanOrEqual(80);
+    // Bracket the actual event handler with an independent read of the audio
+    // clock. Focus and rendering may take time; no arbitrary latency is assumed.
+    for(const [i,ms] of taps.entries()){expect(ms).toBeGreaterThanOrEqual(ranges[i][0]);expect(ms).toBeLessThanOrEqual(ranges[i][1]);}
+    // Validate the actual input. RAF dispatch may run late on a loaded host;
+    // an out-of-tolerance event must be scored as wrong rather than accepted.
+    const offsets=taps.map((ms,i)=>ms-m.slots[i]*60000/m.tempo/m.subdivision),ordered=[...offsets].sort((a,b)=>a-b);
+    const middle=Math.floor(ordered.length/2),median=ordered.length%2?ordered[middle]:(ordered[middle-1]+ordered[middle])/2;
+    const offset=Math.max(-250,Math.min(250,median)),expectedCorrect=offsets.every(v=>Math.abs(v-offset)<=m.tolerance);
+    expect(answer.correct).toBe(expectedCorrect);await expect(page.locator('.feedback')).toContainText(expectedCorrect?'Evet, duydun.':'Birlikte tekrar dinleyelim.');
     await expect(page.locator('.timing-table tbody tr')).toHaveCount(m.slots.length);
     await expect(page.getByRole('button', { name: 'Yanıtını dinle', exact: true })).toBeVisible();
     await page.reload(); expect((await saved(page)).session!.answers[0]).toEqual(answer); expect((await saved(page)).attempts).toHaveLength(1);

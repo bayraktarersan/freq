@@ -1,5 +1,33 @@
 # Doğrulama kayıtları
 
+## 0.6 önizleme
+
+10 Ekim 2026, Node.js 24 ve sistem Chromium'u ile. Bu kayıt genel sınav atölyesini doğrular; kurumların resmî sınav kapsamı henüz doğrulanmadı.
+
+| Kontrol | Sonuç |
+| --- | --- |
+| Birim testleri | 241 / 241 geçti; eski 219 kontrole 22 sınav içeriği/model/yedek kontrolü eklendi |
+| TypeScript ve son üretim build'i | Geçti; 14 dosyalık çevrimdışı önbellek, son sürüm `7a12998d2c99` |
+| Önceki 0.5 soru üreticisi | 54 ders × 200 tohum × beş soru: 54.000 soru birebir aynı |
+| Son sabit çıktıda tam tarayıcı turu | 111 / 112 geçti; bir eski ritim testinin geciken otomatik girdiyi koşulsuz doğru sayan beklentisi başarısız oldu |
+| Son ders/notasyon düzenlemesinden sonra sınav + müzik turu | 26 / 27 geçti; yeni sınav alanının 11 kontrolü ve müziğin 15 kontrolü geçti. Kalan ritim kontrolünde testin olay öncesi ölçümüne eklediği 5 ms varsayımı başarısız oldu |
+| Ritim test ölçümü düzeltmesinden sonra | Üç seviye 3 / 3 geçti; gerçek olay işleme aralığı ve kaydedilen ses saati zamanları karşılaştırılıyor. Puanlama/tolerans değişmedi |
+| Üç seviyeli denemeler | Deterministik soru planı, tam dinleme, dinleme sınırı, başarısız başlatma iadesi, boş/yanlış/doğru cevap ve tek sonuç kaydı |
+| Süre ve geri yükleme | Son teslim anında cevap puanlanmıyor; kapalı sayfadan dönüşte kalanlar boş kaydediliyor; yarım deneme ilk son teslim zamanıyla gerçek JSON dosyası üzerinden geri alınıyor |
+| Deneme sonucu | Yanıtlar deneme sırasında kapalı; bitince soru/yanıt sesi, derece/ritim geri bildirimi ve eksik beceriye pratik bağlantısı |
+| Prova kayıtları | Üç kutuluk öz değerlendirme ve not; yeniden açma/yedek doğrulama; otomatik beceri puanından ayrı |
+| Yeni kayıtların güvenilirliği | Yanlış doğruluk bayrağı, değiştirilmiş süre, gelecekteki dinleme, çelişen cevap, aynı kimlikli farklı sonuç reddediliyor; anahtar sırası normalize, birleştirme idempotent |
+| Mobil / erişilebilirlik | 320/390 px yeni sınav, solfej, prova ve sonuç ekranlarında taşma yok; seçilen WCAG 2 A/AA ve 2.1 AA kurallarında ihlal yok |
+| Son mobil solfej düzenlemesi | İki ölçü dar ekranda ayrı satırlar; toplam sekiz nota ve nota adları korunuyor; son sınav turunda doğrulandı |
+| Çevrimdışı sınav | Yeni dersler ve süreli denemede gerçek ses ilk önbellek kurulumundan sonra internetsiz çalışıyor |
+| Üniversite kılavuzları | Doğrulanmadı; çalışan ağ politikasında üniversite alanları yok. Sekiz kurum / 16 ana-alt alan izni taslağa eklendi; 53 önceki araştırma izni ve paket preset'i korunuyor |
+
+İlk kontrollerde aynı anda birim ve tarayıcı yükü, eski bir sample testi için 5 saniye sınırını aşırdı. Testler sürerken build klasörünün yenilenmesi de bir HTTP 404 ve bir service worker beklemesi yarattı. Birim testleri tek başına, üretim çıktısı sabit tutularak tarayıcı testleri yeniden çalıştırıldı; bu sorunlar son sabit turda görülmedi. Zaman sınırları artırılmadı ve hiçbir kontrol kapatılmadı.
+
+Son sabit tam turdaki ritim olayında otomatik RAF gönderimi ilk vuruşu yaklaşık 100 ms geç üretti; uygulama ±65 ms sınırını aşan bu vuruşu doğru olarak reddetti. Test artık planlanan gönderim zamanını gerçek zaman sanmıyor: her pointer/Space olayının öncesinde ve sonrasında bağımsız AudioContext saati gözlemi alıyor, uygulamanın kaydı bu aralığın içinde olmalı. Gözlenen girişin ofset/sapmalarıyla sonuç ve geri bildirim ayrıca karşılaştırılıyor. Basılı Space tekrarları, açık gönderme, kalıcı kayıt ve yenileme kontrolleri korunuyor. Uygulamaya yanıt veya sahte ses saati enjekte edilmiyor. Son üç seviyelik tur geçti; düzeltmeden sonra 112 testlik tam tur yeniden çalıştırılmadı.
+
+Son UI düzenlemesi yalnız mobil porte satırlarını değiştirdi; eski soru/ses modelleri değiştirilmedi. Gerçek iPhone/Android, Bluetooth/kablolu gecikme, manuel ekran okuyucu, öğretmen/jüriyle içerik ve öğrenme etkisi pilotları yapılmadı. Solfej örneği Do majör / Sol anahtarı / 4/4 dörtlüklerle, otomatik dikte derece/konum girişiyle sınırlı. Kuruma özel yıl/program paketleri, resmî ağırlıklarla değerlendirme ve tam sınav simülasyonu tamamlanmış değildir. [Araştırma durumu](research/sinav-hazirligi-arastirma-durumu.md).
+
 ## 0.5
 
 10 Ekim 2026 (Europe/Istanbul), Node.js 24 ve sistem Chromium’u ile.

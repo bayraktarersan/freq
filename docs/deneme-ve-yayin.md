@@ -1,5 +1,11 @@
 # Freq'i deneme ve yayımlama
 
+## 0.6 sınav önizlemesini dene
+
+Yollar → Sınava hazırlık. Hazırlık derslerinden birini açıp üç seviyeyi seç; ses/porte örneğini çalış ve öz değerlendirmeyi kaydet. Denemeler bölümünde seviye seç → Denemeyi hazırla → Süreyi başlat. İlk tam dinlemeden sonra cevap ver; istersen boş bırak. Süre sayfadan çıksan da sürer. Bitince doğru yanıtları incele, tekrar dinle veya önerilen kısa pratiğe geç. Profil yedeği deneme ve prova notlarını da içerir.
+
+Bu paket genel işitme önizlemesidir; kurum kılavuzları erişim beklediği için resmî kurum formatları henüz doğrulanmadı. [Kalan araştırma](research/sinav-hazirligi-arastirma-durumu.md).
+
 ## İndirdiğin paketler
 
 - **freq-source.zip**: proje kaynakları, araştırma, testler ve bu yönergeler. Açıp Node.js 24 ile `npm ci`, ardından `npm run dev` çalıştır.

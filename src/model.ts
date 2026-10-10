@@ -1,4 +1,6 @@
 import { isMusicianship, type MusicSpec } from './music-types';
+import { readExamProgress } from './exam-model';
+import type { ExamProgress } from './exam-types';
 import { evaluateAnswer, makeMusicQuestion } from './music-model';
 import { isAdvanced } from './advanced-content';
 import { makeAdvancedQuestion } from './advanced-model';
@@ -19,6 +21,7 @@ export type Attempt = { sessionId: string; index: number; correct: boolean; at: 
 export type Progress = {
   version: 1; locale: Locale; path: PathId; volume: number; session: Session | null; eqSource?: EqSource;
   attempts: Attempt[]; results: Result[];
+  exam?: ExamProgress;
 };
 export const STORAGE_KEY = 'freq.progress.v1';
 export const initialProgress = (): Progress => ({ version: 1, locale: 'tr', path: 'mix', volume: 0.35, eqSource: 'studio', session: null, attempts: [], results: [] });
@@ -163,6 +166,8 @@ export function parseProgress(raw: string | null): Progress {
       path: v.path === 'music' || v.path === 'exam' ? v.path : 'mix',
       volume: typeof v.volume === 'number' && Number.isFinite(v.volume) ? Math.min(0.8, Math.max(0.05, v.volume)) : fallback.volume,
       eqSource: isEqSource(v.eqSource) ? v.eqSource : 'studio' };
+    const exam = readExamProgress(v.exam);
+    if (exam) p.exam = exam;
     if (Array.isArray(v.attempts)) p.attempts = v.attempts.filter(validAttempt).map(a => ({ sessionId: a.sessionId, index: a.index, lessonId: a.lessonId, correct: a.correct, at: a.at, ...(a.response ? { response: { seed: a.response.seed, choice: a.response.choice } } : {}), ...(a.source ? { source: a.source } : {}) })).slice(-2000);
     if (Array.isArray(v.results)) p.results = v.results.filter(validResult).map(r => ({ id: r.id, lessonId: r.lessonId, correct: r.correct, total: r.total, at: r.at, ...(r.source ? { source: r.source } : {}) })).slice(-200);
     const s = v.session;

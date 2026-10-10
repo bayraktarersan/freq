@@ -1,4 +1,6 @@
 import { getLesson, usesLoop } from './content';
+import { initialExamProgress, readExamProgress } from './exam-model';
+import type { ExamProgress } from './exam-types';
 import { isEqSource, parseProgress, validAttempt, validResult, type Attempt, type Progress, type Result } from './model';
 
 export const MAX_BACKUP_BYTES = 2 * 1024 * 1024;
@@ -54,6 +56,7 @@ export function readBackup(raw: string): Progress {
   if (typeof value.version === 'number' && value.version > 1) throw new BackupError('future');
   if (value.version !== 1 || !['tr', 'en'].includes(value.locale as string) || !['mix', 'music', 'exam'].includes(value.path as string) || typeof value.volume !== 'number' || !Number.isFinite(value.volume) || value.volume < 0.05 || value.volume > 0.8 || value.eqSource !== undefined && !isEqSource(value.eqSource) || !Array.isArray(value.attempts) || value.attempts.length > 2000 || !value.attempts.every(validAttempt) || !Array.isArray(value.results) || value.results.length > 200 || !value.results.every(validResult) || value.session === undefined) throw new BackupError('invalid');
   const p = parseProgress(JSON.stringify(value));
+  if (value.exam !== undefined && !readExamProgress(value.exam)) throw new BackupError('invalid');
   if (value.session !== null && !p.session) throw new BackupError('invalid');
   p.attempts = unique(p.attempts, attemptKey, sameAttempt);
   p.results = unique(p.results, r => r.id, sameResult);
@@ -72,11 +75,31 @@ export function mergeProgress(current: Progress, incoming: Progress): Progress {
     if (a.lessonId !== b.lessonId || a.seed !== b.seed || (a.source ?? 'studio') !== (b.source ?? 'studio') || a.answers.some((answer, i) => b.answers[i] && JSON.stringify(answer) !== JSON.stringify(b.answers[i]))) throw new BackupError('conflict');
     if (b.answers.length > a.answers.length || b.answers.length === a.answers.length && (b.index > a.index || b.index === a.index && b.started)) session = b;
   }
-  const merged = { ...current, attempts, results, session };
+  const merged = { ...current, attempts, results, session, ...(current.exam || incoming.exam ? { exam: mergeExamProgress(current.exam ?? initialExamProgress(), incoming.exam ?? initialExamProgress()) } : {}) };
   checkConsistency(merged);
   // Keep the active session's answered questions even if a backup contains
   // future timestamps. Losing these would make the next exported file invalid.
   const active = attempts.filter(a => a.sessionId === session?.id);
   const retained = attempts.filter(a => a.sessionId !== session?.id).slice(-(2000 - active.length));
   return { ...merged, attempts: [...retained, ...active].sort((a, b) => Date.parse(a.at) - Date.parse(b.at)), results: results.slice(-200) };
+}
+
+function mergeExamProgress(a: ExamProgress, b: ExamProgress): ExamProgress {
+  const results = unique([...a.results,...b.results], r=>r.id, (x,y)=>JSON.stringify(x)===JSON.stringify(y));
+  const rehearsals = unique([...a.rehearsals,...b.rehearsals], r=>r.id, (x,y)=>JSON.stringify(x)===JSON.stringify(y));
+  const completed = new Set(results.map(r=>r.id));
+  let active = [a.active,b.active].find(s=>s&&!completed.has(s.id)) ?? null;
+  if (a.active && b.active && a.active.id===b.active.id && !completed.has(a.active.id)) {
+    const x=a.active,y=b.active;
+    if (x.profileId!==y.profileId || x.level!==y.level || x.seed!==y.seed || x.startedAt!==y.startedAt || x.deadline!==y.deadline || x.answers.some((v,i)=>y.answers[i] && JSON.stringify(v)!==JSON.stringify(y.answers[i]))) throw new BackupError('conflict');
+    const ahead=y.answers.length>x.answers.length?y:x;
+    active={...ahead,plays:x.plays.map((n,i)=>Math.max(n,y.plays[i])),heard:x.heard.map((h,i)=>h||y.heard[i])};
+  }
+  for(const state of [a.active,b.active]) {
+    const r=state && results.find(v=>v.id===state.id);
+    if(r && state && (r.seed!==state.seed || r.profileId!==state.profileId || r.level!==state.level || r.startedAt!==state.startedAt || state.answers.some((v,i)=>JSON.stringify(v)!==JSON.stringify(r.answers[i])))) throw new BackupError('conflict');
+  }
+  const merged={...a,active,results:results.sort((x,y)=>x.finishedAt-y.finishedAt).slice(-30),rehearsals:rehearsals.sort((x,y)=>x.at-y.at).slice(-100)};
+  if(!readExamProgress(merged))throw new BackupError('conflict');
+  return merged;
 }

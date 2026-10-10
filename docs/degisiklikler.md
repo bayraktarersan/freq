@@ -1,5 +1,15 @@
 # Sürüm değişiklikleri
 
+## 0.6 önizleme
+
+- Sınav atölyesi: Kurum ve kapsam / Hazırlık dersleri / Denemeler sekmeleri. Bu önizlemede yalnız genel Ortak hazırlık profili var; kurum kılavuzları ağ erişimi nedeniyle henüz doğrulanamadı.
+- Tek ses/aralık, çok ses, ezgi, ritim, dikte, solfej ve icra için yedi ders ailesi / üçer seviye. Ses örnekleri, Do majör 4/4 porte örneği, mevcut geri bildirimli pratiklere bağlantı, öz değerlendirme ve çalışma notu.
+- 6/8/10 soruluk ve dakikalık ortak işitme denemesi. En fazla üç dinleme, tam dinleme koşulu, boş bırakma ve erken bitirme; yanıtlar deneme sonunda açılır. Bu kurallar Freq ayarlarıdır.
+- Sayfa kapansa da süren zamanlayıcı; yarım deneme, son 30 sonuç ve 100 prova notu yerel kayıt/JSON yedeğine dahil. Eski yedekler ve 54 pratiğin soruları korunur.
+- Sonuçtan soru/yanıt sesi, konum geri bildirimi ve eksik beceriye çalışma bağlantısı. Jüri öz değerlendirmesi işitme doğruluğundan ayrı.
+
+Deneme: Yollar → Sınava hazırlık. [Araştırma engeli ve kalan doğrulama](research/sinav-hazirligi-arastirma-durumu.md). Bu önizleme kurum sınav paketlerinin tamamlandığı anlamına gelmez.
+
 ## 0.5
 
 - Tonal merkez, dizi dereceleri, işlevsel işitme, melodik dikte, ritmik dikte ve ritim tekrarı için üçer seviye: 18 yeni pratik. Toplam 54 pratik / 20 beceri; müzik yolu 24 pratik / altı açılır bölüm.
@@ -9,7 +19,7 @@
 - Yazılan cevaplar ve tekrar zamanları pratik tamamlandıktan sonra da yerel kayıtta/JSON yedeğinde korunur. Becerilerim son beş müzik yanıtını tekrar çalıştırır; tekrar dinleme puanı değiştirmez. Eski 36 dersin 36.000 sorusu 0.4 ile birebir aynı.
 - Türkçe/İngilizce, mobil girişler, otomatik erişilebilirlik ve kök/alt klasör çevrimdışı kullanım; [kaynaklı müzik araştırması](research/muzik-kulagi-arastirmasi.md). Makam/usul uzman içerik aşaması olarak korunur.
 
-Deneme: Yollar → Müzik kulağı → Tonal merkez ve dereceler / İşlevsel işitme / Dikte atölyesi / Ritim tekrarı. Güncel paketler 0.5’tir. Canlı Pages için yayın workflow’unu yeniden çalıştır.
+Deneme: Yollar → Müzik kulağı → Tonal merkez ve dereceler / İşlevsel işitme / Dikte atölyesi / Ritim tekrarı. Bu bölüm 0.5 teslimatını anlatır. Canlı Pages için yayın workflow’unu yeniden çalıştır.
 
 ## 0.4
 

@@ -1,6 +1,6 @@
 # Freq
 
-Türkçe ve İngilizce, miks odaklı kulak pratiği. Web ve telefonda kullanılabilen prototip, sürüm **0.5**.
+Türkçe ve İngilizce, miks odaklı kulak pratiği. Web ve telefonda kullanılabilen prototip, sürüm **0.6 önizleme**. Kurum kılavuzlarının doğrulanması ağ erişimi bekliyor; bu önizleme genel sınav atölyesini içerir.
 
 ## Dosyalar nerede?
 
@@ -27,7 +27,8 @@ Terminalde gösterilen adresi **kendi bilgisayarındaki** tarayıcıda aç. Kula
 6. **Miks ve prodüksiyon → Dinamikler / Masking / Stereo alan / Reverb ve delay** başlıklarını aç. Etiketli örnekleri sırayla dinle, sonra pratiğe geç. Yanlış yanıtta C senin seçtiğin ayarı çalar; ses ölçümleri yalnızca yanıttan sonra açılır. Stereo ve ping-pong için sol/sağ kulaklık kontrolünü doğrula.
 7. Miks yolundaki **Laboratuvarı aç** ile hazır akustik örneği veya kendi kaydını kullan. Ayarları değiştir, A/B ve mono ile karşılaştır, işlenmiş WAV önizlemesini indir.
 8. **Yollar → Müzik kulağı**: Tonal merkez ve dereceler, İşlevsel işitme, Dikte atölyesi veya Ritim tekrarı başlığını aç. Önce açıklamalı örneği dinle; diktede derece/konum kutularını doldur, ritim tekrarında dokun veya Space kullan. Yanıtını göndermeden puan oluşmaz.
-9. **TR / EN** ile dili değiştir; **Becerilerim** bölümünde kendi yanıtlarını gör.
+9. **Yollar → Sınava hazırlık**: **Hazırlık dersleri** altında üç seviyeli ses/ezgi/ritim, dikte, solfej ve jüri provalarını aç. **Denemeler** altında 6/8/10 soruluk süreli işitme denemesi yap; yanıtları bitince incele. Kuruma özel doğrulanmış profiller henüz eklenmedi.
+10. **TR / EN** ile dili değiştir; **Becerilerim** bölümünde kendi yanıtlarını gör.
 
 Üretim çıktısını denemek için:
 
@@ -55,7 +56,7 @@ Bu sürüm bir **PWA**'dır; App Store / Google Play paketi değildir. iOS ve An
 | --- | --- |
 | Miks ve prodüksiyon | EQ ve ses yüksekliği; üçer seviyeli kompresyon, attack, release, masking, stereo, reverb ve delay: toplam 27 pratik |
 | Müzik kulağı | Melodi ve armoni: ses yönü → aralıklar → majör/minör. Ritim ayırt etme; üçer seviyeli tonal merkez, derece, işlevsel işitme, melodik/ritmik dikte ve ritim tekrarı: toplam 24 pratik |
-| Sınava hazırlık | 1: üç notalı; 2: dört notalı; 3: beş notalı melodik hafıza |
+| Sınava hazırlık | Üçer seviyeli yedi hazırlık dersi, öz değerlendirmeli jüri provaları, üç seviye süreli ortak işitme denemesi; ayrıca üç melodik hafıza pratiği |
 
 Toplam 54 pratik, 20 beceri var. Miks yolu altı açılır bölümde düzenlenir; dinamikler ve reverb/delay içinde beceri adları açıkça görünür. Yeni altı müzik becerisinin ve miks becerilerinin üçer seviyesi vardır; eski yön/aralık/akor başlangıç dersleri ayrı durur. Her pratikte açıklama, yanıtı görünen örnek, beş soru, tekrar dinleme, geri bildirim ve sonuç var. Seviyeleri doğrudan seçebilirsin. Ana ekrandaki öneri, bir seviyede son 10 yanıtın en az 8'i doğruysa sonraki seviyeye geçer. Önceki EQ öneri sırası korunur; tüm yeni bölümler doğrudan da seçilebilir. Bu geçici ürün kuralı bilimsel olarak doğrulanmış bir ustalık ölçütü değildir.
 
@@ -77,7 +78,11 @@ Tonal görevlerde kadans majör bağlamı kurar. Sayılar göreli derecelerdir; 
 
 Geri yükleme öncesinde onay özeti gösterilir. Kayıtlar mevcut ilerlemeyle birleştirilir; aynı yanıt ve sonuç iki kez sayılmaz. Mevcut dil/ses tercihleri korunur. İki farklı yarım pratik varsa cihazdaki oturum devam eder; mevcut oturum yoksa yedekteki geri alınır. Aynı oturumun iki kopyası varsa daha ileri kopya kullanılır. Bozuk, çelişen, desteklenmeyen veya 2 MB'dan büyük dosyalar mevcut kayıtları değiştirmez. 0.1 sürümünün eski JSON yedekleri de desteklenir.
 
-Son 2.000 yanıt ve 200 tamamlanmış pratik tutulur. Tarayıcı verileri silinirse kayıtlar kaybolur; bu işlemden önce yedeği indir. Yeni bir HTTPS adresine geçmek ayrı kayıt alanı oluşturur; yedeği orada geri yükleyebilirsin.
+Son 2.000 yanıt ve 200 tamamlanmış pratik tutulur. Sınav atölyesi ayrıca son 30 denemeyi ve 100 öz değerlendirme notunu yedekle birlikte korur. Deneme süreleri sayfa kapansa da devam eder; sıradan pratik oturumu ayrı korunur. Yeni sınav kayıtlarını korumak için yedeği bu sürüm veya daha yenisiyle yükle. Tarayıcı verileri silinirse kayıtlar kaybolur; bu işlemden önce yedeği indir. Yeni bir HTTPS adresine geçmek ayrı kayıt alanı oluşturur; yedeği orada geri yükleyebilirsin.
+
+## Sınav önizlemesinin sınırı
+
+Yedi ders / 21 seviye çalışması otomatik puanlanan 54 kısa pratikten ayrı bir öğretim/prova alanıdır. Ortak denemenin 6/8/10 dakikası ve üç dinleme sınırı Freq ayarlarıdır. Söyleme/icra öz değerlendirmesi otomatik işitme doğruluğuna katılmaz. Do majör/4-4 solfej örnekleri tam konservatuvar repertuvarını kapsamaz. Üniversite sitelerine erişim engelli olduğundan kurum kılavuzları henüz okunamadı; bu sürüm kurumların gerçek sınav formatına göre doğrulanmış paket olarak sunulmaz. [Araştırma durumu ve devam işi](docs/research/sinav-hazirligi-arastirma-durumu.md).
 
 ## Sonraki kapsam
 
