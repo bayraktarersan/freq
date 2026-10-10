@@ -1,6 +1,8 @@
 import { isMusicianship, type MusicSpec } from './music-types';
 import { readExamProgress } from './exam-model';
 import type { ExamProgress } from './exam-types';
+import { readPersonalProgress } from './personal-validation';
+import type { PersonalProgress } from './personal-types';
 import { evaluateAnswer, makeMusicQuestion } from './music-model';
 import { isAdvanced } from './advanced-content';
 import { makeAdvancedQuestion } from './advanced-model';
@@ -22,6 +24,7 @@ export type Progress = {
   version: 1; locale: Locale; path: PathId; volume: number; session: Session | null; eqSource?: EqSource;
   attempts: Attempt[]; results: Result[];
   exam?: ExamProgress;
+  personal?: PersonalProgress;
 };
 export const STORAGE_KEY = 'freq.progress.v1';
 export const initialProgress = (): Progress => ({ version: 1, locale: 'tr', path: 'mix', volume: 0.35, eqSource: 'studio', session: null, attempts: [], results: [] });
@@ -123,7 +126,7 @@ export function answerQuestion(progress: Progress, choice: string, at = new Date
   const correct = evaluateAnswer(question, choice);
   if (correct === null) return progress;
   return { ...progress, session: { ...s, answers: [...s.answers, { choice, correct, at }] },
-    attempts: [...progress.attempts, { sessionId: s.id, index: s.index, lessonId: s.lessonId, correct, at, ...(question.music ? { response: { seed: s.seed, choice } } : {}), ...(usesLoop(question.kind) ? { source: s.source ?? 'studio' } : {}) }].slice(-2000) };
+    attempts: [...progress.attempts, { sessionId: s.id, index: s.index, lessonId: s.lessonId, correct, at, response: { seed: s.seed, choice }, ...(usesLoop(question.kind) ? { source: s.source ?? 'studio' } : {}) }].slice(-2000) };
 }
 export function advanceQuestion(progress: Progress, at = new Date().toISOString()): Progress {
   const s = progress.session;
@@ -152,7 +155,7 @@ const validSource = (v: Record<string, unknown>) => v.source === undefined || is
 const validResponse = (a: Record<string, unknown>) => {
   if (a.response === undefined) return true;
   const r = a.response;
-  return object(r) && Number.isInteger(r.seed) && (r.seed as number) >= 0 && (r.seed as number) <= 0xffffffff && typeof r.choice === 'string' && isMusicianship(getLesson(a.lessonId as string).skill) && evaluateAnswer(makeQuestion(a.lessonId as string, r.seed as number, a.index as number), r.choice) === a.correct;
+  return object(r) && Number.isInteger(r.seed) && (r.seed as number) >= 0 && (r.seed as number) <= 0xffffffff && typeof r.choice === 'string' && evaluateAnswer(makeQuestion(a.lessonId as string, r.seed as number, a.index as number, a.source as EqSource | undefined), r.choice) === a.correct;
 };
 export const validAttempt = (a: unknown): a is Attempt => object(a) && knownLesson(a.lessonId) && typeof a.sessionId === 'string' && a.sessionId.length > 0 && Number.isInteger(a.index) && (a.index as number) >= 0 && (a.index as number) < ROUND_COUNT && typeof a.correct === 'boolean' && validDate(a.at) && validSource(a) && validResponse(a);
 export const validResult = (r: unknown): r is Result => object(r) && typeof r.id === 'string' && r.id.length > 0 && knownLesson(r.lessonId) && Number.isInteger(r.correct) && (r.correct as number) >= 0 && (r.correct as number) <= ROUND_COUNT && r.total === ROUND_COUNT && validDate(r.at) && validSource(r);
@@ -168,6 +171,8 @@ export function parseProgress(raw: string | null): Progress {
       eqSource: isEqSource(v.eqSource) ? v.eqSource : 'studio' };
     const exam = readExamProgress(v.exam);
     if (exam) p.exam = exam;
+    const personal = readPersonalProgress(v.personal);
+    if (personal) p.personal = personal;
     if (Array.isArray(v.attempts)) p.attempts = v.attempts.filter(validAttempt).map(a => ({ sessionId: a.sessionId, index: a.index, lessonId: a.lessonId, correct: a.correct, at: a.at, ...(a.response ? { response: { seed: a.response.seed, choice: a.response.choice } } : {}), ...(a.source ? { source: a.source } : {}) })).slice(-2000);
     if (Array.isArray(v.results)) p.results = v.results.filter(validResult).map(r => ({ id: r.id, lessonId: r.lessonId, correct: r.correct, total: r.total, at: r.at, ...(r.source ? { source: r.source } : {}) })).slice(-200);
     const s = v.session;

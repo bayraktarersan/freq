@@ -1,5 +1,31 @@
 # Doğrulama kayıtları
 
+## 0.7 önizleme — kişiye uygun çalışma
+
+10 Ekim 2026, Node.js 24.19.0 ve sistem Chromium'u ile. Son üretim çıktısı sabit tutuldu; tarayıcı turu sırasında yeniden build yapılmadı.
+
+| Kontrol | Sonuç |
+| --- | --- |
+| Birim testleri | **269 / 269 geçti**, yedi dosya; 28 yeni kişiselleştirme kontrolü |
+| TypeScript ve üretim build'i | `npm run build` geçti; `tsc -b`, Vite ve çevrimdışı önbellek üretimi tamamlandı |
+| Tam tarayıcı turu | **121 / 121 geçti**, iki worker, 4,5 dakika; dokuz yeni kişisel çalışma senaryosu dahil |
+| Önceki 0.6 soru üreticisi | 54 ders × 200 tohum × beş soru: **54.000 soru birebir aynı** |
+| Başlangıç değerlendirmesi | Üç yolun tüm soruları, ikinci probun uyarlanması, gerçek mevcut seviyeler, ara verme/yenileme, boş bırakma, tamamlanmayan değerlendirmenin eski öneriyi koruması |
+| Seviye önerisi | Yeni soru kanıtı, farklı oturum şartı, tek aşamalı dersler, bir aşamalı artış/azalış, en temel aşamada öğretim desteği; aynı etkin soru tohumunun farklı kayıt biçimleri iki kez sayılmıyor |
+| Tekrar takvimi | İlk 10 dakika; zamanında başarıyla 1 / 3 / 7 gün ve kapanma; erken doğru cevap takvimi ilerletmiyor, yanlış aynı kartı sıfırlıyor, boş cevap takvimi değiştirmiyor |
+| Tam ses ve girişler | Özgün kaynakla tekrar; A/B tam dinleme koşulu; melodik/ritmik giriş ve ritim tekrarı ekranına geçiş; değerlendirmede erken doğru/yanlış veya taslak önizleme yok |
+| Yanlış miks karşılaştırması | Seçilen C ayarı canlı geri bildirimde ve saklanan sonuçta aynı ses/parametre karşılaştırmasıyla açılıyor |
+| Yedek ve geçmiş | Gerçek JSON indirme/yükleme, tekrarlı birleştirme, tarihlerin korunması, eski yedek uyumu, aynı çalışmanın ileri kopyası ve çelişkilerin reddi; özgün ders oturumu korunuyor |
+| Mobil / TR-EN / erişilebilirlik | 390 px yatay taşma yok; ayrıntılar açılır bölümlerde; kişisel plan, sonuç ve giriş ekranlarında axe kontrolleri geçti; odak soru/sonuca taşınıyor |
+| Çevrimdışı | Önbellek kurulduktan sonra kişisel pratik ve yenileme internet kapalıyken çalıştı; önceki kök ve `/freq/` kontrolleri de tam turda geçti |
+| Üretim önbelleği | 14 dosya; sürüm `9e48d5b1f188` |
+
+İlk kişisel tarayıcı turunda iki sorun bulundu: kardeş ses/giriş bileşenlerindeki aynı React anahtarı, soru geçişlerinde yinelenen ses paneli oluşturuyordu; stereo doğrulanınca onay kutusunun anında kaldırılması etkileşimi bozuyordu. Bileşen anahtarları ayrıldı, mevcut stereo sorusunun kontrolü görünür tutuldu. Son tur aynı geçişleri ve tek ses panelini doğruladı.
+
+İlk geniş tur 119 / 120 geçti. Eski yedek testi doğruluk bayrağını değiştirip birleştirme çelişkisi bekliyordu; yeni arşivlenmiş soru cevabı bu bozulmayı artık dosya doğrulamasında yakalıyor. Test hem bozuk cevap reddini hem de içeriği geçerli fakat mevcut kayda göre tarihi çelişen dosyanın birleştirme reddini ayrı kontrol edecek şekilde güçlendirildi. Son 121 testlik tam tur eksiksiz geçti; kontroller devre dışı bırakılmadı, puanlama toleransları değiştirilmedi.
+
+Gerçek iPhone/Android, Bluetooth, VoiceOver/TalkBack ve eğitimci pilotu yapılmadı. İki başlangıç sorusu, uyarlama eşikleri ve tekrar aralıkları Freq çalışma kurallarıdır; kalibre edilmiş genel yetenek veya kabul puanı değildir. Farklı tohumlar dar içerik ailelerinde benzer örnekler üretebilir; daha geniş içerikte aktarım pilotu ilerleyen kapsamdır. [Kişiselleştirme tasarımı](research/kisisellestirme-tasarimi.md). Kuruma özel resmî kılavuz doğrulaması ayrı bekleyen iştir.
+
 ## 0.6 önizleme
 
 10 Ekim 2026, Node.js 24 ve sistem Chromium'u ile. Bu kayıt genel sınav atölyesini doğrular; kurumların resmî sınav kapsamı henüz doğrulanmadı.

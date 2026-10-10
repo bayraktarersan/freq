@@ -2,9 +2,9 @@
 
 ## Kararlaştırılan hedef
 
-Ana odak miks ve prodüksiyon kulağı. Temel müzik kulağı ve konservatuvar / müzik bölümüne hazırlık kendi yollarında yer alır. Türkçe ve İngilizce içerik; web, iOS ve Android hedefleri. Ana ekran tek aktif yol ve bir sonraki pratik gösterir. Navigasyon: Bugün, Yollar, Becerilerim, Profil.
+Ana odak miks ve prodüksiyon kulağı. Temel müzik kulağı ve konservatuvar / müzik bölümüne hazırlık kendi yollarında yer alır. Türkçe ve İngilizce içerik; web, iOS ve Android hedefleri. Ana ekran aktif yolu, kişisel çalışma planına erişimi ve ders pratiğini gösterir; beceri ayrıntıları kişisel planın içinde açılır. Navigasyon: Bugün, Yollar, Becerilerim, Profil.
 
-## Çalışan sürüm: 0.6 önizleme
+## Çalışan sürüm: 0.7 önizleme
 
 54 pratik / 20 beceri, önce öğretim ardından pratik. Her derste yanıtı görünen bir örnek var. EQ ve ses yüksekliğinde iki örneği, hafıza ve ritimde iki tam örneği dinlemeden yanıt düğmeleri açılmaz. Doğru/yanlış sonrası tekrar dinleme serbesttir; tekrar dinleme puanı değiştirmez. Yarım bırakılmış oturum korunur. Başka pratiğe geçerken uyarı gösterilir; eski yanıtlar beceri kaydında kalır.
 
@@ -40,8 +40,14 @@ Kurumlara özel doğrulanmış kapsam ve denemeler tamamlanmadı. Hacettepe, MSG
 
 Öğretmeden sınamak, zorluk sıçraması, yanlış yanıttan sonra karşılaştırma yetersizliği ve oturum kaybı ürün riskleri olarak ele alındı. Bunlar seçili yorumlarda görülüyor; bütün rakiplerde güncel ve aynı sorun olduğu iddia edilmiyor. TYE'de geri bildirim / düzeltme, SoundGym'de kompresyon ve multitrack, EarMaster'da Türkçe ve adaptasyon zaten mevcut. Freq'in hedefi bunları yeni icat gibi sunmak değil; düzenli bir akışta kaliteli içerik, ses doğruluğu ve gerçek miks aktarımı sağlamak.
 
+## Kişiye uygun çalışma
+
+0.7 başlangıç değerlendirmesi, hatalardan aralıklı tekrar ve beceri bazında zorluk önerisi ekler. Miks / müzik / hazırlıkta 18 / 20 / 12 soru, ikişer başlangıç probu; tamamlanan değerlendirme geçici seviye önerisi sağlar. Tamamen geçilen beceriler ve yarım yeniden değerlendirme mevcut öneriyi değiştirmez. Her beceride tek bir ham müzikal yetenek puanı verilmez.
+
+Yeni soru kanıtı ve hata tekrarı ayrıdır. En az iki oturumda 8/10 yeni doğru bir sonraki seviyeyi; 2/6 veya daha az yeni doğru önceki seviyeyi önerir. Hata tekrarının kendisi düzey yükseltmez. Günlük plan en fazla iki zamanı gelen tekrar ve yeni odak soruları içerir. Öncelik güçlük ve en uzun süredir çalışılmayan beceridir. Dersleri elle seçmek serbesttir. 10 dakika / 1 / 3 / 7 gün tekrar politikası ve bu eşikler ürün varsayımlarıdır. [Tasarım ve sınırlar](research/kisisellestirme-tasarimi.md).
+
 ## Kullanıcı pilotu
 
-Önce iki dilde derslerin anlaşılmasını, cihazlarda sesin güvenilirliğini, zorluk geçişini ve yanlış yanıttan sonra öğrenmeyi değerlendir. Daha sonra eğitimde duyulmayan kaynaklarda ön test / son test / gecikmeli tekrar uygulanabilir. İlk sürümdeki 10 yanıt / %80 öneri kuralı bir ürün varsayımıdır; bilimsel doğrulama veya sınav başarısı garantisi değildir.
+Önce iki dilde derslerin anlaşılmasını, cihazlarda sesin güvenilirliğini, zorluk geçişini ve yanlış yanıttan sonra öğrenmeyi değerlendir. Daha sonra eğitimde duyulmayan kaynaklarda ön test / son test / gecikmeli tekrar uygulanabilir. 0.7 öncesindeki sıralı 10 yanıt / %80 ders önerisi, kişisel akışta beceri bazında başlangıç, yeni örnek kanıtı ve aralıklı tekrar ile genişletildi. Bu kurallar bilimsel doğrulama veya sınav başarısı garantisi değildir.
 
 Gerçek iPhone Safari, Android Chrome, Bluetooth ve kablolu kulaklık, arka plana alma, düşük güç modu, VoiceOver / TalkBack ve farklı işitme profilleriyle manuel test gerekir. İlk teslimattaki Chromium testleri bu matrisin tamamını kapsamaz.

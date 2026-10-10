@@ -1,6 +1,6 @@
 # Freq
 
-Türkçe ve İngilizce, miks odaklı kulak pratiği. Web ve telefonda kullanılabilen prototip, sürüm **0.6 önizleme**. Kurum kılavuzlarının doğrulanması ağ erişimi bekliyor; bu önizleme genel sınav atölyesini içerir.
+Türkçe ve İngilizce, miks odaklı kulak pratiği. Web ve telefonda kullanılabilen prototip, sürüm **0.7 önizleme**. Başlangıç değerlendirmesi, beceriye göre zorluk ve yanlışlardan aralıklı tekrar içerir. Sınav atölyesi genel hazırlık önizlemesidir; kuruma özel kılavuz doğrulamaları tamamlanmadı.
 
 ## Dosyalar nerede?
 
@@ -28,7 +28,8 @@ Terminalde gösterilen adresi **kendi bilgisayarındaki** tarayıcıda aç. Kula
 7. Miks yolundaki **Laboratuvarı aç** ile hazır akustik örneği veya kendi kaydını kullan. Ayarları değiştir, A/B ve mono ile karşılaştır, işlenmiş WAV önizlemesini indir.
 8. **Yollar → Müzik kulağı**: Tonal merkez ve dereceler, İşlevsel işitme, Dikte atölyesi veya Ritim tekrarı başlığını aç. Önce açıklamalı örneği dinle; diktede derece/konum kutularını doldur, ritim tekrarında dokun veya Space kullan. Yanıtını göndermeden puan oluşmaz.
 9. **Yollar → Sınava hazırlık**: **Hazırlık dersleri** altında üç seviyeli ses/ezgi/ritim, dikte, solfej ve jüri provalarını aç. **Denemeler** altında 6/8/10 soruluk süreli işitme denemesi yap; yanıtları bitince incele. Kuruma özel doğrulanmış profiller henüz eklenmedi.
-10. **TR / EN** ile dili değiştir; **Becerilerim** bölümünde kendi yanıtlarını gör.
+10. **Bugün → Kişisel planı aç**: yolunu seç. Başlangıç değerlendirmesini yap veya beş soruluk kişisel pratiğe başla. Miks değerlendirmesinde stereo kontrolünü doğrula. Hatalar zamanı geldiğinde günlük plana alınır; **Yanlışlarımı çalış** ile erken de deneyebilirsin. Beceri seviyelerinin neden değiştiğini açılır ayrıntılardan gör.
+11. **TR / EN** ile dili değiştir; **Becerilerim** bölümünde kendi yanıtlarını gör.
 
 Üretim çıktısını denemek için:
 
@@ -105,3 +106,11 @@ Cloud ortamındaki sistem Chromium'u için `CHROMIUM_PATH=/usr/bin/chromium npm 
 Tarayıcı testleri gerçek Web Audio buffer'larını, beş kaynakta seviye eşleştirmeyi, A/B/C zamanlamasını, 54 pratiğin geri bildirimini, kasıtlı dB farklarını, ritim örneklerindeki vuruş yerlerini ve tam dinleme koşulunu, gerçek dosya indirme/geri yüklemeyi, kayıt/yenileme, dil değişimi, çevrimdışı kullanım, alt klasör yayını, klavye ve mobil görünümü kontrol eder. Yeni stereo DSP, attack/release, delay zamanlaması, reverb kuyruğu, gerçek kayıt hash’leri, kendi ses dosyasıyla çalışma, ayrı eşlik ve WAV indirme de doğrulanır. Müzik testleri derece-perde tutarlılığı, sus/konum zamanları, dikte girişleri, dokunma/Space tekrarı, ofset/tolerans ve iptal/yenileme akışlarını kapsar. Otomatik erişilebilirlik kontrolü manuel ekran okuyucu testinin yerine geçmez.
 
 Akustik WAV’lar depoda hazırdır; standart kurulumda Python veya ffmpeg gerekmez. Yalnızca kayıtları yeniden hazırlamak isteyen geliştirici için: Python 3 + NumPy + ffmpeg ile `python3 scripts/prepare-recordings.py`. Script sabit commit’teki dört ham kaydı hash kontrolüyle indirir ve `public/audio/` dosyalarını üretir.
+
+## Kişiye uygun çalışma
+
+Miks / müzik / hazırlık yolunda 18 / 20 / 12 başlangıç sorusu, süre sınırı olmadan ve ara vererek çalışılır. Her beceride iki cevap geçici bir öneri sağlar; tamamen geçilen becerilerin önceki önerisi korunur. Aralık, yön ve majör/minör gibi tek mevcut aşamalı derslere hayalî seviyeler verilmez. Değerlendirme pratik doğruluğuna katılmaz; genel yetenek veya sınav puanı değildir.
+
+Her becerinin seviyesinde en az iki oturumda 10 yeni cevaptan 8 doğru bir aşama yükseltir; son 6 yeni cevapta en fazla 2 doğru bir aşama azaltır. Aynı soru tekrarları düzeyi artırmaz. Günlük beş sorunun en fazla ikisi zamanı gelmiş hata tekrarıdır; diğerleri odak beceriden yeni örneklerdir. Yanlış örnek ilk 10 dakika sonra, zamanında doğru cevaplarla 1 / 3 / 7 günlük aralıklarla tekrar gelir; dördüncü zamanında başarıdan sonra kapanır. Erken doğru çalışma takvimi ilerletmez. Bu eşikler Freq çalışma kurallarıdır; uzmanla kalibre edilmiş bir ölçek değildir. [Tasarım ve pilot sınırları](docs/research/kisisellestirme-tasarimi.md).
+
+Son 100 kişisel oturum, yarım çalışma ve tam soru/cevap ayrıntıları JSON yedeğine dahildir. Eski yedekler kişisel verileri silmez. İki farklı yarım **kişisel** çalışma veya aynı kimlikte farklı cevaplar varsa birleştirme durur; bir oturum sessizce kaybedilmez. Ders oturumu ve kişisel oturum ayrı tutulur. Yeni `personal` alanını korumak için yedeği 0.7 veya daha yeni sürümde aç. Yeni ders yanlışları her beceride ses kaynağıyla saklanır; eski ses ayrıntısı olmayan hatalar için özgün ses uydurulmaz.

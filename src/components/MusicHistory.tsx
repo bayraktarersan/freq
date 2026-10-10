@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { getLesson, text, tx, type Locale } from '../content';
 import { makeQuestion, withAnswerComparison, type Progress } from '../model';
 import { answerLabel } from '../music-model';
+import { isMusicianship } from '../music-types';
 import type { AudioEngine } from '../audio';
 import { AudioPlayer } from './AudioPlayer';
 import { MusicFeedback } from './MusicFeedback';
 export function MusicHistory({ progress, engine, locale, volume, onVolume }: { progress: Progress; engine: AudioEngine; locale: Locale; volume: number; onVolume: (v: number) => void }) {
   const [selected, setSelected] = useState<string | null>(null);
-  const attempts = progress.attempts.filter(a => a.response).slice(-5).reverse();
+  const attempts = progress.attempts.filter(a => a.response && isMusicianship(getLesson(a.lessonId).skill)).slice(-5).reverse();
   const active = attempts.find(a => `${a.sessionId}:${a.index}` === selected);
   const q = active?.response ? makeQuestion(active.lessonId, active.response.seed, active.index) : null;
   if (!attempts.length) return null;

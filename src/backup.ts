@@ -1,6 +1,9 @@
 import { getLesson, usesLoop } from './content';
 import { initialExamProgress, readExamProgress } from './exam-model';
 import type { ExamProgress } from './exam-types';
+import { readPersonalProgress } from './personal-validation';
+import { initialPersonalProgress, PERSONAL_RESULT_LIMIT, refIdentity } from './personal-model';
+import type { PersonalProgress, PersonalSession } from './personal-types';
 import { isEqSource, parseProgress, validAttempt, validResult, type Attempt, type Progress, type Result } from './model';
 
 export const MAX_BACKUP_BYTES = 2 * 1024 * 1024;
@@ -26,6 +29,11 @@ function unique<T>(records: T[], key: (record: T) => string, same: (a: T, b: T) 
 const attemptKey = (a: Attempt) => JSON.stringify([a.sessionId, a.index]);
 function checkConsistency(p: Progress) {
   const attempts = new Map(p.attempts.map(a => [attemptKey(a), a]));
+  const originals=new Map(p.attempts.filter(a=>a.response).map(a=>[`manual:${a.sessionId}:${a.index}`,a]));
+  for(const s of [...(p.personal?.results??[]),...(p.personal?.active?[p.personal.active]:[])])for(const ref of s.items)if(ref.review){
+    const a=originals.get(ref.review.id);
+    if(a&&(a.correct||Date.parse(a.at)!==ref.review.createdAt||refIdentity(ref)!==refIdentity({lessonId:a.lessonId,seed:a.response!.seed,index:a.index,source:a.source})))throw new BackupError('conflict');
+  }
   if (p.session) {
     const s = p.session;
     if (p.attempts.some(a => a.sessionId === s.id && a.index >= s.answers.length)) throw new BackupError('conflict');
@@ -57,6 +65,7 @@ export function readBackup(raw: string): Progress {
   if (value.version !== 1 || !['tr', 'en'].includes(value.locale as string) || !['mix', 'music', 'exam'].includes(value.path as string) || typeof value.volume !== 'number' || !Number.isFinite(value.volume) || value.volume < 0.05 || value.volume > 0.8 || value.eqSource !== undefined && !isEqSource(value.eqSource) || !Array.isArray(value.attempts) || value.attempts.length > 2000 || !value.attempts.every(validAttempt) || !Array.isArray(value.results) || value.results.length > 200 || !value.results.every(validResult) || value.session === undefined) throw new BackupError('invalid');
   const p = parseProgress(JSON.stringify(value));
   if (value.exam !== undefined && !readExamProgress(value.exam)) throw new BackupError('invalid');
+  if (value.personal !== undefined && !readPersonalProgress(value.personal)) throw new BackupError('invalid');
   if (value.session !== null && !p.session) throw new BackupError('invalid');
   p.attempts = unique(p.attempts, attemptKey, sameAttempt);
   p.results = unique(p.results, r => r.id, sameResult);
@@ -75,13 +84,34 @@ export function mergeProgress(current: Progress, incoming: Progress): Progress {
     if (a.lessonId !== b.lessonId || a.seed !== b.seed || (a.source ?? 'studio') !== (b.source ?? 'studio') || a.answers.some((answer, i) => b.answers[i] && JSON.stringify(answer) !== JSON.stringify(b.answers[i]))) throw new BackupError('conflict');
     if (b.answers.length > a.answers.length || b.answers.length === a.answers.length && (b.index > a.index || b.index === a.index && b.started)) session = b;
   }
-  const merged = { ...current, attempts, results, session, ...(current.exam || incoming.exam ? { exam: mergeExamProgress(current.exam ?? initialExamProgress(), incoming.exam ?? initialExamProgress()) } : {}) };
+  const merged = { ...current, attempts, results, session, ...(current.exam || incoming.exam ? { exam: mergeExamProgress(current.exam ?? initialExamProgress(), incoming.exam ?? initialExamProgress()) } : {}), ...(current.personal || incoming.personal ? { personal: mergePersonalProgress(current.personal ?? initialPersonalProgress(), incoming.personal ?? initialPersonalProgress()) } : {}) };
   checkConsistency(merged);
   // Keep the active session's answered questions even if a backup contains
   // future timestamps. Losing these would make the next exported file invalid.
   const active = attempts.filter(a => a.sessionId === session?.id);
   const retained = attempts.filter(a => a.sessionId !== session?.id).slice(-(2000 - active.length));
   return { ...merged, attempts: [...retained, ...active].sort((a, b) => Date.parse(a.at) - Date.parse(b.at)), results: results.slice(-200) };
+}
+
+function compatiblePersonal(a:PersonalSession,b:PersonalSession) {
+  if(a.mode!==b.mode||a.path!==b.path||a.seed!==b.seed||a.startedAt!==b.startedAt||a.items.length!==b.items.length)throw new BackupError('conflict');
+  const shared=Math.min(a.answers.length,b.answers.length);
+  for(let i=0;i<a.items.length;i++) {
+    if((a.mode!=='placement'||i<shared)&&JSON.stringify(a.items[i])!==JSON.stringify(b.items[i]))throw new BackupError('conflict');
+    if(i<shared&&JSON.stringify(a.answers[i])!==JSON.stringify(b.answers[i]))throw new BackupError('conflict');
+  }
+}
+function mergePersonalProgress(a:PersonalProgress,b:PersonalProgress):PersonalProgress {
+  const results=unique([...a.results,...b.results],r=>r.id,(x,y)=>JSON.stringify(x)===JSON.stringify(y));
+  const finished=new Set(results.map(r=>r.id));
+  for(const s of [a.active,b.active])if(s&&finished.has(s.id))compatiblePersonal(s,results.find(r=>r.id===s.id)!);
+  const x=a.active&&!finished.has(a.active.id)?a.active:null, y=b.active&&!finished.has(b.active.id)?b.active:null;
+  if(x&&y&&x.id!==y.id)throw new BackupError('conflict');
+  let active=x??y;
+  if(x&&y){compatiblePersonal(x,y);active=y.answers.length>x.answers.length||y.answers.length===x.answers.length&&y.index>x.index?y:x;}
+  const merged:PersonalProgress={version:1,active,results:results.sort((x,y)=>x.finishedAt-y.finishedAt||x.id.localeCompare(y.id)).slice(-PERSONAL_RESULT_LIMIT)};
+  if(!readPersonalProgress(merged))throw new BackupError('conflict');
+  return merged;
 }
 
 function mergeExamProgress(a: ExamProgress, b: ExamProgress): ExamProgress {

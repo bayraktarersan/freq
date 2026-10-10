@@ -1,5 +1,16 @@
 # Sürüm değişiklikleri
 
+## 0.7 önizleme
+
+- Bugün ekranında kişisel plan; ayrı ve sade çalışma alanında başlangıç değerlendirmesi, pratik ve hata tekrarları. Ses kaynağı ve beceri ayrıntıları açılır bölümlerde.
+- Miks 9 beceri / 18 soru, müzik 10 beceri / 20 soru, hazırlık 6 ölçülebilir beceri / 12 soru. İkinci soru ilk yanıta göre ayarlanır; geçici başlangıç önerisi. Tamamlanmayan değerlendirme ve tamamen geçilen beceriler önceki seviyeyi değiştirmez.
+- Beceriye göre uyarlama: farklı oturumlarda yeni soru kanıtı, birer aşamalı artış/azalış, gerekçeli öneri. Aynı örneği ezberlemek ve hata tekrarı seviye yükseltmez; hız puanlanmaz.
+- Tam ses ayrıntısıyla yanlışlardan tekrar. 10 dakika → 1 / 3 / 7 gün; erken doğru tekrar takvimi ilerletmez, yanlış aynı kartı sıfırlar. Günlük beş soruda en fazla iki zamanı gelen tekrar; kalanlar yeni örnekler.
+- Yarım kişisel çalışma, son 100 kişisel sonuç ve tekrar referansları yerel kayıt/yedeğe dahil. İdempotent birleştirme, çelişki kontrolü ve eski yedek uyumu. Genel jüri notları ve başlangıç değerlendirmesi pratik doğruluğundan ayrı.
+- Yeni ders yanıtları tüm becerilerde seed/cevap/kaynakla saklanır. Önceki 54 dersin 54.000 sorusu 0.6 ile birebir aynı; mevcut ders ve süreli deneme akışları korunur.
+
+Deneme: **Bugün → Kişisel planı aç**. Yeni alanda TR/EN, mobil, klavye, ses ve çevrimdışı kullanım. [Kişiselleştirme kuralları](research/kisisellestirme-tasarimi.md). Sınav kurumlarının resmî kılavuzlarla eşleştirilmesi ayrı bekleyen iştir.
+
 ## 0.6 önizleme
 
 - Sınav atölyesi: Kurum ve kapsam / Hazırlık dersleri / Denemeler sekmeleri. Bu önizlemede yalnız genel Ortak hazırlık profili var; kurum kılavuzları ağ erişimi nedeniyle henüz doğrulanamadı.

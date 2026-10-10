@@ -40,3 +40,7 @@ Ortak hazırlık denemesi 6/8/10 sorudan oluşur. Toplam süre sırasıyla 6/8/1
 7. Bir konservatuvar/işitme öğretmeniyle örnekleri ve seviye geçişlerini kontrol et. Bu uzman kontrolü de henüz yapılmış değildir.
 
 Bu belge tamamlanmış bir kurum araştırması değildir; doğrulama engelini ve devam işini kayıt altına alır.
+
+## 0.7 sırasında yeniden kontrol
+
+10 Ekim 2026, çalışan ortam spec_revision 13 üzerinde üniversite alanları yapılandırma listesinde görünmesine rağmen Hacettepe ana sayfası HTTPS denemesi yine `Tunnel connection failed: 403 Forbidden` döndürdü. Resmî kılavuz doğrulaması tamamlanmış sayılmadı; kurum profilleri eklenmedi. Bu turdaki geliştirme kişiselleştirmedir ve mevcut yerel içerikle tamamlanabilir.

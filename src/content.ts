@@ -187,7 +187,7 @@ export const ui = {
   cancel: text('Vazgeç', 'Cancel'), delete: text('Evet, sil', 'Yes, delete'),
   storageError: text('Tarayıcı kayıt yapamıyor. Pratik çalışır; sayfayı kapatırsan ilerleme kaybolabilir.', 'This browser cannot save records. You can practise, but progress may be lost when you close the page.'),
   audioError: text('Ses başlatılamadı. Dinle düğmesiyle tekrar dene; başka ses uygulamalarını kapatmayı deneyebilirsin.', 'Audio could not start. Try Listen again, or close other audio apps.'),
-  early: text('DİNLEME STÜDYOSU · 0.6 ÖNİZLEME', 'LISTENING STUDIO · 0.6 PREVIEW'),
+  early: text('DİNLEME STÜDYOSU · 0.7 ÖNİZLEME', 'LISTENING STUDIO · 0.7 PREVIEW'),
   future: text('Bu yolun devamı', 'Further along this path'),
   roadmapMix: text('Sırada: daha geniş kayıt kütüphanesi, çoklu sorunları teşhis ve yeni müziklerde beceri aktarımı. İleri miks pratiklerini veya Kendi kaydın alanını keşfet.', 'Next: a larger recording library, diagnosing multiple issues and transfer to new music. Explore advanced mixing practice or Your recording.'),
   roadmapMusic: text('Sırada: minör/kromatik bağlam, porte ve daha uzun dikte. Makam ve usul ayrı bir içerik yolu olarak uzmanlarla hazırlanacak.', 'Next: minor/chromatic context, staff notation and longer dictation. Makam and usul will be a separate content path authored with specialists.'),

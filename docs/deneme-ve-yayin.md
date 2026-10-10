@@ -1,5 +1,18 @@
 # Freq'i deneme ve yayımlama
 
+## 0.7 kişisel çalışmayı dene
+
+1. Bugün → Kişisel planı aç. Miks, Müzik kulağı veya Sınava hazırlık yolunu seç. Miks başlangıç değerlendirmesinde stereo kulaklık kontrolünü doğrula.
+2. Başlangıcımı belirle: iki soru / beceri, süre sınırı yok. İlk doğru cevaptan sonra ikinci örnek varsa sonraki seviyeden gelir. Bilmiyorum ile geçebilirsin. Kaydet ve ara ver → Kişisel çalışmaya dön; sonlandırma ayrı ve açıkça onaylanır.
+3. Sonucu gör: cevaplar ancak sonunda açılır. Her becerideki başlangıç önerisini ve yanıtlanan soru sayısını incele. Yeni değerlendirmeyi tümüyle geçmek önceki öneriyi düşürmez.
+4. Kişisel pratiğe başla: beş soru, en fazla iki zamanı gelen tekrar ve yeni odak soruları. Yanlış yanıttan sonra karşılaştırmayı dinle. Aynı örneğin doğru tekrarı beceri seviyesini yükseltmez.
+5. Yanlışlarımı çalış: 10 dakika, 1 / 3 / 7 günlük tekrar akışı. Erken doğru tekrar sonraki aralığı açmamalı; yanlış aynı kartı yeniden 10 dakika sonrasına almalı. Geçmiş sonucu dinlemek yeni cevap sayılmaz.
+6. Öneriler nasıl belirleniyor? ve Beceriye göre seviyen bölümlerini aç. Sadece mevcut ders seviyelerinin gösterildiğini ve seviye değişikliğinin gerekçesini kontrol et. Eski dersleri Yollar üzerinden kendin seçebilirsin.
+7. Profil → İlerlemeyi indir. Dosyayı iki kez geri yükle: kişisel oturum sayısı ve tekrar tarihi değişmemeli. İki farklı yarım kişisel oturum veya aynı kimlikle farklı cevaplar sessizce kaybedilmemeli. Eski yedeği yüklemek kişisel geçmişi silmemeli.
+8. TR/EN, 390 px mobil, klavye ve ilk çevrimiçi kurulumdan sonra uçak modu ile tekrarla. Gerçek cihaz/BT ve ekran okuyucu pilotu ayrıca gereklidir.
+
+Canlı Pages sürümü için aşağıdaki yayın adımlarını uygula; GitHub'a kod gönderilmesi yayımlanmış siteyi kendiliğinden değiştirmez.
+
 ## 0.6 sınav önizlemesini dene
 
 Yollar → Sınava hazırlık. Hazırlık derslerinden birini açıp üç seviyeyi seç; ses/porte örneğini çalış ve öz değerlendirmeyi kaydet. Denemeler bölümünde seviye seç → Denemeyi hazırla → Süreyi başlat. İlk tam dinlemeden sonra cevap ver; istersen boş bırak. Süre sayfadan çıksan da sürer. Bitince doğru yanıtları incele, tekrar dinle veya önerilen kısa pratiğe geç. Profil yedeği deneme ve prova notlarını da içerir.

@@ -283,7 +283,12 @@ test('invalid and conflicting backups keep records unchanged', async ({ page }) 
   await page.goto('/'); await openProfile(page);
   await uploadBackup(page, {}); await expect(page.getByText(/geçerli bir Freq yedeği değil/)).toBeVisible();
   expect((await progress(page)).attempts).toHaveLength(5);
-  const conflict = structuredClone(original); conflict.attempts[0].correct = false;
+  const corrupt = structuredClone(original); corrupt.attempts[0].correct = false;
+  await uploadBackup(page, createBackup(corrupt)); await expect(page.getByText(/geçerli bir Freq yedeği değil/)).toBeVisible();
+  expect((await progress(page)).attempts).toEqual(original.attempts);
+  // A valid file with the same record identity and different timestamp must
+  // reach merge conflict handling, rather than fail answer integrity first.
+  const conflict = structuredClone(original); conflict.attempts[0].at = '2026-10-08T20:00:00.001Z';
   await uploadBackup(page, createBackup(conflict)); await expect(page.getByText(/çelişen kayıtlar/)).toBeVisible();
   expect((await progress(page)).attempts).toEqual(original.attempts);
 });
