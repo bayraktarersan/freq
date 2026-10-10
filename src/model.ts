@@ -26,7 +26,9 @@ export type Progress = {
   exam?: ExamProgress;
   personal?: PersonalProgress;
 };
-export const STORAGE_KEY = 'freq.progress.v1';
+// Separate storage prevents an older open tab from truncating expanded history.
+export const LEGACY_STORAGE_KEY = 'freq.progress.v1';
+export const STORAGE_KEY = 'freq.progress.v2';
 export const initialProgress = (): Progress => ({ version: 1, locale: 'tr', path: 'mix', volume: 0.35, eqSource: 'studio', session: null, attempts: [], results: [] });
 export const isEqSource = (v: unknown): v is EqSource => typeof v === 'string' && eqSourceIds.includes(v as EqSource);
 export function random(seed: number) {
@@ -126,14 +128,14 @@ export function answerQuestion(progress: Progress, choice: string, at = new Date
   const correct = evaluateAnswer(question, choice);
   if (correct === null) return progress;
   return { ...progress, session: { ...s, answers: [...s.answers, { choice, correct, at }] },
-    attempts: [...progress.attempts, { sessionId: s.id, index: s.index, lessonId: s.lessonId, correct, at, response: { seed: s.seed, choice }, ...(usesLoop(question.kind) ? { source: s.source ?? 'studio' } : {}) }].slice(-2000) };
+    attempts: [...progress.attempts, { sessionId: s.id, index: s.index, lessonId: s.lessonId, correct, at, response: { seed: s.seed, choice }, ...(usesLoop(question.kind) ? { source: s.source ?? 'studio' } : {}) }] };
 }
 export function advanceQuestion(progress: Progress, at = new Date().toISOString()): Progress {
   const s = progress.session;
   if (!s || !s.answers[s.index]) return progress;
   if (s.index < ROUND_COUNT - 1) return { ...progress, session: { ...s, index: s.index + 1 } };
   const result: Result = { id: s.id, lessonId: s.lessonId, correct: s.answers.filter(a => a.correct).length, total: ROUND_COUNT, at, ...(usesLoop(getLesson(s.lessonId).skill) ? { source: s.source ?? 'studio' } : {}) };
-  return { ...progress, session: null, results: [...progress.results, result].slice(-200) };
+  return { ...progress, session: null, results: [...progress.results, result] };
 }
 export function recommendedLesson(progress: Progress) {
   const pathLessons = lessons.filter(l => l.path === progress.path);
@@ -173,8 +175,8 @@ export function parseProgress(raw: string | null): Progress {
     if (exam) p.exam = exam;
     const personal = readPersonalProgress(v.personal);
     if (personal) p.personal = personal;
-    if (Array.isArray(v.attempts)) p.attempts = v.attempts.filter(validAttempt).map(a => ({ sessionId: a.sessionId, index: a.index, lessonId: a.lessonId, correct: a.correct, at: a.at, ...(a.response ? { response: { seed: a.response.seed, choice: a.response.choice } } : {}), ...(a.source ? { source: a.source } : {}) })).slice(-2000);
-    if (Array.isArray(v.results)) p.results = v.results.filter(validResult).map(r => ({ id: r.id, lessonId: r.lessonId, correct: r.correct, total: r.total, at: r.at, ...(r.source ? { source: r.source } : {}) })).slice(-200);
+    if (Array.isArray(v.attempts)) p.attempts = v.attempts.filter(validAttempt).map(a => ({ sessionId: a.sessionId, index: a.index, lessonId: a.lessonId, correct: a.correct, at: a.at, ...(a.response ? { response: { seed: a.response.seed, choice: a.response.choice } } : {}), ...(a.source ? { source: a.source } : {}) }));
+    if (Array.isArray(v.results)) p.results = v.results.filter(validResult).map(r => ({ id: r.id, lessonId: r.lessonId, correct: r.correct, total: r.total, at: r.at, ...(r.source ? { source: r.source } : {}) }));
     const s = v.session;
     if (object(s) && typeof s.id === 'string' && s.id.length > 0 && knownLesson(s.lessonId) && validSource(s) && Number.isInteger(s.seed) && (s.seed as number) >= 0 && (s.seed as number) <= 0xffffffff && Number.isInteger(s.index) && (s.index as number) >= 0 && (s.index as number) < ROUND_COUNT && typeof s.started === 'boolean' && Array.isArray(s.answers) && (s.answers.length === s.index || s.answers.length === (s.index as number) + 1)) {
       const valid = s.answers.every((a, i) => {

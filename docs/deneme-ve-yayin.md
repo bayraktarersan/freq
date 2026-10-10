@@ -1,5 +1,17 @@
 # Freq'i deneme ve yayımlama
 
+## 0.8 denetim düzeltmelerini dene
+
+1. Bugün → Kişisel planı aç. Çalışma yöntemini ve beceriye göre aşama/duyulan örnek sayısını incele. Aynı ritmin tek kalıbı veya erken hata tekrarı üst seviye kanıtı olmaz.
+2. Normal A/B pratiğinde iki düğmeye hızla bas: yanıt kilitli kalır. A ve B’yi ayrı ayrı en az bir saniye dinle; sonlu müzik/ritim örneklerini tamamla.
+3. Becerilerim’de güncel önerilen aşamayı aç. Yüzde hata tekrarlarını içermez; tekrar sayısı ayrıca gösterilir.
+4. İki sekmede uyumlu cevaplar birleştirilir. Sekmelerde farklı yarım pratik seçilirse çakışma uyarısından iki kopyayı indir. Bozuk kayıt uyarısında orijinal JSON korunur; kurtarılmış kopyaya geçiş açık onay ister. Kota uyarısında kapatmadan önce bu sekmenin verisini indir.
+5. Profil → İlerlemeyi indir. 0.8 yedeği sürüm 2’dir ve 0.8 veya üstünde açılır; v1/düz JSON yedekler hâlâ yüklenir. İlk açılış v1 tarayıcı kaydını ayrı v2 alanına taşır.
+6. Sınava hazırlık → Kurum ve kapsam. MSGSÜ Opera ve Müzik teorisi 2026–2027 profillerini karşılaştır; farklı aşamaları, resmî PDF/sayfa bilgisini ve eksik kapsamı oku. Deneme hâlâ Freq’in kısa işitme formatıdır.
+7. Yayın güncellendiği hâlde 0.7 görünüyorsa tüm Freq sekmelerini kapatıp yeniden aç. Farklı yayın alt klasörleri kendi çevrimdışı önbelleğini korur. Kodun GitHub’a gönderilmesi Pages yayını değildir; aşağıdaki Pages iş akışı ayrıca çalıştırılır.
+
+[Eleştiri/düzeltmeler](kalite-denetimi.md), [ölçülmüş sonuçlar](dogrulama.md).
+
 ## 0.7 kişisel çalışmayı dene
 
 1. Bugün → Kişisel planı aç. Miks, Müzik kulağı veya Sınava hazırlık yolunu seç. Miks başlangıç değerlendirmesinde stereo kulaklık kontrolünü doğrula.
@@ -17,7 +29,7 @@ Canlı Pages sürümü için aşağıdaki yayın adımlarını uygula; GitHub'a 
 
 Yollar → Sınava hazırlık. Hazırlık derslerinden birini açıp üç seviyeyi seç; ses/porte örneğini çalış ve öz değerlendirmeyi kaydet. Denemeler bölümünde seviye seç → Denemeyi hazırla → Süreyi başlat. İlk tam dinlemeden sonra cevap ver; istersen boş bırak. Süre sayfadan çıksan da sürer. Bitince doğru yanıtları incele, tekrar dinle veya önerilen kısa pratiğe geç. Profil yedeği deneme ve prova notlarını da içerir.
 
-Bu paket genel işitme önizlemesidir; kurum kılavuzları erişim beklediği için resmî kurum formatları henüz doğrulanmadı. [Kalan araştırma](research/sinav-hazirligi-arastirma-durumu.md).
+0.6 teslimatında resmî kurum formatları doğrulanmamıştı. 0.8, MSGSÜ'nün iki programı için kaynaklı kapsam haritası ekler; kısa denemeler hâlâ Freq işitme formatıdır. [Kalan araştırma](research/sinav-hazirligi-arastirma-durumu.md).
 
 ## İndirdiğin paketler
 

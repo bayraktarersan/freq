@@ -2,7 +2,21 @@
 
 10 Ekim 2026. Kullanıcı, Türkiye'nin önde gelen konservatuvarlarının karşılaştırılmasını ve ortak sınav becerilerinden çıkarım yapılmasını istedi.
 
-## Doğrulama henüz tamamlanmadı
+## 0.8 denetiminde erişim ve gerçek program farkları
+
+10 Ekim 2026. Önceki engel tüm kurumlara genellenmedi. Hacettepe konservatuvarı ve İTÜ konservatuvarı istekleri yine proxy 403 aldı; MSGSÜ ve İstanbul Üniversitesi ana sayfaları 200 döndürdü. Ana sayfa başarısı sınav kılavuzu doğrulaması değildir. MSGSÜ'nün resmî duyurusundan 2026–2027 Özel Yetenek Sınavları Kılavuzu bulundu, tam PDF indirildi ve metni okundu. [Kaynak URL, byte sayısı, tam dosya SHA-256 ve program sayfaları](sinav-kaynaklari.json).
+
+| Program | Kılavuz sayfaları | Doğrulanan kapsam | Freq karşılığı ve eksikliği |
+| --- | --- | --- | --- |
+| MSGSÜ Opera | 25–26 | Duyuş; ses yeteneği ve hazırlanan repertuvar; kesin kabul, doğaçlama, opera kültürü | Tek/çok ses, ezgi ve ritim provaları; ayrı icra öz değerlendirmesi. Şan, jüri, kültür ve kabul puanı otomatik sınanmaz. Majör/minör seçimi iki/üç ses söylemenin eşdeğeri değildir. |
+| MSGSÜ Müzik teorisi | 17–19 | Yazılı/sözlü teori, dikte, kadans/aralık, armoni/partisyon analizi, modülasyon, piyano, mülakat, yazılı düzey sınavı | Mevcut işitme/dikte başlangıç dersleri ve öğretmenle prova. Tam porte diktesi, modülasyon, teori/partisyon sınavı, piyano ve kültür mülakatı tamamlanmış değildir. |
+
+Bu iki program uygulamaya kaynaklı **kapsam haritası** olarak eklendi. 6/8/10 soru/dakika ve üç dinleme hâlâ Freq'in kısa işitme ayarlarıdır. Kurum kılavuzuna atfedilmez. 2026–2027 kılavuzu sonraki başvuru dönemi için geçerli varsayılmaz; başvuru tarihleri, yaş/TYT koşulları ve yerleştirme hesabı uygulamadan yönetilmez. Kılavuzun bağlantı verdiği lisans düzey örneği ayrı doğrulama işidir.
+
+2026 Bilgi Kataloğu da incelendi; bölüm/kontenjan tablosu, özel yetenek sınavının ayrıntılı kapsamı yerine kullanılmadı. Aynı kurumda programların farklılaşması, “bütün kurumlarda aynı sınav vardır” yaklaşımını zaten geçersiz kılar. Diğer hedef kurumların kılavuzları ve bağımsız öğretmen denetimi henüz tamamlanmadı.
+
+## 0.6 erişim kaydı — tarihsel durum
+
 
 Çalışan ortamın ağ politikası üniversite alan adlarını içermiyor. `https://konservatuvar.hacettepe.edu.tr/` isteği proxy bağlantısında `403 Forbidden` ile engellendi; sayfanın içeriği okunamadı. Google araması JavaScript yönlendirme sayfası döndürdü; Bing RSS aramaları konu dışı sonuçlar verdi. Bu çıktılar sınav kapsamının kanıtı kabul edilmedi.
 

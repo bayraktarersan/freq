@@ -84,11 +84,11 @@ describe('adaptive difficulty',()=>{
   });
   it('reassessment resets the recommendation while retaining errors and all historical scores',()=>{
     let p=manual(initialProgress(),'eq-1','a',[false,false,false,false,false]);const original=p.attempts;
-    p=placement('mix',true,p,T+20_000);expect(p.attempts).toEqual(original);expect(skillEstimate(p,'eq')).toMatchObject({level:2,reason:'placement',samples:0});expect(reviewCards(p)).toHaveLength(5);
+    p=placement('mix',true,p,T+20_000);expect(p.attempts).toEqual(original);expect(skillEstimate(p,'eq')).toMatchObject({level:2,reason:'placement',samples:0});expect(reviewCards(p)).toHaveLength(2);
   });
-  it('old records without exact audio still inform skill levels; they never invent a replay',()=>{
+  it('old records retain accuracy without proving a higher stage or inventing a replay',()=>{
     let p=manual(initialProgress(),'eq-1','a',[true,true,true,true,true]);p=manual(p,'eq-1','b',[true,true,true,false,false],T+10_000);p.attempts.forEach(a=>delete a.response);
-    expect(skillEstimate(p,'eq').level).toBe(2);expect(reviewCards(p)).toHaveLength(0);expect(load(p)).toEqual(p);
+    expect(skillEstimate(p,'eq')).toMatchObject({level:1,samples:10,accuracy:80,distinctExamples:0});expect(reviewCards(p)).toHaveLength(0);expect(load(p)).toEqual(p);
   });
   it('all paths provide a supported focus and rotate after new practice',()=>{
     let p=startPersonal(initialProgress(),'practice','mix',T,123,'focus');for(let i=0;i<5;i++){p=answerPersonal(p,refQuestion(p.personal!.active!.items[i]).correct,T+i*100+1);p=advancePersonal(p,T+i*100+2);}
@@ -99,7 +99,7 @@ describe('adaptive difficulty',()=>{
 describe('error review and spacing',()=>{
   it('retains the exact source, question and mistake; plans up to two due reviews with fresh practice',()=>{
     const p=manual(initialProgress(),'eq-1','old',[false,false,false,false,false]);const cards=reviewCards(p);
-    expect(cards).toHaveLength(5);expect(refQuestion(cards[0].ref).source).toBe('acoustic');expect(refQuestion(cards[0].ref).seed).toBe(makeQuestion('eq-1',T>>>0,0,'acoustic').seed);
+    expect(cards).toHaveLength(2);expect(refQuestion(cards[0].ref).source).toBe('acoustic');expect(refQuestion(cards[0].ref).seed).toBe(makeQuestion('eq-1',T>>>0,cards[0].ref.index,'acoustic').seed);
     expect(personalPlan(p,'mix',T+599_999).due).toHaveLength(0);
     const active=startPersonal(p,'practice','mix',T+700_000,3,'plan').personal!.active!;
     expect(active.items.filter(r=>r.review)).toHaveLength(2);expect(active.items.filter(r=>!r.review)).toHaveLength(3);
@@ -122,11 +122,13 @@ describe('error review and spacing',()=>{
     let p=placement('music',false);p=startPersonal(p,'practice','mix',T+100_000,2,'p');p=answerPersonal(p,wrong(p),T+100_001);p=endPersonal(p,T+100_002);
     expect(reviewCards(p)).toHaveLength(1);expect(personalPlan(p,'music',T+800_000).cards).toHaveLength(0);expect(personalPlan(p,'mix',T+800_000).due).toHaveLength(1);
   });
-  it('applies the 200-card display limit per path without hiding mistakes in other paths',()=>{
+  it('shows every open task on its path and collapses equivalent errors',()=>{
     let p=manual(initialProgress(),'eq-1','source',[false]);const sample=p.attempts[0];
     p.attempts=Array.from({length:201},(_,i)=>({...sample,sessionId:`error-${i}`}));
     p=manual(p,'direction-1','music',[false],T+10_000);
-    expect(personalPlan(p,'mix',T+800_000).cards).toHaveLength(200);expect(personalPlan(p,'music',T+800_000).cards).toHaveLength(1);
+    expect(personalPlan(p,'mix',T+800_000).cards).toHaveLength(1);
+    for(let i=0;i<201;i++){const q=makeQuestion('eq-1',i,0,'studio');p.attempts.push({...sample,sessionId:`varied-${i}`,source:'studio',response:{seed:i,choice:q.options.find(o=>o.id!==q.correct)!.id}});}
+    expect(personalPlan(p,'mix',T+800_000).cards).toHaveLength(202);expect(personalPlan(p,'music',T+800_000).cards).toHaveLength(1);
   });
   it('can reconstruct pending reviews when the originating personal result is no longer retained',()=>{
     let p=startPersonal(initialProgress(),'practice','mix',T,2,'origin');p=answerPersonal(p,wrong(p),T+1);p=endPersonal(p,T+2);

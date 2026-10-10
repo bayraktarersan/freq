@@ -1,5 +1,36 @@
 # Doğrulama kayıtları
 
+## 0.8 önizleme — derin denetim ve düzeltmeler
+
+10 Ekim 2026 UTC, Node.js 24.19.0 ve sistem Chromium'u ile. Son kaynak, test ve üretim dosyaları tarayıcı turunda sabit tutuldu; 76 dosyanın hash'i tur sonunda tekrar kontrol edildi. Ayrıntılı [eleştiri ve düzeltmeler](kalite-denetimi.md).
+
+| Kontrol | Sonuç |
+| --- | --- |
+| Birim testleri | **287 / 287 geçti**, dokuz dosya; 0.7'ye göre 18 yeni kontrol (15 denetim, üç ses yaşam döngüsü) |
+| TypeScript ve üretim build'i | `npm run build` geçti; `tsc -b`, Vite ve çevrimdışı önbellek üretimi tamamlandı |
+| Son sabit çıktıda tam tarayıcı turu | **130 / 130 geçti**, iki worker, 6.5m; dokuz yeni denetim senaryosu dahil |
+| Önceki 0.7 soru üreticisi | 54 ders × 200 tohum × beş soru: **54.000 soru birebir aynı**; bu turda değiştirilen ses yaşam döngüsü ve kurtarma soru üretmez |
+| Uzun kullanım geçmişi | Eski 100 kişisel / 2.000 cevap / 200 ders sonucu / 30 deneme sınırını aşınca değerlendirme, hata ve sonuç kaybolmuyor; yeniden okuma/birleştirme geçiyor |
+| Bozuk kayıt kurtarma | Orijinal JSON byte düzeyinde korunuyor ve indiriliyor. Açık kurtarma sonrası tutarsız oturum kapalı; eksik cevap uydurulmadan bir sonraki kayıt/yedek geçerli |
+| Çoklu sekme | Uyumlu cevap tek kayıtta birleşiyor; dil tercihi ileri-geri yazma döngüsü oluşturmuyor. Farklı yarım oturumda otomatik yazma duruyor; iki kopya ayrı indiriliyor |
+| Kota / eski istemci | Enjekte edilen kayıt kotası hatasında cevap bellekte ve geçerli yedekte kalıyor. v1 kaynak korunarak v2 alanına geçiliyor; eski v1 sekmesinin yazması yeni geçmişi budayamıyor |
+| Öğrenme kanıtı | Aynı ritmin farklı seed'leri tek ses sayılıyor; referansı eksik eski cevap seviye artırmıyor veya ses çeşitliliği üretmiyor. İleri aşama başarısı, iki seçenekli 9/10 ve adil odak kuralları geçiyor |
+| Tekrar / istatistik | Aynı ders/ses hatası tek kart; eski kökenler aynı takvimi güncelliyor. Erken doğru takvimi ilerletmiyor. Hata tekrarları ham pratik yüzdesine katılmıyor; beceri düğmesi önerilen aşamayı açıyor |
+| A/B dinleme | Hızlı düğme geçişi cevap açmıyor. Her döngü varyantında gerçek `AudioContext` saati en az bir saniye ilerlemeli; sonlu örnek tamamen bitmeli |
+| Ses yaşam döngüsü | Doğal tamamlanma iptal sayılmıyor; tamamlanma içinden yeni ses başlatılabiliyor, eski kaynak temizliği yeni oynatmayı durdurmuyor |
+| PWA kapsamları | Kök ve `/freq/` önbelleği aynı tarayıcıda birlikte korunuyor; diğer kapsamın örnek kaydı silinmiyor. İki yayın internetsiz yeniden açılıyor |
+| Mobil / TR-EN / erişilebilirlik | Yeni bozuk-kayıt, çakışma, beceri ve resmî kapsam ekranlarının axe kontrolleri geçti; mevcut 320/390 px, klavye ve iki dil akışları tam turda geçti |
+| Sınav kaynakları | MSGSÜ 2026–2027 resmî kılavuzunun Opera (25–26) ve Müzik teorisi (17–19) kapsamları doğrulandı; iki profilin yedek/devam ve farklı kaynaklı kapsamı geçiyor. Tam kurum denemesi değildir |
+| Pazar araştırması izi | 43 ürünlük matris; 14 yorum akışı / 390 indeks satırı, ham CSV sayımıyla aynı. Kapsam ve hash kaydı depoya eklendi; temsili araştırma veya bütün rakiplerin kullanım testi değildir |
+| Bağımlılıklar | `npm audit --json` başarılı; kayıtlı prod/dev bağımlılıklarında bilinen açık sayısı **0** |
+| Üretim önbelleği | 14 dosya; kapsamlı ad içinde sürüm `9a5a81359645`; hazır web çıktısı `sw.js` ile 15 dosya |
+
+İlk sekiz denetim testi 0.7 üzerinde **8 / 8 başarısız** oldu; düzeltmelerden sonra geçti. Ek eski-yedek kontrolü de düzeltmeden önce **1 başarısız / 14 başarılı** idi: ses referansı olmayan eski doğru cevaplar seviyeyi yükseltiyordu. Artış artık on özgün soru referansı gerektirir. Eski uyumluluk testinin otomatik yükselme beklentisi bu daha ihtiyatlı kurala göre değiştirildi; %80 geçmiş doğruluk, kayıtların korunması ve hayalî tekrar sesi üretilmemesi ayrıca kontrol ediliyor.
+
+İlk tam aday turu 123 / 130 geçti. Yedi hata aynı doğal ses bitişi regresyonundan kaynaklandı; tamamlanma/idle sırası ve oynatma kimliği koruması düzeltildi. Üç yaşam döngüsü testi eklendi; etkilenen yedi senaryo ayrı geçti ve son tam 130 testlik tur eksiksiz tamamlandı. Dinleme sınırı, son teslim anı, ritim toleransı veya yanıt gizleme gevşetilmedi; test kapatılmadı. Ses yaşam döngüsü birim testleri denetlenebilir taşıma/saati ve gerçek PCM'i kullanır; tarayıcı turu gerçek Web Audio ile çalışır.
+
+Gerçek iPhone/Android, kablolu/Bluetooth, VoiceOver/TalkBack, eğitimci/jüri kontrolü ve öğrenme/aktarımı ölçen pilot yapılmadı. Native mağaza paketleri hazır değil. Tek resmî kılavuz/iki program kapsamı, diğer kurumların araştırması veya bütün sınavın öğretimi anlamına gelmez. Yerel sonuçlar uzak CI veya canlı Pages yayını başarı kaydı değildir. [Deneme ve manuel yayın](deneme-ve-yayin.md).
+
 ## 0.7 önizleme — kişiye uygun çalışma
 
 10 Ekim 2026, Node.js 24.19.0 ve sistem Chromium'u ile. Son üretim çıktısı sabit tutuldu; tarayıcı turu sırasında yeniden build yapılmadı.

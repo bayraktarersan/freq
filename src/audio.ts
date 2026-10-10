@@ -8,6 +8,7 @@ import type { Material, Stereo } from './mix-types';
 
 export type Variant = 'a' | 'b' | 'c' | 'solo' | 'context' | 'resolution' | 'capture';
 export type AudioStatus = 'idle' | 'preparing' | 'playing' | 'error';
+export const MIN_LOOP_EXPOSURE = 1;
 type Pair = { a: AudioBuffer; b: AudioBuffer; c?: AudioBuffer; solo?: AudioBuffer; context?: AudioBuffer; resolution?: AudioBuffer; capture?: AudioBuffer; evidence?: { a: SignalInfo; b: SignalInfo; c?: SignalInfo } };
 export const rms = (data: Float32Array) => Math.sqrt(data.reduce((sum, x) => sum + x * x, 0) / Math.max(1, data.length));
 export const peak = (data: Float32Array) => data.reduce((max, x) => Math.max(max, Math.abs(x)), 0);
@@ -128,6 +129,9 @@ export class AudioEngine {
   private loadToken = 0;
   private custom: { id: string; stereo: Stereo; bed?: Stereo } | null = null;
   private lastEvidence: { key: string; data: NonNullable<Pair['evidence']> } | null = null;
+  private exposure = new Map<Variant, { seconds: number; callback?: () => void; credited: boolean }>();
+  private exposureAt = 0;
+  private exposureTimer: ReturnType<typeof setInterval> | null = null;
   status: AudioStatus = 'idle';
   activeTiming: { start: number; variant: Variant; responseStart?: number; responseEnd?: number } | null = null;
   get currentTime() { return this.context?.currentTime ?? 0; }
@@ -186,6 +190,8 @@ export class AudioEngine {
     return { id, name: file.name, duration: length / context.sampleRate, channels: decoded.numberOfChannels };
   }
   stop() {
+    if (this.exposureTimer !== null) clearInterval(this.exposureTimer);
+    this.exposureTimer = null; this.exposure.clear();
     this.token++; this.captureRequested = false;
     this.sources.forEach(s => { s.onended = null; try { s.stop(); } catch { /* already ended */ } s.disconnect(); });
     this.gains.forEach(g => g.disconnect());
@@ -265,6 +271,8 @@ export class AudioEngine {
   async play(q: Question, variant: Variant = 'a', onComplete?: () => void): Promise<boolean> {
     const key = this.key(q);
     if (variant !== 'solo' && usesLoop(q.kind) && this.gains.length > 0 && this.status === 'playing' && this.activeKey === key) {
+      const entry = this.exposure.get(variant) ?? { seconds: 0, credited: false };
+      entry.callback = onComplete; this.exposure.set(variant, entry);
       this.switchVariant(variant); return true;
     }
     this.stop();
@@ -291,10 +299,18 @@ export class AudioEngine {
       } else {
         const s = context.createBufferSource(); s.buffer = pair[variant]!;
         s.connect(this.master!); s.start(start);
-        s.onended = () => { if (token === this.token) { onComplete?.(); this.stop(); } };
+        // Consumers must mark natural completion before idle is emitted.
+        // A completion callback may start the next sound synchronously;
+        // its new token must survive cleanup of this finished source.
+        s.onended = () => { if (token === this.token) { onComplete?.(); if (token === this.token) this.stop(); } };
         this.sources.push(s);
       }
       this.activeTiming = { start, variant, ...(variant === 'capture' && q.music ? { responseStart: start + 12 * 60 / q.music.tempo, responseEnd: start + 16 * 60 / q.music.tempo } : {}) };
+      if (usesLoop(q.kind) && variant !== 'solo') {
+        this.exposureAt = start;
+        this.exposure.set(variant, { seconds: 0, callback: onComplete, credited: false });
+        this.exposureTimer = setInterval(() => this.updateExposure(), 50);
+      }
       this.activeKey = key; this.emit('playing'); return true;
     } catch { if (token === this.token) { this.captureRequested = false; this.emit('error'); } return false; }
   }
@@ -313,7 +329,22 @@ export class AudioEngine {
   }
   switchVariant(variant: Variant) {
     const selected = ['a', 'b', 'c'].indexOf(variant);
-    if (!this.context || selected >= this.gains.length) return;
+    if (!this.context || selected < 0 || selected >= this.gains.length) return;
+    this.updateExposure();
+    if (this.activeTiming) this.activeTiming.variant = variant;
+    this.exposureAt = Math.max(this.context.currentTime, this.activeTiming?.start ?? 0);
     this.gains.forEach((g, i) => { g.gain.cancelScheduledValues(this.context!.currentTime); g.gain.setTargetAtTime(i === selected ? 1 : 0, this.context!.currentTime, 0.012); });
+  }
+  private updateExposure() {
+    if (!this.context || !this.activeTiming || this.status !== 'playing' || this.exposureTimer === null) return;
+    const entry = this.exposure.get(this.activeTiming.variant) ?? { seconds: 0, credited: false };
+    const now = this.context.currentTime;
+    entry.seconds += Math.max(0, now - this.exposureAt);
+    this.exposureAt = Math.max(now, this.activeTiming.start);
+    this.exposure.set(this.activeTiming.variant, entry);
+    if (!entry.credited && entry.callback && entry.seconds >= MIN_LOOP_EXPOSURE) {
+      entry.credited = true;
+      entry.callback();
+    }
   }
 }

@@ -20,7 +20,7 @@ export function finishMock(p: ExamProgress, reason: MockResult['reason'], now = 
   const at = expires ? s.deadline : now;
   const answers = [...s.answers, ...Array.from({ length: count - s.answers.length }, () => ({ choice: null, correct: false, at }))];
   const result: MockResult = { ...s, answers, finishedAt: at, reason: expires ? 'expired' : reason };
-  return { ...p, active: null, results: [...p.results.filter(r => r.id !== s.id), result].slice(-30) };
+  return { ...p, active: null, results: [...p.results.filter(r => r.id !== s.id), result] };
 }
 export const expireMock = (p: ExamProgress, now = Date.now()) => p.active && now >= p.active.deadline ? finishMock(p, 'expired', now) : p;
 export function registerMockPlay(p: ExamProgress, now = Date.now()): ExamProgress {
@@ -68,7 +68,7 @@ export function validMockResult(v: unknown): v is MockResult {
 }
 export const validRehearsal = (v: unknown): v is ExamRehearsal => object(v) && typeof v.id === 'string' && v.id.length>0 && v.id.length<=128 && examCourses.some(c=>c.id===v.courseId) && level(v.level) && Number.isInteger(v.seed) && (v.seed as number)>=0 && (v.seed as number)<=0xffffffff && time(v.at) && Array.isArray(v.checks) && v.checks.length===3 && v.checks.every(c=>typeof c==='boolean') && typeof v.note==='string' && v.note.length<=500;
 export function readExamProgress(v: unknown): ExamProgress | null {
-  if(!object(v) || v.version!==1 || typeof v.selectedProfile!=='string' || !getExamProfile(v.selectedProfile) || v.active!==null && !validMock(v.active) || !Array.isArray(v.results) || v.results.length>30 || !v.results.every(validMockResult) || !Array.isArray(v.rehearsals) || v.rehearsals.length>100 || !v.rehearsals.every(validRehearsal)) return null;
+  if(!object(v) || v.version!==1 || typeof v.selectedProfile!=='string' || !getExamProfile(v.selectedProfile) || v.active!==null && !validMock(v.active) || !Array.isArray(v.results) || !v.results.every(validMockResult) || !Array.isArray(v.rehearsals) || !v.rehearsals.every(validRehearsal)) return null;
   if(new Set(v.results.map(r=>r.id)).size!==v.results.length || new Set(v.rehearsals.map(r=>r.id)).size!==v.rehearsals.length || v.active && v.results.some(r=>r.id===(v.active as ExamMock).id)) return null;
   const copyMock=(s:ExamMock):ExamMock=>({id:s.id,profileId:s.profileId,level:s.level,seed:s.seed,startedAt:s.startedAt,deadline:s.deadline,answers:s.answers.map(a=>({choice:a.choice,correct:a.correct,at:a.at})),plays:[...s.plays],heard:[...s.heard]});
   return {version:1,selectedProfile:v.selectedProfile,active:v.active?copyMock(v.active as ExamMock):null,results:v.results.map(r=>({...copyMock(r),finishedAt:r.finishedAt,reason:r.reason})),rehearsals:v.rehearsals.map(r=>({id:r.id,courseId:r.courseId,level:r.level,seed:r.seed,checks:[...r.checks],note:r.note,at:r.at}))};

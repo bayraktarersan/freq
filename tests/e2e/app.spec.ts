@@ -3,7 +3,7 @@ import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { eqSourceIds, eqSources, lessons, usesLoop, usesPair } from '../../src/content';
 import { advanceQuestion, answerQuestion, initialProgress, makeQuestion, STORAGE_KEY, type Progress } from '../../src/model';
-import { createBackup } from '../../src/backup';
+import { createBackup, MAX_BACKUP_BYTES } from '../../src/backup';
 import { readFile } from 'node:fs/promises';
 
 async function progress(page: Page): Promise<Progress> { return page.evaluate(key => JSON.parse(localStorage.getItem(key)!), STORAGE_KEY); }
@@ -25,6 +25,7 @@ async function listen(page: Page) {
   const player = page.locator('.exercise .audio-player');
   if (usesPair(lesson.skill)) {
     await player.locator('.ab-button').nth(0).click();
+    await expect(player.locator('.ab-button').nth(0)).toContainText('✓ Dinlendi',{timeout:12_000});
     if (!usesLoop(lesson.skill)) await expect(player.getByRole('button', { name: 'Dinle', exact: true })).toBeVisible({ timeout: 10_000 });
     await player.locator('.ab-button').nth(1).click();
   } else await player.getByRole('button', { name: 'Dinle', exact: true }).click();
@@ -302,7 +303,7 @@ test('the downloaded backup restores exact records and a saved question through 
   await page.getByRole('button', { name: 'İlerlemeyi indir', exact: true }).click();
   const download = await downloadReady;
   const raw = await readFile((await download.path())!, 'utf8');
-  expect(JSON.parse(raw)).toMatchObject({ format: 'freq-backup', schemaVersion: 1, progress: before });
+  expect(JSON.parse(raw)).toMatchObject({ format: 'freq-backup', schemaVersion: 2, progress: before });
   await page.getByRole('button', { name: 'İlerlemeyi sıfırla', exact: true }).click();
   await page.getByRole('button', { name: 'Evet, sil', exact: true }).click();
   expect((await progress(page)).attempts).toHaveLength(0);
@@ -316,9 +317,9 @@ test('the downloaded backup restores exact records and a saved question through 
 test('unsupported and oversized backup files give actionable errors without changing progress', async ({ page }) => {
   await page.goto('/'); await openProfile(page);
   const before = await progress(page);
-  await uploadBackup(page, { format: 'freq-backup', schemaVersion: 2 });
+  await uploadBackup(page, { format: 'freq-backup', schemaVersion: 3 });
   await expect(page.getByText(/daha yeni bir Freq sürümüyle/)).toBeVisible();
-  await page.locator('input[type="file"]').setInputFiles({ name: 'large.json', mimeType: 'application/json', buffer: Buffer.alloc(2 * 1024 * 1024 + 1) });
+  await page.locator('input[type="file"]').setInputFiles({ name: 'large.json', mimeType: 'application/json', buffer: Buffer.alloc(MAX_BACKUP_BYTES + 1) });
   await expect(page.getByText(/Yedek dosyası çok büyük/)).toBeVisible();
   expect(await progress(page)).toEqual(before);
 });
@@ -354,7 +355,7 @@ test('storage denial still permits practice and gives clear feedback', async ({ 
   await expect(page.getByText(/Tarayıcı kayıt yapamıyor/)).toBeVisible();
   await page.getByRole('button', { name: 'Pratiğe başla', exact: true }).click();
   await page.getByRole('button', { name: 'Hazırım, dinleyelim' }).click();
-  await page.locator('.ab-button').nth(0).click(); await page.locator('.ab-button').nth(1).click();
+  await page.locator('.ab-button').nth(0).click(); await expect(page.locator('.ab-button').nth(0)).toContainText('✓ Dinlendi'); await page.locator('.ab-button').nth(1).click();
   await expect(page.locator('.answer-option').first()).toBeEnabled();
   await page.locator('.answer-option').first().click();
   await expect(page.locator('.feedback')).toBeVisible();
@@ -390,7 +391,7 @@ test('keyboard answers and mobile layout remain usable', async ({ page }) => {
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.getByRole('button', { name: 'Pratiğe başla', exact: true }).click();
   await page.getByRole('button', { name: 'Hazırım, dinleyelim' }).click();
-  await page.locator('main').focus(); await page.keyboard.press('a'); await page.keyboard.press('b');
+  await page.locator('main').focus(); await page.keyboard.press('a'); await expect(page.locator('.exercise .ab-button').nth(0)).toContainText('✓ Dinlendi'); await page.locator('main').focus(); await page.keyboard.press('b');
   await expect(page.locator('.answer-option').first()).toBeEnabled();
   await page.locator('main').focus(); await page.keyboard.press('1');
   await expect(page.locator('.feedback')).toBeVisible();

@@ -17,8 +17,7 @@ export function AudioPlayer({ engine, question, locale, volume, onVolume, onHear
   useEffect(() => { engine.stop(); engine.setMono(false); setMono(false); setVariant('a'); return () => { engine.stop(); engine.setMono(false); }; }, [engine, question.seed, question.kind, question.source, question.comparisonFrequency, JSON.stringify(question.mix), JSON.stringify(question.music), question.customId]);
   const play = async (v: Variant = variant) => {
     if (v !== 'context' && v !== 'resolution') setVariant(v);
-    const didPlay = await engine.play(question, v, () => callback.current?.(v));
-    if (didPlay && usesLoop(question.kind)) callback.current?.(v);
+    await engine.play(question, v, () => callback.current?.(v));
   };
   const toggle = () => { if (status === 'playing' || status === 'preparing') engine.stop(); else void play(); };
   useEffect(() => {
@@ -52,6 +51,7 @@ export function AudioPlayer({ engine, question, locale, volume, onVolume, onHear
       <label className="volume-control"><Volume2 size={18} /><span className="sr-only">{tx(ui.volume, locale)}</span><input aria-label={tx(ui.volume, locale)} type="range" min="0.05" max="0.8" step="0.01" value={volume} onChange={e => onVolume(Number(e.target.value))} /></label>
     </div>
     {question.kind === 'rhythm' && <p className="rhythm-cue">{question.tempo} BPM · {tx(text('4 sayım, ardından 1 ölçü · A ve B’yi tamamla', '4 count-in beats, then 1 bar · finish both A and B'), locale)}</p>}
+    {onHeard && usesLoop(question.kind) && <p className="rhythm-cue">{tx(text('A ve B’nin her birini en az 1 saniye dinle. Geçişte zaman çizgisi korunur; durdurmak eksik dinleme süresini sıfırlar.', 'Listen to A and B for at least 1 second each. Switching keeps the timeline; stopping resets incomplete listening time.'), locale)}</p>}
     {status === 'error' && <p className="notice" role="alert">{tx(ui.audioError, locale)}</p>}
   </div>;
 }

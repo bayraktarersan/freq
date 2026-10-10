@@ -13,6 +13,7 @@ async function hear(page:Page){
   const stereo=page.locator('.personal-exercise .stereo-check input');if(await stereo.count())await stereo.check();
   if(usesPair(q.kind)){
     await player.locator('.ab-button').nth(0).click();
+    await expect(player.locator('.ab-button').nth(0)).toContainText('✓ Dinlendi',{timeout:12_000});
     if(!usesLoop(q.kind))await expect(player.getByRole('button',{name:'Dinle',exact:true})).toBeVisible({timeout:12_000});
     await player.locator('.ab-button').nth(1).click();
   }else await player.getByRole('button',{name:'Dinle',exact:true}).click();

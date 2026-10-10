@@ -1,7 +1,7 @@
 import { getLesson, lessons, usesLoop, type PathId } from './content';
 import { isEqSource } from './model';
 import { evaluateAnswer } from './music-model';
-import { personalSkills, PERSONAL_RESULT_LIMIT, placementItems, refIdentity, refQuestion } from './personal-model';
+import { personalSkills, placementItems, refIdentity, refQuestion } from './personal-model';
 import type { PersonalAnswer, PersonalProgress, PersonalResult, PersonalSession, QuestionRef } from './personal-types';
 
 const object=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
@@ -45,7 +45,7 @@ export function readPersonalSession(v:unknown, result=false):PersonalSession|Per
   return {...session,finishedAt:v.finishedAt,status:v.status as PersonalResult['status']};
 }
 export function readPersonalProgress(v:unknown):PersonalProgress|null {
-  if(!object(v)||v.version!==1||!Array.isArray(v.results)||v.results.length>PERSONAL_RESULT_LIMIT||v.active===undefined)return null;
+  if(!object(v)||v.version!==1||!Array.isArray(v.results)||v.active===undefined)return null;
   const results=v.results.map(r=>readPersonalSession(r,true) as PersonalResult|null);
   const active=v.active===null?null:readPersonalSession(v.active);
   if(results.some(r=>!r)||v.active!==null&&!active)return null;

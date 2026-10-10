@@ -1,5 +1,17 @@
 # Sürüm değişiklikleri
 
+## 0.8 önizleme — derin denetim
+
+- Sayıya bağlı geçmiş budaması kaldırıldı. Kota hatasında veri bellekte kalır ve indirilebilir; bozuk orijinal kayıt otomatik olarak değiştirilmez.
+- Sekmelerde uyumlu cevaplar birleşir, çakışmada iki kopya korunur. Eski açık uygulama sekmesine karşı ayrı v2 kayıt alanı ve sürüm 2 yedek zarfı eklendi.
+- Seviye önerisi gerçek ses çeşitliliğini ve iki seçenekli görevlerde 9/10 eşiğini kullanır. Ses ayrıntısı olmayan eski kayıtlar korunur ama ses çeşitliliği veya artış kanıtı sayılmaz. İleri aşamadaki sürdürülen başarı tanınır, zayıf beceri günlük odağı tekeline almaz.
+- Aynı ders/ses hataları tek tekrar kartında birleşir. Genel ve beceri doğruluğu hata tekrarlarından ayrıldı; pratik düğmesi önerilen aşamayı açar.
+- A/B döngüsü her varyantta en az bir saniye gerçek ses saati gerektirir. Sonlu ses tamamlanması ve sonraki oynatmanın korunması düzeltildi.
+- PWA önbelleği yayın kapsamına ayrıldı; ekran okuyucu alanlarına ayrı adlar verildi.
+- Resmî MSGSÜ 2026–2027 Opera/Müzik teorisi kapsam haritaları, açık öğretim sınırları ve 390 yorumluk araştırma indeksi eklendi.
+
+[Ayrıntılı eleştiri/düzeltme](kalite-denetimi.md), [doğrulama](dogrulama.md).
+
 ## 0.7 önizleme
 
 - Bugün ekranında kişisel plan; ayrı ve sade çalışma alanında başlangıç değerlendirmesi, pratik ve hata tekrarları. Ses kaynağı ve beceri ayrıntıları açılır bölümlerde.

@@ -27,6 +27,7 @@ async function listen(page: Page) {
   const player = page.locator('.exercise .audio-player');
   await player.locator('.ab-button').nth(0).click();
   await expect(player).toHaveClass(/is-playing/);
+  await expect(player.locator('.ab-button').nth(0)).toContainText('✓ Dinlendi');
   await player.locator('.ab-button').nth(1).click();
   await expect(page.locator('.answer-option').first()).toBeEnabled();
 }

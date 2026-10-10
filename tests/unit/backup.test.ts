@@ -50,7 +50,7 @@ describe('backup format', () => {
   it.each(['{}', '[]', 'null', '{', '{"format":"other"}', '{"version":1}'])('rejects non-backups without returning empty progress: %s', raw => {
     expect(errorCode(() => readBackup(raw))).toBe('invalid');
   });
-  it.each([{ format: 'freq-backup', schemaVersion: 2 }, { version: 2 }])('identifies an unsupported future schema', future => {
+  it.each([{ format: 'freq-backup', schemaVersion: 3 }, { version: 2 }])('identifies an unsupported future schema', future => {
     expect(errorCode(() => readBackup(JSON.stringify(future)))).toBe('future');
   });
   it('rejects unknown lessons, corrupt sessions and unknown source ids', () => {
@@ -76,9 +76,9 @@ describe('merging progress', () => {
   });
   it('keeps different sessions and current preferences', () => {
     const current = { ...practice('a'), locale: 'en' as const, path: 'music' as const, volume: 0.2 };
-    const incoming = practice('b', 2);
+    const incoming = advanceQuestion(practice('b', 5));
     const merged = mergeProgress(current, incoming);
-    expect(merged.attempts).toHaveLength(3);
+    expect(merged.attempts).toHaveLength(6);
     expect(merged.session).toEqual(current.session);
     expect(merged).toMatchObject({ locale: 'en', path: 'music', volume: 0.2 });
     expect(load(merged)).toEqual(merged);

@@ -40,7 +40,7 @@ Apple'ın seçili 14 ABD/Türkiye yorum akışının ilk sayfalarından **390 yo
 
 Reddit istekleri erişim engeli aldı. Statik Google çıktısı kullanılabilir sonuç vermedi; ilgisiz sonuç dönen arama çıktıları da kanıt olarak kullanılmadı. Araştırma doğrudan ürün, mağaza ve yorum kaynaklarına dayandırıldı.
 
-Ham erişim kayıtları `kaynak-kayitlari.json`, yorum kayıtları `yorum-kayitlari.csv`, toplama kapsamı `yorum-ozeti.json` dosyalarındadır. `sources/` altında sayfa metni, HTML, bağlantı listesi, erişim zamanı ve SHA-256 kaydı bulunur.
+Depoda [erişim kayıtları](kaynak-kayitlari.json), [390 yorumun metinsiz kimlik/tarih/kaynak indeksi](yorum-kayit-indeksi.csv) ve [örneklem kapsamı](yorum-kapsami.json) bulunur. 0.8 denetiminde özgün CSV satır sayısı ve 14 akışın dağılımı tekrar kontrol edildi. Tam yorum metinleri ve sayfa kopyaları önceki çalışma ortamındaki `/workspace/research/` arşivindedir; kaynak ZIP paketine dahil değildir. Kaynak URL ve hash kayıtları içerik erişimini belgeler; rakip ses motoru veya öğrenme etkinliği testini belgelemez. Yorum başlığı/metni ve kullanıcı adı indekste yeniden yayımlanmaz.
 
 ## 3. Miks ve prodüksiyon rakipleri
 

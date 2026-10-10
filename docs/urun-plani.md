@@ -4,7 +4,7 @@
 
 Ana odak miks ve prodüksiyon kulağı. Temel müzik kulağı ve konservatuvar / müzik bölümüne hazırlık kendi yollarında yer alır. Türkçe ve İngilizce içerik; web, iOS ve Android hedefleri. Ana ekran aktif yolu, kişisel çalışma planına erişimi ve ders pratiğini gösterir; beceri ayrıntıları kişisel planın içinde açılır. Navigasyon: Bugün, Yollar, Becerilerim, Profil.
 
-## Çalışan sürüm: 0.7 önizleme
+## Çalışan sürüm: 0.8 önizleme
 
 54 pratik / 20 beceri, önce öğretim ardından pratik. Her derste yanıtı görünen bir örnek var. EQ ve ses yüksekliğinde iki örneği, hafıza ve ritimde iki tam örneği dinlemeden yanıt düğmeleri açılmaz. Doğru/yanlış sonrası tekrar dinleme serbesttir; tekrar dinleme puanı değiştirmez. Yarım bırakılmış oturum korunur. Başka pratiğe geçerken uyarı gösterilir; eski yanıtlar beceri kaydında kalır.
 
@@ -12,7 +12,7 @@ Ana odak miks ve prodüksiyon kulağı. Temel müzik kulağı ve konservatuvar /
 
 0.3'te yollar içerik ailelerine göre bölümlendi. Ses yüksekliği alıştırmalarında aynı kaynağın yalnızca seviyesi değiştirilir veya aynı bırakılır; göreli fark bilerek korunur. Ritim alıştırmalarında sayımdan sonra dört vuruşlu bir ölçü karşılaştırılır. Vuruş sayısı, tempo ve ses rengi sabittir; bir vuruşun yeri bir alt bölüme kayabilir. Çizim bağımsız soruda cevap verilmeden gösterilmez. Bu alıştırma dinleyerek ayırt etmedir; ritim tekrarı veya dokunma puanı değildir. Her iki yeni beceri ayrı ölçülür ve yedeklenir.
 
-Profil'den yedek geri yükleme, mevcut kayıtları birleştirir. Kimliği aynı olan kayıtlar tekrar sayılmaz; çelişkiler yüklemeyi durdurur. Eski 0.1 yedekleri ve yarım oturumlar desteklenir. Dosyalar sunucuya gönderilmez. Kalıcı veri sınırı 2.000 yanıt / 200 sonuçtur; geri yükleme özeti bunu açıklar.
+Profil'den yedek geri yükleme, mevcut kayıtları birleştirir. Kimliği aynı olan kayıtlar tekrar sayılmaz; çelişkiler ve iki farklı yarım oturum yüklemeyi durdurur. Eski 0.1 yedekleri ve yarım oturumlar desteklenir. Dosyalar sunucuya gönderilmez. Sayıya bağlı budama kaldırıldı; gerçek tarayıcı kotası aşılırsa kayıt uyarısı ve indirme eylemi görünür. İçeri alma sınırı 16 MiB'dır.
 
 Miks: EQ bölümünde üç frekans bölgesi → beş frekans noktası → dar bant / yükseltme-kesme; ses yüksekliği bölümünde 6 → 3 → 1 dB. Müzik: melodi ve armonide yön → aralık → majör/minör; ritimde sekizlik bölünme → sus/ters vuruş → onaltılık hareket. Hazırlık: üç → dört → beş notalı karşılaştırma. Bu son yol, gerçek bir kurum sınavının yerine geçen bir deneme değildir.
 
@@ -34,7 +34,7 @@ CC0 tek nota/vuruş kayıtlarından hazırlanmış iki akustik düzenleme ve ayr
 
 Yedi ders ailesi / üçer seviye, öz değerlendirme notları, Sol anahtarlı Do majör 4/4 solfej örneği ve 6/8/10 soruluk süreli ortak deneme çalışır. Ders ve deneme alanları ayrı sekmelerde; eski beş soruluk hafıza pratikleri korunur. Deneme sırasında cevap açılmaz; sonunda her soru geri dinlenir ve eksik beceriye yönlendirilir. Süre, soru sayısı ve dinleme sınırı Freq varsayımıdır. Otomatik sonuç jüri/icra puanı içermez.
 
-Kurumlara özel doğrulanmış kapsam ve denemeler tamamlanmadı. Hacettepe, MSGSÜ, İTÜ, İstanbul, Ankara, Dokuz Eylül, Gazi ve Marmara alanları ortam taslağına eklendi; çalışan erişim açılınca resmî program/yıl kılavuzları karşılaştırılacak. [Araştırma durumu](research/sinav-hazirligi-arastirma-durumu.md).
+MSGSÜ 2026–2027 resmî kılavuzuyla Opera ve Müzik teorisi kapsam haritaları doğrulandı. Programların bütün sınavı, resmî ağırlıklarla puanlama ve diğer kurumların kapsam karşılaştırması tamamlanmadı. Hacettepe, İTÜ, İstanbul, Ankara, Dokuz Eylül, Gazi ve Marmara için program/yıl kılavuzları ayrıca incelenmeli. [Araştırma durumu](research/sinav-hazirligi-arastirma-durumu.md).
 
 ## Araştırmadan alınan tasarım kararları
 
@@ -44,10 +44,16 @@ Kurumlara özel doğrulanmış kapsam ve denemeler tamamlanmadı. Hacettepe, MSG
 
 0.7 başlangıç değerlendirmesi, hatalardan aralıklı tekrar ve beceri bazında zorluk önerisi ekler. Miks / müzik / hazırlıkta 18 / 20 / 12 soru, ikişer başlangıç probu; tamamlanan değerlendirme geçici seviye önerisi sağlar. Tamamen geçilen beceriler ve yarım yeniden değerlendirme mevcut öneriyi değiştirmez. Her beceride tek bir ham müzikal yetenek puanı verilmez.
 
-Yeni soru kanıtı ve hata tekrarı ayrıdır. En az iki oturumda 8/10 yeni doğru bir sonraki seviyeyi; 2/6 veya daha az yeni doğru önceki seviyeyi önerir. Hata tekrarının kendisi düzey yükseltmez. Günlük plan en fazla iki zamanı gelen tekrar ve yeni odak soruları içerir. Öncelik güçlük ve en uzun süredir çalışılmayan beceridir. Dersleri elle seçmek serbesttir. 10 dakika / 1 / 3 / 7 gün tekrar politikası ve bu eşikler ürün varsayımlarıdır. [Tasarım ve sınırlar](research/kisisellestirme-tasarimi.md).
+Yeni soru kanıtı ve hata tekrarı ayrıdır. En az iki oturumda iki seçenekli görevlerde 9/10, diğerlerinde 8/10 ve en az 2/3 farklı duyulan örnek bir sonraki seviyeyi; 2/6 veya daha az yeni doğru önceki seviyeyi önerir. Hata tekrarının kendisi düzey yükseltmez. Günlük plan en fazla iki zamanı gelen tekrar ve yeni odak soruları içerir. Öncelik güçlük ve en uzun süredir çalışılmayan beceridir; başka zayıf/hiç çalışılmamış konular varken en son çalışılan beceri bir sonraki odakta dinlendirilir. Genel/beceri doğruluğu tekrar hariçtir; elle ileri aşamada sürdürülen güçlü başarı da öneriye alınır. Dersleri elle seçmek serbesttir. 10 dakika / 1 / 3 / 7 gün tekrar politikası ve bu eşikler ürün varsayımlarıdır. [Tasarım ve sınırlar](research/kisisellestirme-tasarimi.md).
 
 ## Kullanıcı pilotu
 
 Önce iki dilde derslerin anlaşılmasını, cihazlarda sesin güvenilirliğini, zorluk geçişini ve yanlış yanıttan sonra öğrenmeyi değerlendir. Daha sonra eğitimde duyulmayan kaynaklarda ön test / son test / gecikmeli tekrar uygulanabilir. 0.7 öncesindeki sıralı 10 yanıt / %80 ders önerisi, kişisel akışta beceri bazında başlangıç, yeni örnek kanıtı ve aralıklı tekrar ile genişletildi. Bu kurallar bilimsel doğrulama veya sınav başarısı garantisi değildir.
 
 Gerçek iPhone Safari, Android Chrome, Bluetooth ve kablolu kulaklık, arka plana alma, düşük güç modu, VoiceOver / TalkBack ve farklı işitme profilleriyle manuel test gerekir. İlk teslimattaki Chromium testleri bu matrisin tamamını kapsamaz.
+
+## 0.8 denetimiyle değişenler
+
+Uzun kullanımda kaynak verisini silen sayaç sınırları kaldırıldı. Kayıt kotası, bozuk JSON ve sekme çakışması görünür ve indirilebilir iki kopyayla yönetilir. v1 kayıt v2 alanına taşınır; yeni yedek zarfı sürüm 2’dir. Eski uygulama yeni kaydı budayamaz. Öğretim ve istatistiklerin birbiriyle çelişen eski önerileri birleştirildi. Asgari dinleme, bağımsız yayın önbelleği ve ekran okuyucu alanları düzeltildi.
+
+MSGSÜ Opera ve Müzik teorisi 2026–2027 kaynakları, kurum/program kapsam haritasına eklendi. Bu, iki programın bütün sınavını simüle etmek veya diğer kurumların kapsamını doğrulamak değildir. [Denetim raporu](kalite-denetimi.md) kullanıcı beklentisi, ses, ölçüm, veri ve yayın sınırlarını birlikte açıklar. Fiziksel cihaz ve uzman öğretim pilotu, minör/kromatik içerik, tam dikte, mağaza uygulamaları ve daha geniş lisanslı kayıt kütüphanesi hedefleri devam eder.
